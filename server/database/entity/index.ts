@@ -1,0 +1,6 @@
+export { Attendances } from './attendance'
+export { Classes } from './class'
+export { Courses } from './course'
+export { Teachers } from './teacher'
+export { Users } from './user'
+export { Students } from './student'

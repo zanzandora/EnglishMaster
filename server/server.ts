@@ -1,13 +1,16 @@
 // Trimmed down version of https://github.com/bluwy/create-vite-extra/blob/master/template-ssr-react-ts/server.js
 
+import 'dotenv/config'
 import fs from 'node:fs/promises'
 import express from 'express'
 import { ViteDevServer } from 'vite'
 
+import login from './routes/login'
+
 const isProduction = process.env.NODE_ENV === 'production'
 
 const app = express()
-app.use(express.static('public'))
+app.use(express.static('./client/public'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -25,6 +28,8 @@ else {
   app.use((await import('compression')).default())
   app.use('/', (await import('sirv')).default('./dist/client', { extensions: [] }))
 }
+
+login(app)
 
 app.use('*all', async (req, res) => {
   try {
