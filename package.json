@@ -7,7 +7,8 @@
     "dev": "cross-env NODE_ENV=development tsx server/server.ts",
     "build": "npm run build:client",
     "build:client": "vite build --outDir dist/client",
-    "preview": "cross-env NODE_ENV=production tsx server/server.ts"
+    "preview": "cross-env NODE_ENV=production tsx server/server.ts",
+    "database": "npx drizzle-kit push"
   },
   "dependencies": {
     "compression": "^1.7.5",

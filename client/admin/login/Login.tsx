@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 
 import { blueTextBottom, submitForm } from './login/functions'
-import { hideInvalidate, showInvalidate } from './login/valication'
+import { hideInvalidate, showInvalidate } from './login/validation'
 import { Link } from 'react-router-dom'
 
 const Login = () => {

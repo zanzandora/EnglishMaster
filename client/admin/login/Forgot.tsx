@@ -1,14 +1,11 @@
 import { motion } from 'framer-motion'
 
-import { hideInvalidate, showInvalidate } from './login/valication'
+import { hideInvalidate, showInvalidate } from './login/validation'
 
 const Forgot = () => {
   return (
     <div className='flex w-full h-full'>
-      <motion.div
-        className='flex flex-row m-auto bg-white shadow-xl rounded-xl h-[36rem]'
-        layout
-      >
+      <motion.div className='flex flex-row m-auto bg-white shadow-xl rounded-xl h-[36rem]' layout>
         <motion.img src='/reg.jpg' className='rounded-l-xl' />
         <motion.div className='flex flex-col p-8 w-full h-full relative'>
           <motion.span layout='position' className='font-semibold text-4xl mx-auto select-none mb-2'>
@@ -30,10 +27,7 @@ const Forgot = () => {
                 </div>
               </div>
 
-              <button
-                type='submit'
-                className='bg-sky-500 w-32 h-12 mx-auto py-2 px-5 rounded-lg text-white mt-2 cursor-pointer select-none'
-              >
+              <button type='submit' className='bg-sky-500 w-32 h-12 mx-auto py-2 px-5 rounded-lg text-white mt-2 cursor-pointer select-none'>
                 Submit
               </button>
             </form>

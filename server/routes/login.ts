@@ -53,11 +53,10 @@ export default function (app: Express) {
       from: process.env.EMAIL_USER,
       to: req.body.email,
       subject: 'Forgot Password',
-      text: 'ngu'
+      text: 'Đây là mail mẫu cho chức năng quên mật khẩu'
     }, (err, info) => {
       if (err) return res.send('CANNOT SEND EMAIL: ' + err.message)
       return res.send('SUCCESS')
     })
-
   })
 }

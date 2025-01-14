@@ -5,10 +5,10 @@ export default defineConfig({
   dialect: 'mysql',
   schema: './server/database/entity/index.ts',
   dbCredentials: {
-    host: 'localhost',
-    port: 3306,
-    user: 'root',
+    host: process.env.DATABASE_HOST as any,
+    port: process.env.DATABASE_HOST as any,
+    user: process.env.DATABASE_USER as any,
     // password: 'a',
-    database: 'englishmaster',
+    database: process.env.DATABASE_NAME as any,
   },
 })
