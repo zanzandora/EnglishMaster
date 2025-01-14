@@ -29,8 +29,8 @@ export default function (app: Express) {
     const phoneNumber = req.body.phone
     const address = req.body.address
 
-    const users = await db.select().from(Users).where(and(eq(Users.username, username), eq(Users.password, password)))
-    if (users.length === 0) {
+    const users = (await db.select().from(Users).where(eq(Users.username, username))).at(0)
+    if (!users) {
       await db.insert(Users).values({
         username,
         password,

@@ -6,7 +6,7 @@ export default defineConfig({
   schema: './server/database/entity/index.ts',
   dbCredentials: {
     host: process.env.DATABASE_HOST as any,
-    port: process.env.DATABASE_HOST as any,
+    port: process.env.DATABASE_PORT as any,
     user: process.env.DATABASE_USER as any,
     // password: 'a',
     database: process.env.DATABASE_NAME as any,
