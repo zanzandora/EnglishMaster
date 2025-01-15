@@ -58,7 +58,7 @@ const Login = () => {
                         required
                       />
                       <input
-                        type='text'
+                        type='email'
                         name='email'
                         placeholder='Email'
                         className='bg-gray-200 px-3 h-12 w-72 rounded-lg outline-none border-2 border-transparent'

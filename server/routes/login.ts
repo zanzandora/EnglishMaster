@@ -1,5 +1,5 @@
 import { Express } from 'express'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, or } from 'drizzle-orm'
 
 import { Users } from '../database/entity/user'
 import { db } from '../database/driver'
@@ -29,7 +29,7 @@ export default function (app: Express) {
     const phoneNumber = req.body.phone
     const address = req.body.address
 
-    const users = (await db.select().from(Users).where(eq(Users.username, username))).at(0)
+    const users = (await db.select().from(Users).where(or(eq(Users.username, username), eq(Users.email, email)))).at(0)
     if (!users) {
       await db.insert(Users).values({
         username,
@@ -44,7 +44,10 @@ export default function (app: Express) {
       res.status(200).json({ msg: 'success' })
     }
     else {
-      res.status(400).json({ msg: 'Username already exists' })
+      if (users.username === username)
+        res.status(400).json({ msg: 'Username already exists' })
+      else if (users.email === email)
+        res.status(400).json({ msg: 'Email already exists' })
     }
   })
 

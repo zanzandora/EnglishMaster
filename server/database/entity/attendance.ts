@@ -1,4 +1,4 @@
-import { boolean, date, int, mysqlTable, serial } from 'drizzle-orm/mysql-core'
+import { boolean, date, int, mysqlTable } from 'drizzle-orm/mysql-core'
 import { Classes } from './class'
 import { Students } from './student'
 

@@ -1,4 +1,4 @@
-import { date, int, mysqlTable, serial } from 'drizzle-orm/mysql-core'
+import { date, int, mysqlTable } from 'drizzle-orm/mysql-core'
 import { Users } from './user'
 
 export const Students = mysqlTable('students', {

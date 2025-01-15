@@ -8,7 +8,7 @@ export default defineConfig({
     host: process.env.DATABASE_HOST as any,
     port: process.env.DATABASE_PORT as any,
     user: process.env.DATABASE_USER as any,
-    // password: 'a',
+    password: process.env.DATABASE_PASSWORD as any,
     database: process.env.DATABASE_NAME as any,
   },
 })
