@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 
 import { blueTextBottom, submitForm } from './login/functions';
 import { hideInvalidate, showInvalidate } from './login/validation';
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [isRegistering, setIsRegistering] = useState(false);
 
   const [notice, setNotice] = useState('');
+
+  const navigate = useNavigate();
 
   return (
     <>
@@ -19,17 +20,17 @@ const Login = () => {
             "url('https://cdn.pixabay.com/photo/2017/12/05/16/34/maple-2999706_1280.jpg')",
         }}
       >
-        <motion.div className='flex justify-end'>
-          <motion.div className='bg-red-50 min-h-screen w-1/2 flex justify-center items-center'>
+        <div className='flex justify-end'>
+          <div className='bg-red-50 min-h-screen w-1/2 flex justify-center items-center'>
             <div className=''>
               <form
+             
                 onSubmit={(e) =>
-                  submitForm(e, isRegistering, setNotice, setIsRegistering)
+                  submitForm(e, isRegistering, setNotice, setIsRegistering, navigate)
                 }
               >
                 <div>
-                  <motion.span
-                    layout='position'
+                  <span
                     className='font-semibold text-4xl mx-auto select-none mb-2 '
                   >
                     <h1 className='text-2xl font-bold'>
@@ -37,11 +38,12 @@ const Login = () => {
                         ? 'Sign up for new'
                         : 'Login to your account'}
                     </h1>
-                  </motion.span>
+                  </span>
                 </div>
 
                 <div className='flex flex-col gap-5 mt-5'>
                       {/* Input Password */}
+                      
                       <div className='flex flex-col'>
                         <label
                           className='block text-md mb-2'
@@ -197,9 +199,9 @@ const Login = () => {
                   </>
                   )}
                 </div>
-                <motion.span className='mx-auto text-red-500 text-center w-full block'>
+                <span className='mx-auto text-red-500 text-center w-full block'>
                  {notice}
-               </motion.span>
+               </span>
                 <div className=''>
                   <button
                     type='submit'
@@ -223,8 +225,8 @@ const Login = () => {
                 </span>
               </div>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </>
   );

@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 
 import { hideInvalidate, showInvalidate } from './login/validation';
 
@@ -12,15 +11,14 @@ const Forgot = () => {
             "url('https://cdn.pixabay.com/photo/2017/12/05/16/34/maple-2999706_1280.jpg')",
         }}
       >
-        <motion.div className='flex justify-end'>
-          <motion.div className='bg-red-50 min-h-screen w-1/2 flex justify-center items-center'>
+        <div className='flex justify-end'>
+          <div className='bg-red-50 min-h-screen w-1/2 flex justify-center items-center'>
             <form method='post' action='/forgot'>
-              <motion.span
-                layout='position'
+              <span
                 className='font-semibold text-4xl mx-auto select-none mb-2 text-center'
               >
                 <h1 className='text-2xl font-bold'>Forgot Password</h1>
-              </motion.span>
+              </span>
 
               <div className='flex flex-col gap-5 mt-5  '>
                 <div className='flex flex-col'>
@@ -47,8 +45,8 @@ const Forgot = () => {
                 </button>
               </div>
             </form>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </>
   );
