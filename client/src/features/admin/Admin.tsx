@@ -1,42 +1,31 @@
-import React from 'react'
-import Header from './bar/Header'
-
+import React from 'react';
+import { Link } from 'react-router-dom';
+import Menu from '@components/common/Menu';
+import Navbar from '@components/common/NavBar';
 const Admin: React.FC = () => {
   return (
-    <div>
-      {/* HEADER */}
-      <Header />
-
-      {/* BODY START */}
-      <div className='flex w-full h-full mt-20'>
-
-        {/* SHORTCUTS */}
-        <div className='flex flex-row gap-20 mx-auto'>
-          <div className='flex flex-col w-80 h-40 bg-white shadow-xl rounded-xl'>
-            <div className='flex w-full h-full border-2 border-gray-400 rounded-xl'>
-              <span className='mx-auto text-2xl font-semibold'>Học viên</span>
-            </div>
-          </div>
-          <div className='flex flex-col w-80 h-40 bg-white shadow-xl rounded-xl'>
-            <div className='flex w-full h-full border-2 border-gray-400 rounded-xl'>
-              <span className='mx-auto text-2xl font-semibold'>Giảng viên</span>
-            </div>
-          </div>
-          <div className='flex flex-col w-80 h-40 bg-white shadow-xl rounded-xl'>
-            <div className='flex w-full h-full border-2 border-gray-400 rounded-xl'>
-              <span className='mx-auto text-2xl font-semibold'>Khoá học</span>
-            </div>
-          </div>
-          <div className='flex flex-col w-80 h-40 bg-white shadow-xl rounded-xl'>
-            <div className='flex w-full h-full border-2 border-gray-400 rounded-xl'>
-              <span className='mx-auto text-2xl font-semibold'>Lớp học</span>
-            </div>
-          </div>
+    <>
+      <div className='h-screen flex '>
+        {/* LEFT */}
+        <div className='w-[14%] md:w-[8%] lg:w-[16%] xl:w-[14%] p-4 bg-primary-light'>
+          <Link
+            to='/'
+            className='flex items-center justify-center lg:justify-start gap-2'
+          >
+            <img src='/logo.png' alt='logo' width={32} height={32} />
+            <span className='hidden lg:block font-bold text-primary uppercase'>
+              Canenglish
+            </span>
+          </Link>
+          <Menu />
         </div>
-
+        {/* RIGHT */}
+        <div className='w-[86%] md:w-[92%] lg:w-[84%] xl:w-[86%] bg-[#F7F8FA] overflow-scroll flex flex-col'>
+          <Navbar />
+        </div>
       </div>
-    </div>
-  )
-}
+    </>
+  );
+};
 
-export default Admin
+export default Admin;
