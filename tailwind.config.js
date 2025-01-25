@@ -8,6 +8,11 @@ export default {
           DEFAULT: '#ff4742',
           light: '#fff',
           dark: '#1E40AF',
+          redLight: '#ff6767',
+          menuBtnHover: 'rgba(255,229,225,.45)',
+        },
+        secondary: {
+          lavender: '#cfceff',
         },
       },
     },
