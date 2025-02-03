@@ -3,6 +3,8 @@ import { UserCard, RevenueCard } from '@components/common/UserCard';
 import CountChart from '@components/admin/charts/CountChart';
 import StudentGrowthChart from '@components/admin/charts/StudentGrowthChart';
 import FinanceChart from '@components/admin/charts/FinanceChart';
+import EventCalendar from '@components/admin/calender/EventCalendar';
+import Announcements from '@components/admin/Announcements';
 const Admin: React.FC = () => {
   return (
     <>
@@ -30,6 +32,11 @@ const Admin: React.FC = () => {
           <div className='w-full h-[500px]'>
             <FinanceChart />
           </div>
+        </div>
+        {/* RIGHT */}
+        <div className='w-full lg:w-1/3 flex flex-col gap-8'>
+          <EventCalendar />
+          <Announcements />
         </div>
       </div>
     </>

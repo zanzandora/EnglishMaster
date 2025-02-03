@@ -35,7 +35,7 @@ app.use('*all', async (req, res) => {
   try {
     const url = req.originalUrl.replace('/', '')
 
-    let html = !isProduction
+    const html = !isProduction
       ? await vite.transformIndexHtml(url, await fs.readFile('./index.html', 'utf-8'))
       : await fs.readFile('./dist/client/index.html', 'utf-8')
 
