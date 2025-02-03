@@ -5,8 +5,6 @@ import fs from 'node:fs/promises'
 import express from 'express'
 import { ViteDevServer } from 'vite'
 
-import loginRoute from './routes/login'
-
 const isProduction = process.env.NODE_ENV === 'production'
 
 const app = express()
@@ -29,8 +27,7 @@ else {
   app.use('/', (await import('sirv')).default('./dist/client', { extensions: [] }))
 }
 
-loginRoute(app)
-
+app.post(['/login', '/register', '/forgot'], (await import('./routes/login')).router)
 app.use('/student', (await import('./routes/database/student')).router)
 app.use('/teacher', (await import('./routes/database/teacher')).router)
 app.use('/user', (await import('./routes/database/user')).router)
