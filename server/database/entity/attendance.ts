@@ -4,7 +4,7 @@ import { Students } from './student'
 
 export const Attendances = mysqlTable('attendances', {
   id: int().autoincrement().primaryKey(),
-  classID: int().references(() => Classes.id),
+  classID: int().references(() => Classes.id).notNull(),
   studentID: int().references(() => Students.id),
   date: date().default(new Date()),
   status: boolean().default(false),

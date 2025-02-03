@@ -1,0 +1,89 @@
+import { Router } from 'express'
+import { eq } from 'drizzle-orm'
+
+import { Attendances } from '../../database/entity'
+import { db } from '../../database/driver'
+
+const expressRouter = Router()
+
+expressRouter.post('/add', async (req, res) => {
+  const classID = req.body.classID
+  const studentID = req.body.studentID
+  const date = req.body.date
+  const status = req.body.status
+
+  let missingFields: string[] = []
+  if (!classID) missingFields.push('classID')
+  if (!studentID) missingFields.push('studentID')
+  if (!date) missingFields.push('date')
+  if (!status) missingFields.push('status')
+
+  if (missingFields.length > 0) {
+    res.status(400).send(`Missing fields: ${missingFields.join(', ')}`)
+    return
+  }
+
+  try {
+    await db.insert(Attendances).values({
+      classID,
+      studentID,
+      date,
+      status,
+    })
+
+    res.send('Attendance added')
+  }
+  catch (err) {
+    res.status(500).send(err.toString())
+  }
+
+})
+
+expressRouter.post('/edit', async (req, res) => {
+  const id = req.body.id
+
+  if (!id) {
+    res.status(400).send('Attendance id is required')
+    return
+  }
+
+  const classID = req.body.classID
+  const studentID = req.body.studentID
+  const date = req.body.date
+  const status = req.body.status
+
+  let set1 = {}
+  if (classID) set1['classID'] = classID
+  if (studentID) set1['studentID'] = studentID
+  if (date) set1['date'] = date
+  if (status) set1['status'] = status
+
+  try {
+    if (Object.keys(set1).length > 0) await db.update(Attendances).set(set1).where(eq(Attendances.id, id))
+
+    res.send('Attendance updated')
+  }
+  catch (err) {
+    res.status(500).send(err.toString())
+  }
+})
+
+expressRouter.post('/delete', async (req, res) => {
+  const id = req.body.id
+
+  if (!id) {
+    res.status(400).send('Attendance id is required')
+    return
+  }
+
+  try {
+    await db.delete(Attendances).where(eq(Attendances.id, id))
+
+    res.send('Attendance deleted')
+  }
+  catch (err) {
+    res.status(500).send(err.toString())
+  }
+})
+
+export const router = expressRouter
