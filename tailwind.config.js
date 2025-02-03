@@ -9,10 +9,13 @@ export default {
           light: '#fff',
           dark: '#1E40AF',
           redLight: '#ff6767',
+          redLight_fade: 'rgba(255,103,103,.55)',
           menuBtnHover: 'rgba(255,229,225,.45)',
         },
         secondary: {
           lavender: '#cfceff',
+          male: '#2daae2',
+          female: '#e71873',
         },
       },
     },
