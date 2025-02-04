@@ -16,9 +16,6 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 
-  --color-primary-redLight: theme('colors.primary.redLight'); 
-  --color-primary-redLight-fade: theme('colors.primary.redLight_fade'); 
-  --color-secondary: theme('colors.secondary.lavender');
 }
 .custome-react-calender{
   border: none !important;

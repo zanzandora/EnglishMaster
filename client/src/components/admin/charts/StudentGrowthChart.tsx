@@ -87,7 +87,7 @@ const StudentGrowthChart = () => {
           />
           <Bar
             dataKey='growth'
-            fill='#FF0000' // Red color
+            fill='var(--color-charts-barChart-barColor_A)'
             legendType='circle'
             radius={[10, 10, 0, 0]}
           />

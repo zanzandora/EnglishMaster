@@ -15,7 +15,7 @@ const Admin: React.FC = () => {
           <div className='flex gap-4 justify-between flex-wrap'>
             <UserCard type='student' />
             <UserCard type='teacher' />
-            <UserCard type='parent' />
+            <UserCard type='staft' />
             <RevenueCard revenue={123456} />
           </div>
           {/* MIDDLE CHARTS */}

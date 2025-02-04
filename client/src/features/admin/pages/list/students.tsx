@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import { role, studentsData } from '../../../../mockData/data';
+import { studentsData } from '../../../../mockData/data';
 
 type Student = {
   id: number;
@@ -12,7 +12,7 @@ type Student = {
   email?: string;
   photo: string;
   phone?: string;
-  grade: number;
+  experience: number;
   class: string;
   address: string;
 };
@@ -28,8 +28,8 @@ const columns = [
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Grade',
-    accessor: 'grade',
+    header: 'Experience',
+    accessor: 'experience',
     className: 'hidden md:table-cell',
   },
   {
@@ -70,22 +70,36 @@ const StudentListPage = () => {
           </div>
         </td>
         <td className='hidden md:table-cell'>{student.studentId}</td>
-        <td className='hidden md:table-cell'>{student.grade}</td>
+        <td className='hidden md:table-cell'>
+          {student.experience !== undefined ? student.experience : 'N/A'}
+        </td>
         <td className='hidden md:table-cell'>{student.phone}</td>
         <td className='hidden md:table-cell'>{student.address}</td>
         <td>
           <div className='flex items-center gap-2'>
             <Link to={`/list/teachers/${student.id}`}>
-              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-secondary-paleturquoise'>
-                <img src='/view.png' alt='' width={16} height={16} />
+              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgViewIcon'>
+                <img
+                  src='/view.png'
+                  alt=''
+                  width={16}
+                  height={16}
+                  className='w-8/12'
+                />
               </button>
             </Link>
             {/* {role === 'admin' && (
               <FormModal table='student' type='delete' id={student.id} />
             )} */}
             <Link to={`/list/teachers/${student.id}`}>
-              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-secondary-lavender'>
-                <img src='/delete.png' alt='' width={16} height={16} />
+              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgDeleteIcon'>
+                <img
+                  src='/delete.png'
+                  alt=''
+                  width={16}
+                  height={16}
+                  className='w-8/12'
+                />
               </button>
             </Link>
           </div>

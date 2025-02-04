@@ -1,6 +1,6 @@
 const UserCard = ({ type }: { type: string }) => {
   return (
-    <div className='rounded-2xl odd:bg-primary even:bg-secondary-lavender p-4 flex-1 min-w-[130px]'>
+    <div className='rounded-2xl odd:bg-primary even:bg-secondary p-4 flex-1 min-w-[130px]'>
       <div className='flex justify-between items-center'>
         <span className='text-[10px] bg-white px-2 py-1 rounded-full text-green-600'>
           2024/25
@@ -14,7 +14,7 @@ const UserCard = ({ type }: { type: string }) => {
 
 const RevenueCard = ({ revenue }: { revenue: number }) => {
   return (
-    <div className='rounded-2xl bg-secondary-lavender p-4 flex-1 min-w-[130px]'>
+    <div className='rounded-2xl bg-secondary p-4 flex-1 min-w-[130px]'>
       <div className='flex justify-between items-center'>
         <span className='text-[10px] bg-white px-2 py-1 rounded-full text-green-600'>
           This month

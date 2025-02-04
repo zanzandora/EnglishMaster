@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import './index.css';
 
+import ErrorPage from 'features/error/error';
 import DashboardLayout from '@components/dashboard/DashboardLayout';
 import AdminRoutes from './src/features/admin/AdminRoutes';
 import Login from './src/features/admin/login/Login';
@@ -23,7 +24,7 @@ hydrateRoot(
       <Route path='/login' element={<Login />} />
       <Route path='/forgot' element={<Forgot />} />
 
-      <Route path='*' element={<>404 Not Found</>} />
+      <Route path='*' element={<ErrorPage />} />
     </Routes>
   </BrowserRouter>
 );

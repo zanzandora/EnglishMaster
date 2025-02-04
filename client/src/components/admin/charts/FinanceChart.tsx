@@ -110,18 +110,22 @@ const FinanceChart = () => {
           <Legend
             align='center'
             verticalAlign='top'
-            wrapperStyle={{ paddingTop: '10px', paddingBottom: '30px' }}
-          />
-          <Line
-            type='monotone'
-            dataKey='income'
-            stroke='var(--color-primary-redLight-fade)'
-            strokeWidth={5}
+            wrapperStyle={{
+              paddingTop: '10px',
+              paddingBottom: '30px',
+              fontWeight: 'bold',
+            }}
           />
           <Line
             type='monotone'
             dataKey='expense'
-            stroke='var(--color-secondary)'
+            stroke='var(--color-charts-lineChart-lineColor_A)'
+            strokeWidth={5}
+          />
+          <Line
+            type='monotone'
+            dataKey='income'
+            stroke='var(--color-charts-barChart-barColor_B)'
             strokeWidth={5}
           />
         </LineChart>

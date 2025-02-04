@@ -22,12 +22,12 @@ const menuItems = [
         href: '/admin/list/students',
         visible: ['admin', 'teacher'],
       },
-      {
-        icon: '/parent.png',
-        label: 'Parents',
-        href: '/admin/list/parents',
-        visible: ['admin', 'teacher'],
-      },
+      // {
+      //   icon: '/parent.png',
+      //   label: 'Parents',
+      //   href: '/admin/list/parents',
+      //   visible: ['admin', 'teacher'],
+      // },
       {
         icon: '/subject.png',
         label: 'Subjects',
