@@ -1,5 +1,11 @@
 import { Link } from 'react-router-dom';
 
+const basePath = {
+  admin: '/admin',
+  teacher: '/teacher',
+  student: '/student',
+};
+const role = 'admin';
 const menuItems = [
   {
     title: 'MENU',
@@ -7,19 +13,19 @@ const menuItems = [
       {
         icon: '/home.png',
         label: 'Home',
-        href: '/admin',
+        href: `${basePath[role]}`,
         visible: ['admin', 'teacher', 'student', 'parent'],
       },
       {
         icon: '/teacher.png',
         label: 'Teachers',
-        href: '/admin/list/teachers',
+        href: `${basePath[role]}/list/teachers`,
         visible: ['admin', 'teacher'],
       },
       {
         icon: '/student.png',
         label: 'Students',
-        href: '/admin/list/students',
+        href: `${basePath[role]}/list/students`,
         visible: ['admin', 'teacher'],
       },
       // {
@@ -31,61 +37,61 @@ const menuItems = [
       {
         icon: '/subject.png',
         label: 'Subjects',
-        href: '/admin/list/subjects',
+        href: `${basePath[role]}/list/subjects`,
         visible: ['admin'],
       },
       {
         icon: '/class.png',
         label: 'Classes',
-        href: '/admin/list/classes',
+        href: `${basePath[role]}/list/classes`,
         visible: ['admin', 'teacher'],
       },
       {
         icon: '/lesson.png',
         label: 'Lessons',
-        href: '/admin/list/lessons',
+        href: `${basePath[role]}/list/lessons`,
         visible: ['admin', 'teacher'],
       },
       {
         icon: '/exam.png',
         label: 'Exams',
-        href: '/admin/list/exams',
+        href: `${basePath[role]}/list/exams`,
         visible: ['admin', 'teacher', 'student', 'parent'],
       },
       {
         icon: '/assignment.png',
         label: 'Assignments',
-        href: '/admin/list/assignments',
+        href: `${basePath[role]}/list/assignments`,
         visible: ['admin', 'teacher', 'student', 'parent'],
       },
       {
         icon: '/result.png',
         label: 'Results',
-        href: '/admin/list/results',
+        href: `${basePath[role]}/list/results`,
         visible: ['admin', 'teacher', 'student', 'parent'],
       },
       {
         icon: '/attendance.png',
         label: 'Attendance',
-        href: '/admin/list/attendance',
+        href: `${basePath[role]}/list/attendance`,
         visible: ['admin', 'teacher', 'student', 'parent'],
       },
       {
         icon: '/calendar.png',
         label: 'Events',
-        href: '/admin/list/events',
+        href: `${basePath[role]}/list/events`,
         visible: ['admin', 'teacher', 'student', 'parent'],
       },
       {
         icon: '/message.png',
         label: 'Messages',
-        href: '/admin/list/messages',
+        href: `${basePath[role]}/list/messages`,
         visible: ['admin', 'teacher', 'student', 'parent'],
       },
       {
         icon: '/announcement.png',
         label: 'Announcements',
-        href: '/admin/list/announcements',
+        href: `${basePath[role]}/list/announcements`,
         visible: ['admin', 'teacher', 'student', 'parent'],
       },
     ],

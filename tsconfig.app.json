@@ -22,7 +22,9 @@
     /* Define Alias */
     "baseUrl": "./client/src",
     "paths": {
-      "@components/*": ["components/*"]
+      "@components/*": ["components/*"],
+      "@mockData/*": ["mockData/*"],
+      "@list/*": ["features/list/*"]
     }
   },
   "include": ["client"]

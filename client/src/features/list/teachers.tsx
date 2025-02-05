@@ -1,7 +1,7 @@
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import { role, teachersData } from '../../../../mockData/data';
+import { role, teachersData } from '../../mockData/data';
 import { Link } from 'react-router-dom';
 
 type Teacher = {
@@ -125,6 +125,9 @@ const TeacherListPage = () => {
             </button>
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/sort.png' alt='' width={14} height={14} />
+            </button>
+            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
+              <img src='/create.png' alt='' width={14} height={14} />
             </button>
           </div>
         </div>

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import { studentsData } from '../../../../mockData/data';
+import { studentsData } from '@mockData/data';
 
 type Student = {
   id: number;
@@ -128,6 +128,9 @@ const StudentListPage = () => {
               // </button>
               <FormModal table='student' type='create' />
             )} */}
+            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
+              <img src='/create.png' alt='' width={14} height={14} />
+            </button>
           </div>
         </div>
       </div>
