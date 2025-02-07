@@ -3,7 +3,7 @@ import { UserCard, RevenueCard } from '@components/common/UserCard';
 import CountChart from '@components/admin/charts/CountChart';
 import StudentGrowthChart from '@components/admin/charts/StudentGrowthChart';
 import FinanceChart from '@components/admin/charts/FinanceChart';
-import EventCalendar from '@components/admin/calender/EventCalendar';
+import EventCalendar from '@components/admin/EventCalendar';
 import Announcements from '@components/admin/Announcements';
 const Admin: React.FC = () => {
   return (

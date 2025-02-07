@@ -1,7 +1,30 @@
+import { useRef, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import AccountPopover from './components/navBar/AccountPopover';
 import NotificationsPopover from './components/navBar/NotificationsPopover';
 
 const Navbar = () => {
+  const isNavigating = useRef(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const goToFAQ = () => {
+    if (isNavigating.current || location.pathname === '/faq') return;
+
+    isNavigating.current = true;
+    navigate('/faq');
+
+    // Sau 1s mới cho phép bấm lại
+    setTimeout(() => {
+      isNavigating.current = false;
+    }, 1000);
+  };
+
+  // Reset `isNavigating` khi URL thay đổi
+  useEffect(() => {
+    isNavigating.current = false;
+  }, [location.pathname]);
+
   return (
     <div className='flex items-center justify-between p-4'>
       {/* SEARCH BAR */}
@@ -15,9 +38,14 @@ const Navbar = () => {
       </div>
       {/* ICONS AND USER */}
       <div className='flex items-center gap-6 justify-end w-full'>
-        {/* <div className='bg-white rounded-full w-7 h-7 flex items-center justify-center cursor-pointer'>
-          <img src='/message.png' alt='' width={20} height={20} />
-        </div> */}
+        <div className='bg-white rounded-full h-7 flex items-center justify-center cursor-pointer relative'>
+          <button
+            className='relative p-2 bg-white rounded-full hover:bg-gray-200 '
+            onClick={goToFAQ}
+          >
+            <img src='/question.png' alt='' width={30} height={30} />
+          </button>
+        </div>
         <NotificationsPopover />
         <div className='flex flex-col'>
           <span className='text-xs leading-3 font-medium'>Mai Minh Tu</span>

@@ -68,7 +68,7 @@ const NotificationsPopover = () => {
         onClick={() => setOpen(!open)}
       >
         {/* 🔔 */}
-        <img src='/announcement.png' alt='' width={20} height={20} />
+        <img src='/announcement.png' alt='' width={30} height={30} />
 
         {unreadCount > 0 && (
           <span className='absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full'></span>
@@ -118,6 +118,7 @@ const NotificationsPopover = () => {
                     className='p-3 border-b hover:bg-gray-100 cursor-pointer'
                   >
                     <p className='text-sm'>{noti.title}</p>
+
                     <span className='text-xs text-gray-500'>{noti.time}</span>
                   </div>
                 ))}
@@ -130,6 +131,9 @@ const NotificationsPopover = () => {
                 Không có thông báo nào
               </p>
             )}
+          </div>
+          <div className='p-3 border-t'>
+            <button className='w-full text-blue-500 text-sm'>View all</button>
           </div>
         </div>
       )}

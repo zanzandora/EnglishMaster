@@ -45,7 +45,7 @@ const SubjectListPage = () => {
               </>
             )} */}
             <Link to={`/subjects/${subject.id}`}>
-              <button className='w-8 h-8 flex items-center justify-center rounded-full bg-tables-actions-bgViewIcon'>
+              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgViewIcon'>
                 <img
                   src='/update.png'
                   alt=''
@@ -56,7 +56,7 @@ const SubjectListPage = () => {
               </button>
             </Link>
             <Link to={`/subjects/${subject.id}`}>
-              <button className='w-8 h-8 flex items-center justify-center rounded-full bg-tables-actions-bgDeleteIcon'>
+              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgDeleteIcon'>
                 <img
                   src='/delete.png'
                   alt=''

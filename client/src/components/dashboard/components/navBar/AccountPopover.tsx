@@ -41,8 +41,10 @@ const AccountPopover = () => {
       {open && (
         <div className='absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10'>
           <div className='px-4 py-3 border-b'>
-            <p className='font-semibold'>User Name</p>
-            <p className='text-sm text-gray-500'>user@email.com</p>
+            <p className='font-semibold lowercase'>mai minh tu</p>
+            <p className='text-sm text-gray-500 truncate'>
+              maiminhtu130803@gmail.com
+            </p>
           </div>
           <ul className='py-2'>
             <li>

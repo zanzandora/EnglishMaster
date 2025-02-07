@@ -9,7 +9,7 @@ import LessonListPage from '@list/lessons';
 import ExamListPage from '@list/exams';
 import AssignmentListPage from '@list/assignments';
 import ResultListPage from '@list/results';
-import EventListPage from '@list/events';
+// import Calendar from '@list/calendar';
 import AnnouncementListPage from '@list/announcements';
 
 const AdminRoutes = () => {
@@ -24,7 +24,7 @@ const AdminRoutes = () => {
       <Route path='list/exams' element={<ExamListPage />} />
       <Route path='list/assignments' element={<AssignmentListPage />} />
       <Route path='list/results' element={<ResultListPage />} />
-      <Route path='list/events' element={<EventListPage />} />
+      {/* <Route path='list/events' element={<EventListPage />} /> */}
       <Route path='list/announcements' element={<AnnouncementListPage />} />
       <Route path='*' element={<ErrorPage />} />
     </Routes>
