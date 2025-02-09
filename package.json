@@ -11,7 +11,9 @@
     "database": "npx drizzle-kit push"
   },
   "dependencies": {
+    "@types/react-big-calendar": "^1.16.1",
     "compression": "^1.7.5",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.38.3",
     "express": "^5.0.1",
@@ -19,6 +21,7 @@
     "mysql2": "^3.12.0",
     "nodemailer": "^6.9.16",
     "react": "^18.3.1",
+    "react-big-calendar": "^1.17.1",
     "react-calendar": "^5.1.0",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.1.1",

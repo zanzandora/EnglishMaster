@@ -17,11 +17,48 @@
   -webkit-text-size-adjust: 100%;
 
 }
-.custome-react-calender{
-  border: none !important;
-  width: 100% !important;
-}
+
 #root {
   height: 100dvh;
   width: 100dvw;
 }
+
+.custome-react-calender{
+  border: none !important;
+  width: 100% !important;
+}
+
+/* *BIG CALENDAR  */
+.rbc-header{
+  @apply bg-calendar-header-bgColor
+  text-calendar-header-textColor
+  text-sm 
+  flex 
+  items-center 
+  justify-center 
+  h-9
+}
+.rbc-allday-cell{
+  @apply hidden 
+}
+.rbc-time-header-cell .rbc-today{
+  @apply bg-calendar-today
+}
+.rbc-time-slot{
+  @apply text-secondary-male 
+}
+.rbc-time-slot:not(.rbc-today .rbc-time-slot){
+  background-color: #eff4f7;
+}
+
+
+/* *EVENT STYLES */
+
+.rbc-event, .rbc-background-event {
+  padding: 0 !important;
+  border: none !important;
+}
+.rbc-event-label{
+  display: none !important;
+}
+

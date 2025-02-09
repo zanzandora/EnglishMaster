@@ -72,8 +72,8 @@ const menuItems = [
       },
       {
         icon: '/calendar.png',
-        label: 'Events',
-        href: `${basePath[role]}/list/events`,
+        label: 'Schedule',
+        href: `${basePath[role]}/list/schedule`,
         visible: ['admin', 'teacher', 'student', 'parent'],
       },
       {

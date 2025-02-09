@@ -391,6 +391,11 @@ export const classesData = [
     capacity: 20,
     grade: 1,
     supervisor: "Joseph Padilla",
+    students: ["Le Thi B", "Tran Van C"],
+    schedule: {
+      start: new Date(2025, 1, 10, 10, 0),
+      end: new Date(2025, 1, 10, 12, 0),
+    },
   },
   {
     id: 2,
@@ -398,6 +403,11 @@ export const classesData = [
     capacity: 22,
     grade: 2,
     supervisor: "Blake Joseph",
+    students: ["Mai Minh Tu", "Nguyen Van A"],
+    schedule: {
+      start: new Date(2025, 1, 10, 8, 0),
+      end: new Date(2025, 1, 10, 10, 0),
+    },
   },
   {
     id: 3,
@@ -405,6 +415,11 @@ export const classesData = [
     capacity: 20,
     grade: 3,
     supervisor: "Tom Bennett",
+    students: ["Mai Minh Tu", "Nguyen Van A"],
+    schedule: {
+      start: new Date(2025, 1, 10, 8, 0),
+      end: new Date(2025, 1, 10, 10, 0),
+    },
   },
   {
     id: 4,
@@ -412,6 +427,11 @@ export const classesData = [
     capacity: 18,
     grade: 4,
     supervisor: "Aaron Collins",
+    students: ["Mai Minh Tu", "Nguyen Van A"],
+    schedule: {
+      start: new Date(2025, 1, 10, 8, 0),
+      end: new Date(2025, 1, 10, 10, 0),
+    },
   },
   {
     id: 5,
@@ -419,6 +439,11 @@ export const classesData = [
     capacity: 16,
     grade: 5,
     supervisor: "Iva Frank",
+    students: ["Mai Minh Tu", "Nguyen Van A"],
+    schedule: {
+      start: new Date(2025, 1, 10, 8, 0),
+      end: new Date(2025, 1, 10, 10, 0),
+    },
   },
   {
     id: 5,
@@ -426,6 +451,11 @@ export const classesData = [
     capacity: 20,
     grade: 5,
     supervisor: "Leila Santos",
+    students: ["Mai Minh Tu", "Nguyen Van A"],
+    schedule: {
+      start: new Date(2025, 1, 10, 8, 0),
+      end: new Date(2025, 1, 10, 10, 0),
+    },
   },
   {
     id: 7,
@@ -433,6 +463,11 @@ export const classesData = [
     capacity: 18,
     grade: 7,
     supervisor: "Carrie Walton",
+    students: ["Mai Minh Tu", "Nguyen Van A"],
+    schedule: {
+      start: new Date(2025, 1, 10, 8, 0),
+      end: new Date(2025, 1, 10, 10, 0),
+    },
   },
   {
     id: 8,
@@ -440,6 +475,11 @@ export const classesData = [
     capacity: 22,
     grade: 6,
     supervisor: "Christopher Butler",
+    students: ["Mai Minh Tu", "Nguyen Van A"],
+    schedule: {
+      start: new Date(2025, 1, 10, 8, 0),
+      end: new Date(2025, 1, 10, 10, 0),
+    },
   },
   {
     id: 9,
@@ -447,6 +487,11 @@ export const classesData = [
     capacity: 18,
     grade: 6,
     supervisor: "Marc Miller",
+    students: ["Mai Minh Tu", "Nguyen Van A"],
+    schedule: {
+      start: new Date(2025, 1, 10, 8, 0),
+      end: new Date(2025, 1, 10, 10, 0),
+    },
   },
   {
     id: 10,
@@ -454,6 +499,11 @@ export const classesData = [
     capacity: 20,
     grade: 6,
     supervisor: "Ophelia Marsh",
+    students: ["Mai Minh Tu", "Nguyen Van A"],
+    schedule: {
+      start: new Date(2025, 1, 10, 8, 0),
+      end: new Date(2025, 1, 10, 10, 0),
+    },
   },
 ];
 
@@ -917,147 +967,49 @@ export const announcementsData = [
 
 
 // YOU SHOULD CHANGE THE DATES OF THE EVENTS TO THE CURRENT DATE TO SEE THE EVENTS ON THE CALENDAR
-export const calendarEvents = [
+interface ExtendedEvent {
+  id?: string | number;
+  title: string;
+  allDay?: boolean;
+  start: Date;
+  end: Date;
+  resource?: string;
+  data?: {
+    subject?: string;
+    class?: string;
+    room?: string;
+    teacher?: string;
+    type?: string;
+  };
+}
+export const calendarEvents:ExtendedEvent[] = [
   {
-    title: "Math",
-    allDay: false,
-    start:  new Date(),
-    end: new Date(),
+    id: 1,
+    title: "Lớp B2",
+    start: new Date(2025, 1, 9, 10, 0), // Ngày học
+    end: new Date(2025, 1, 9, 12, 0),
+    resource: "room101",
+    data: {
+      subject: "IELTS",
+      class: "B2",
+      room: "Phòng 101",
+      teacher: "Nguyen Van A",
+      type: "class", // Thêm type để phân biệt
+    },
   },
   {
-    title: "English",
-    allDay: false,
-    start: new Date(2024, 7, 12, 9, 0),
-    end: new Date(2024, 7, 12, 9, 45),
+    id: 2,
+    title: "Lớp B2",
+    start: new Date(2025, 2, 1, 9, 0), // Ngày thi
+    end: new Date(2025, 2, 1, 11, 0),
+    resource: "room101",
+    data: {
+      subject: "IELTS",
+      class: "B2",
+      room: "Phòng 101",
+      teacher: "Nguyen Van B",
+      type: "exam", // Thêm type để phân biệt
+    },
   },
-  {
-    title: "Biology",
-    allDay: false,
-    start: new Date(2024, 7, 12, 10, 0),
-    end: new Date(2024, 7, 12, 10, 45),
-  },
-  {
-    title: "Physics",
-    allDay: false,
-    start: new Date(2024, 7, 12, 11, 0),
-    end: new Date(2024, 7, 12, 11, 45),
-  },
-  {
-    title: "Chemistry",
-    allDay: false,
-    start: new Date(2024, 7, 12, 13, 0),
-    end: new Date(2024, 7, 12, 13, 45),
-  },
-  {
-    title: "History",
-    allDay: false,
-    start: new Date(2024, 7, 12, 14, 0),
-    end: new Date(2024, 7, 12, 14, 45),
-  },
-  {
-    title: "English",
-    allDay: false,
-    start: new Date(2024, 7, 13, 9, 0),
-    end: new Date(2024, 7, 13, 9, 45),
-  },
-  {
-    title: "Biology",
-    allDay: false,
-    start: new Date(2024, 7, 13, 10, 0),
-    end: new Date(2024, 7, 13, 10, 45),
-  },
-  {
-    title: "Physics",
-    allDay: false,
-    start: new Date(2024, 7, 13, 11, 0),
-    end: new Date(2024, 7, 13, 11, 45),
-  },
-
-  {
-    title: "History",
-    allDay: false,
-    start: new Date(2024, 7, 13, 14, 0),
-    end: new Date(2024, 7, 13, 14, 45),
-  },
-  {
-    title: "Math",
-    allDay: false,
-    start: new Date(2024, 7, 14, 8, 0),
-    end: new Date(2024, 7, 14, 8, 45),
-  },
-  {
-    title: "Biology",
-    allDay: false,
-    start: new Date(2024, 7, 14, 10, 0),
-    end: new Date(2024, 7, 14, 10, 45),
-  },
-
-  {
-    title: "Chemistry",
-    allDay: false,
-    start: new Date(2024, 7, 14, 13, 0),
-    end: new Date(2024, 7, 14, 13, 45),
-  },
-  {
-    title: "History",
-    allDay: false,
-    start: new Date(2024, 7, 14, 14, 0),
-    end: new Date(2024, 7, 13, 14, 45),
-  },
-  {
-    title: "English",
-    allDay: false,
-    start: new Date(2024, 7, 15, 9, 0),
-    end: new Date(2024, 7, 15, 9, 45),
-  },
-  {
-    title: "Biology",
-    allDay: false,
-    start: new Date(2024, 7, 15, 10, 0),
-    end: new Date(2024, 7, 15, 10, 45),
-  },
-  {
-    title: "Physics",
-    allDay: false,
-    start: new Date(2024, 7, 15, 11, 0),
-    end: new Date(2024, 7, 15, 11, 45),
-  },
-
-  {
-    title: "History",
-    allDay: false,
-    start: new Date(2024, 7, 15, 14, 0),
-    end: new Date(2024, 7, 15, 14, 45),
-  },
-  {
-    title: "Math",
-    allDay: false,
-    start: new Date(2024, 7, 16, 8, 0),
-    end: new Date(2024, 7, 16, 8, 45),
-  },
-  {
-    title: "English",
-    allDay: false,
-    start: new Date(2024, 7, 16, 9, 0),
-    end: new Date(2024, 7, 16, 9, 45),
-  },
-
-  {
-    title: "Physics",
-    allDay: false,
-    start: new Date(2024, 7, 16, 11, 0),
-    end: new Date(2024, 7, 16, 11, 45),
-  },
-  {
-    title: "Chemistry",
-    allDay: false,
-    start: new Date(2024, 7, 16, 13, 0),
-    end: new Date(2024, 7, 16, 13, 45),
-  },
-  {
-    title: "History",
-    allDay: false,
-    start: new Date(2024, 7, 16, 14, 0),
-    end: new Date(2024, 7, 16, 14, 45),
-  },
+  
 ];

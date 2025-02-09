@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  important: true,
   content: ['./index.html', './client/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
@@ -36,6 +37,15 @@ export default {
             bgViewIcon: 'rgb(156,222,247)',
             bgEditIcon: 'rgb(242,242,242)',
             bgDeleteIcon: 'rgb(156,152,255)',
+          },
+        },
+        calendar: {
+          header: {
+            bgColor: 'rgb(23,64,93)',
+            textColor: 'white',
+          },
+          today: {
+            DEFAULT: 'rgb(5,170,109)',
           },
         },
       },
