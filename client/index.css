@@ -62,3 +62,21 @@
   display: none !important;
 }
 
+/* *DATEPICKER  */
+.react-datepicker__input-container {
+  @apply relative w-full
+}
+
+.react-datepicker__input-container input {
+  @apply pr-10
+}
+
+.react-datepicker__calendar-icon {
+  @apply absolute right-3 top-2/4 cursor-pointer -translate-y-1/2
+}
+.datepicker-popup {
+  z-index: 9999 !important;
+  position: absolute !important;
+}
+
+
