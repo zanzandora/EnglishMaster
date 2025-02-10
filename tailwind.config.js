@@ -41,11 +41,18 @@ export default {
         },
         calendar: {
           header: {
-            bgColor: 'rgb(23,64,93)',
-            textColor: 'white',
+            bgColor: 'rgb(122,171,214)',
+            textColor: 'rgb(243,247,249)',
           },
           today: {
             DEFAULT: 'rgb(5,170,109)',
+            btn: 'rgb(202,244,254)',
+            focus: 'rgb(210,20,4,.9)',
+          },
+          toolBar: {
+            btn: 'rgb(156,222,247)',
+            hover: 'rgb(156,222,247,.5)',
+            label: 'rgb(30,58,138)',
           },
         },
       },

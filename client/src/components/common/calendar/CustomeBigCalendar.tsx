@@ -68,7 +68,7 @@ export const CustomToolbar: React.FC<ToolbarProps<ExtendedEvent>> = ({
           date && (setSelectedDate(date), onNavigate('DATE', date))
         }
         showMonthDropdown
-        className='px-4 py-2 border rounded-lg hidden md:inline-block'
+        className='px-4 py-2 border rounded-lg border-primary hidden md:inline-block'
         popperClassName='datepicker-popup'
         portalId='root'
         dateFormat='dd/MM/yyyy'
@@ -77,25 +77,25 @@ export const CustomToolbar: React.FC<ToolbarProps<ExtendedEvent>> = ({
       <div className='flex items-center gap-2 mx-4'>
         <button
           onClick={() => onNavigate('TODAY')}
-          className='px-4 py-2 rounded-lg bg-gray-200 text-gray-700'
+          className='px-4 py-2 rounded-lg bg-calendar-today-btn text-sky-950 focus:bg-calendar-today-focus focus:text-white hover:opacity-80 font-bold'
         >
           Today
         </button>
         <button
           onClick={() => onNavigate('PREV')}
-          className='px-4 py-2 rounded-lg bg-gray-200 text-gray-700'
+          className='px-4 py-2 rounded-lg bg-calendar-toolBar-btn hover:bg-calendar-toolBar-hover'
         >
           ←
         </button>
 
         {/* Hiển thị tiêu đề ngày/tháng/năm */}
-        <span className='min-w-64 text-center px-6 py-2 rounded-lg bg-blue-900 text-white font-semibold hidden xl:inline-block'>
+        <span className='min-w-64 text-center px-6 py-2 rounded-lg bg-calendar-toolBar-label text-white font-semibold hidden xl:inline-block'>
           {label}
         </span>
 
         <button
           onClick={() => onNavigate('NEXT')}
-          className='px-4 py-2 rounded-lg bg-gray-200 text-gray-700'
+          className='px-4 py-2 rounded-lg bg-calendar-toolBar-btn text-gray-700 hover:bg-calendar-toolBar-hover'
         >
           →
         </button>
@@ -109,8 +109,8 @@ export const CustomToolbar: React.FC<ToolbarProps<ExtendedEvent>> = ({
             onClick={() => onView(mode as View)}
             className={`px-4 py-2 rounded-lg ${
               view === mode
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 text-gray-700'
+                ? 'bg-primary-redLight_fade font-bold text-orange-900 '
+                : 'bg-calendar-toolBar-btn text-sky-800 font-bold hover:opacity-70'
             }`}
           >
             {mode.charAt(0).toUpperCase() + mode.slice(1)}

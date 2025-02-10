@@ -72,7 +72,7 @@
 }
 
 .react-datepicker__calendar-icon {
-  @apply absolute right-3 top-2/4 cursor-pointer -translate-y-1/2
+  @apply absolute right-3 top-2/4 cursor-pointer -translate-y-1/2 hidden md:inline-block
 }
 .datepicker-popup {
   z-index: 9999 !important;
