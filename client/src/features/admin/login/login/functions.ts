@@ -31,7 +31,8 @@ export const submitForm = async (
   e: React.FormEvent<HTMLFormElement>,
   isRegistering: boolean,
   setNotice: React.Dispatch<React.SetStateAction<string>>,
-  setIsRegistering: React.Dispatch<React.SetStateAction<boolean>>
+  setIsRegistering: React.Dispatch<React.SetStateAction<boolean>>,
+  navigate: (path: string) => void
 ) => {
   e.preventDefault()
 
@@ -54,7 +55,13 @@ export const submitForm = async (
 
   if (res.status === 200 && resJson.msg === 'success') {
     setNotice(`Sign ${isRegistering ? 'up' : 'in'} successful!`)
-    isRegistering && setIsRegistering(false)
+    if (!isRegistering) {
+      setTimeout(() => {
+        navigate('/admin'); 
+      }, 1500); // Điều hướng đến trang admin
+    } else {
+      setIsRegistering(false);
+    }
   }
   else
     setNotice(resJson.msg)
