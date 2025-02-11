@@ -20,6 +20,7 @@ import {
   CustomEventComponent,
   CustomToolbar,
 } from '@components/common/calendar/CustomeBigCalendar';
+import Pagination from '@components/common/Pagination';
 
 const locales = {
   'en-US': import('date-fns/locale/en-US'),
@@ -83,7 +84,7 @@ const Schedule: React.FC = () => {
   const [editing, setEditing] = useState(false);
   const normalizedEvents: ExtendedEvent[] = events.map(normalizeEvent);
   return (
-    <div className='p-4 bg-white shadow-md rounded-lg m-4'>
+    <div className='p-4 bg-white shadow-md rounded-lg m-4 mt-0'>
       <Calendar
         localizer={localizer}
         events={normalizedEvents}
@@ -120,6 +121,8 @@ const Schedule: React.FC = () => {
           event: CustomEventComponent,
         }}
       />
+      {/* Phân trang */}
+      <Pagination />
       {/* Popup thêm sự kiện */}
       {/* {showPopup && (
         <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>

@@ -46,12 +46,12 @@ export default {
           },
           today: {
             DEFAULT: 'rgb(5,170,109)',
-            btn: 'rgb(202,244,254)',
+            btn: 'var(--color-primary)',
             focus: 'rgb(210,20,4,.9)',
           },
           toolBar: {
             btn: 'rgb(156,222,247)',
-            hover: 'rgb(156,222,247,.5)',
+            hover: 'rgb(156,222,247,.95)',
             label: 'rgb(30,58,138)',
           },
         },

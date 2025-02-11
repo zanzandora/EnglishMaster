@@ -43,7 +43,7 @@ const AssignmentListPage = () => {
     return (
       <tr
         key={assignment.id}
-        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight'
+        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavender_fade'
       >
         <td className='flex items-center gap-4 p-4'>{assignment.subject}</td>
         <td>{assignment.class}</td>

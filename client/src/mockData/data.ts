@@ -1013,3 +1013,11 @@ export const calendarEvents:ExtendedEvent[] = [
   },
   
 ];
+
+export const attendanceData = [
+  { id: 1, name: 'Rahul S', attendance: Array(20).fill(false) },
+  { id: 2, name: 'Harry Potter', attendance: Array(20).fill(false) },
+  { id: 3, name: 'Jhon C', attendance: Array(20).fill(false) },
+  { id: 4, name: 'Emma Watson', attendance: Array(20).fill(false) },
+  { id: 5, name: 'Nguyen Thi Kim Huyen', attendance: Array(20).fill(false) },
+]

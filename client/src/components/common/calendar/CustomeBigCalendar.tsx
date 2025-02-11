@@ -3,6 +3,8 @@ import { ToolbarProps, View } from 'react-big-calendar';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import { enGB } from 'date-fns/locale';
 import 'react-datepicker/dist/react-datepicker.css';
+import SearchBoldIcon from '@components/svg/SearchBoldIcon';
+
 registerLocale('en-GB', enGB);
 interface ExtendedEvent {
   id?: string | number;
@@ -34,34 +36,7 @@ export const CustomToolbar: React.FC<ToolbarProps<ExtendedEvent>> = ({
       <DatePicker
         showIcon
         toggleCalendarOnIconClick
-        icon={
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            width='1em'
-            height='1em'
-            viewBox='0 0 48 48'
-          >
-            <mask id='ipSApplication0'>
-              <g
-                fill='none'
-                stroke='#fff'
-                strokeLinejoin='round'
-                strokeWidth='4'
-              >
-                <path strokeLinecap='round' d='M40.04 22v20h-32V22'></path>
-                <path
-                  fill='#fff'
-                  d='M5.842 13.777C4.312 17.737 7.263 22 11.51 22c3.314 0 6.019-2.686 6.019-6a6 6 0 0 0 6 6h1.018a6 6 0 0 0 6-6c0 3.314 2.706 6 6.02 6c4.248 0 7.201-4.265 5.67-8.228L39.234 6H8.845l-3.003 7.777Z'
-                ></path>
-              </g>
-            </mask>
-            <path
-              fill='currentColor'
-              d='M0 0h48v48H0z'
-              mask='url(#ipSApplication0)'
-            ></path>
-          </svg>
-        }
+        icon={<SearchBoldIcon />}
         locale='en-GB'
         selected={memoizedDate}
         onChange={(date) =>
@@ -77,13 +52,13 @@ export const CustomToolbar: React.FC<ToolbarProps<ExtendedEvent>> = ({
       <div className='flex items-center gap-2 mx-4'>
         <button
           onClick={() => onNavigate('TODAY')}
-          className='px-4 py-2 rounded-lg bg-calendar-today-btn text-sky-950 focus:bg-calendar-today-focus focus:text-white hover:opacity-80 font-bold'
+          className='px-4 py-2 rounded-lg bg-calendar-today-btn text-white text-lg font-semibold tracking-wider  shadow-[0_1px_3px_rgba(0,0,0,0.5)] active:shadow-[0_0px_1px_rgba(0,0,0,0.5)] active:scale-[0.995]'
         >
           Today
         </button>
         <button
           onClick={() => onNavigate('PREV')}
-          className='px-4 py-2 rounded-lg bg-calendar-toolBar-btn hover:bg-calendar-toolBar-hover'
+          className='px-4 py-2 rounded-lg bg-calendar-toolBar-btn hover:bg-calendar-toolBar-hover shadow-[0_1px_3px_rgba(0,0,0,0.5)] active:shadow-[0_0px_1px_rgba(0,0,0,0.5)] active:scale-[0.995]'
         >
           ←
         </button>
@@ -95,7 +70,7 @@ export const CustomToolbar: React.FC<ToolbarProps<ExtendedEvent>> = ({
 
         <button
           onClick={() => onNavigate('NEXT')}
-          className='px-4 py-2 rounded-lg bg-calendar-toolBar-btn text-gray-700 hover:bg-calendar-toolBar-hover'
+          className='px-4 py-2 rounded-lg bg-calendar-toolBar-btn text-gray-700 hover:bg-calendar-toolBar-hover shadow-[0_1px_3px_rgba(0,0,0,0.5)] active:shadow-[0_0px_1px_rgba(0,0,0,0.5)] active:scale-[0.995]'
         >
           →
         </button>
@@ -109,8 +84,8 @@ export const CustomToolbar: React.FC<ToolbarProps<ExtendedEvent>> = ({
             onClick={() => onView(mode as View)}
             className={`px-4 py-2 rounded-lg ${
               view === mode
-                ? 'bg-primary-redLight_fade font-bold text-orange-900 '
-                : 'bg-calendar-toolBar-btn text-sky-800 font-bold hover:opacity-70'
+                ? 'bg-primary-redLight_fade font-bold text-orange-900 shadow-[0_1px_3px_rgba(0,0,0,0.5)] active:shadow-[0_0px_1px_rgba(0,0,0,0.5)] active:scale-[0.995]'
+                : 'bg-calendar-toolBar-btn text-sky-800 font-bold hover:opacity-80 shadow-[0_1px_3px_rgba(0,0,0,0.5)] active:shadow-[0_0px_1px_rgba(0,0,0,0.5)] active:scale-[0.995]'
             }`}
           >
             {mode.charAt(0).toUpperCase() + mode.slice(1)}
