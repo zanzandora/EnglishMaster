@@ -7,7 +7,7 @@ export const Courses = mysqlTable('courses', {
   description: text().notNull(),
   duration: int().notNull(),
   fee: int().notNull(),
-  teacherID: int().references(() => Teachers.id),
+  teacherID: int().references(() => Teachers.id).notNull(),
   createdAt: date().default(new Date()),
   updatedAt: date().default(new Date()),
 })

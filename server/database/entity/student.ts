@@ -3,9 +3,8 @@ import { Users } from './user'
 
 export const Students = mysqlTable('students', {
   id: int().autoincrement().primaryKey(),
-  userID: int().references(() => Users.id),
+  userID: int().references(() => Users.id).unique().notNull(),
   dateOfBirth: date().notNull(),
-  experience: int().notNull(),
   createdAt: date().default(new Date()),
   updatedAt: date().default(new Date()),
 })
