@@ -35,7 +35,8 @@ export default {
         tables: {
           actions: {
             bgViewIcon: 'rgb(156,222,247)',
-            bgEditIcon: 'rgb(242,242,242)',
+            bgCreateIcon: 'var(--color-primary-redLight_fade)',
+            bgEditIcon: 'rgb(144,238,144)',
             bgDeleteIcon: 'rgb(156,152,255)',
           },
         },

@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import { studentsData } from '@mockData/data';
+import { role, studentsData } from '@mockData/data';
+import FormModal from '@components/common/FormModal';
 
 type Student = {
   id: number;
@@ -88,20 +89,12 @@ const StudentListPage = () => {
                 />
               </button>
             </Link>
-            {/* {role === 'admin' && (
-              <FormModal table='student' type='delete' id={student.id} />
-            )} */}
-            <Link to={`/list/teachers/${student.id}`}>
-              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgDeleteIcon'>
-                <img
-                  src='/delete.png'
-                  alt=''
-                  width={16}
-                  height={16}
-                  className='w-8/12'
-                />
-              </button>
-            </Link>
+            {role === 'admin' && (
+              <>
+                <FormModal table='student' type='update' id={student.id} />
+                <FormModal table='student' type='delete' id={student.id} />
+              </>
+            )}
           </div>
         </td>
       </tr>
@@ -122,15 +115,7 @@ const StudentListPage = () => {
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/sort.png' alt='' width={14} height={14} />
             </button>
-            {/* {role === 'admin' && (
-              // <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              //   <Image src="/plus.png" alt="" width={14} height={14} />
-              // </button>
-              <FormModal table='student' type='create' />
-            )} */}
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
-              <img src='/create.png' alt='' width={14} height={14} />
-            </button>
+            {role === 'admin' && <FormModal table='student' type='create' />}
           </div>
         </div>
       </div>

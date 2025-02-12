@@ -52,7 +52,7 @@ const AssignmentListPage = () => {
         <td>
           <div className='flex items-center gap-2'>
             <Link to={`/list/teachers/${assignment.id}`}>
-              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgViewIcon'>
+              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgEditIcon'>
                 <img
                   src='/update.png'
                   alt=''

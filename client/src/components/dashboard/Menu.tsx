@@ -8,7 +8,6 @@ const basePath = {
 const role = 'admin';
 const menuItems = [
   {
-    title: 'MENU',
     items: [
       {
         icon: '/home.png',
@@ -95,13 +94,8 @@ const menuItems = [
 const Menu = () => {
   return (
     <div className='mt-4 text-sm '>
-      {menuItems.map((menu) => (
-        <MenuList
-          key={menu.title}
-          title={menu.title}
-          items={menu.items}
-          role={role}
-        />
+      {menuItems.map((menu, index) => (
+        <MenuList key={index} items={menu.items} role={role} />
       ))}
     </div>
   );

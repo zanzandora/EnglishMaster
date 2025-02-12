@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -56,12 +54,12 @@ const EventCalendar = () => {
       <div className='flex flex-col gap-4'>
         {events.map((event) => (
           <div
-            className='p-5 rounded-md border-2 border-gray-100 border-t-4 odd:border-secondary-lavender even:border-primary-redLight_fade'
+            className='p-5 rounded-md border-2 border-gray-100 border-t-4 odd:border-secondary even:border-primary-redLight_fade'
             key={event.id}
           >
             <div className='flex items-center justify-between'>
               <h1 className='font-semibold text-gray-600'>{event.title}</h1>
-              <span className='text-gray-300 text-xs'>{event.time}</span>
+              <span className='text-gray-500 text-xs'>{event.time}</span>
             </div>
             <p className='mt-2 text-gray-400 text-sm'>{event.description}</p>
           </div>

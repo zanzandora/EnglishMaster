@@ -1,7 +1,6 @@
 import MenuItem from './MenuItem';
 
 interface MenuListProps {
-  title: string;
   items: {
     icon: string;
     label: string;
@@ -11,12 +10,9 @@ interface MenuListProps {
   role: string;
 }
 
-const MenuList = ({ title, items, role }: MenuListProps) => {
+const MenuList = ({ items, role }: MenuListProps) => {
   return (
-    <div className='flex flex-col gap-2'>
-      <span className='hidden lg:block text-gray-400 font-light my-4'>
-        {title}
-      </span>
+    <div className='flex flex-col gap-2 mt-6'>
       {items.map(
         (item) =>
           item.visible.includes(role) && (

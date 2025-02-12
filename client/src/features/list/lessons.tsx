@@ -51,7 +51,7 @@ const LessonListPage = () => {
               </>
             )} */}
             <Link to={`/list/teachers/${lesson.id}`}>
-              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgViewIcon'>
+              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgEditIcon'>
                 <img
                   src='/update.png'
                   alt=''

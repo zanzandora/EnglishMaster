@@ -1,11 +1,6 @@
 import { useState } from 'react';
 const faqs = [
   {
-    question: 'Làm thế nào để đăng ký tài khoản?',
-    answer:
-      'Bạn có thể đăng ký tài khoản bằng cách nhấn vào nút Đăng ký trên trang chủ và điền thông tin.',
-  },
-  {
     question: 'Tôi quên mật khẩu, làm sao để khôi phục?',
     answer:
       "Nhấn vào 'Quên mật khẩu' trên trang đăng nhập, nhập email của bạn và làm theo hướng dẫn.",
