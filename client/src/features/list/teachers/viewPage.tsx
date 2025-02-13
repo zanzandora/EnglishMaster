@@ -1,11 +1,39 @@
 import Announcements from '@components/admin/Announcements';
 import PerformanceChart from '@components/admin/charts/PerformanceChart';
+import { useState } from 'react';
 import FormModal from '@components/common/FormModal';
 import { role } from '@mockData/data';
+import { Calendar, View, Views, dateFnsLocalizer } from 'react-big-calendar';
 import { Link, useParams } from 'react-router-dom';
+import {
+  format,
+  parse,
+  startOfWeek,
+  getDay,
+  setHours,
+  setMinutes,
+} from 'date-fns';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+
+const locales = {
+  'en-US': import('date-fns/locale/en-US'),
+};
+
+const localizer = dateFnsLocalizer({
+  format,
+  parse,
+  startOfWeek,
+  getDay,
+  locales,
+});
 
 const SingleTeacherPage = () => {
   const { id } = useParams();
+  const [view, setView] = useState<View>(Views.WORK_WEEK);
+
+  const handleOnChangeView = (selectedView: View) => {
+    setView(selectedView);
+  };
 
   return (
     <div className='flex-1 p-4 flex flex-col gap-4 xl:flex-row'>
@@ -134,6 +162,18 @@ const SingleTeacherPage = () => {
         {/* BOTTOM */}
         <div className='mt-4 bg-white rounded-md p-4 h-[800px]'>
           <h1>Teacher&apos;s Schedule</h1>
+          {/* <Calendar
+            localizer={localizer}
+            events={calendarEvents}
+            startAccessor='start'
+            endAccessor='end'
+            views={['work_week', 'day']}
+            view={view}
+            style={{ height: '98%' }}
+            onView={handleOnChangeView}
+            min={new Date(2025, 1, 0, 8, 0, 0)}
+            max={new Date(2025, 1, 0, 17, 0, 0)}
+          /> */}
         </div>
       </div>
       {/* RIGHT */}

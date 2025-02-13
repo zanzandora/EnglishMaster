@@ -1,33 +1,53 @@
-import { useState, useMemo } from 'react';
-import { ToolbarProps, View } from 'react-big-calendar';
+// 📄 components/common/calendar/BigCalendar.tsx
+import React, { useState, useMemo } from 'react';
+import { Calendar, View, ToolbarProps, EventProps } from 'react-big-calendar';
+import { setHours, setMinutes } from 'date-fns';
+import { ExtendedEvent, ResourceCalendar } from '@interfaces';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import { enGB } from 'date-fns/locale';
 import 'react-datepicker/dist/react-datepicker.css';
 import SearchBoldIcon from '@components/svg/SearchBoldIcon';
 
 registerLocale('en-GB', enGB);
-interface ExtendedEvent {
-  id?: string | number;
-  title: string;
-  allDay?: boolean;
-  start: Date;
-  end: Date;
-  resource?: string;
-  data?: {
-    subject?: string;
-    class?: string;
-    room?: string;
-    teacher?: string;
-    type?: string;
-  };
+
+interface BigCalendarProps {
+  events: ExtendedEvent[];
+  resources: ResourceCalendar[];
+  view: View;
+  setView: (view: View) => void;
+  filteredEvents: ExtendedEvent[];
+  localizer: any;
 }
 
-export const CustomToolbar: React.FC<ToolbarProps<ExtendedEvent>> = ({
-  label,
-  onNavigate,
-  view,
-  onView,
+// Custom Event Component
+const CustomEventComponent: React.FC<EventProps<ExtendedEvent>> = ({
+  event,
 }) => {
+  return (
+    <div
+      className='p-2 rounded-lg shadow-md text-white h-full'
+      style={{
+        backgroundColor: event.data?.type === 'exam' ? '#e74c3c' : '#3498db',
+      }}
+    >
+      <span className='font-bold text-sm'>{event.title}</span>
+      {event.data?.subject && (
+        <span className='text-xs'>📚 {event.data.subject}</span>
+      )}
+      {event.data?.room && (
+        <span className='text-xs'>🏫 {event.data.room}</span>
+      )}
+      {event.data?.teacher && (
+        <span className='text-xs'>👨‍🏫 {event.data.teacher}</span>
+      )}
+    </div>
+  );
+};
+
+// Custom Toolbar Component
+const CustomToolbar: React.FC<
+  ToolbarProps<ExtendedEvent, ResourceCalendar>
+> = ({ label, onNavigate, onView, view }) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const memoizedDate = useMemo(() => selectedDate, [selectedDate]);
   return (
@@ -97,28 +117,39 @@ export const CustomToolbar: React.FC<ToolbarProps<ExtendedEvent>> = ({
   );
 };
 
-export const CustomEventComponent = ({ event }: { event: ExtendedEvent }) => {
+const BigCalendar: React.FC<BigCalendarProps> = ({
+  events,
+  resources,
+  view,
+  setView,
+  filteredEvents,
+  localizer,
+}) => {
   return (
-    <div
-      className='p-2 rounded-lg shadow-md border border-gray-200 text-white h-full'
-      style={{
-        backgroundColor: event.data?.type === 'exam' ? '#e74c3c' : '#3498db',
+    <Calendar
+      localizer={localizer}
+      events={filteredEvents}
+      startAccessor='start'
+      endAccessor='end'
+      resourceAccessor='resource'
+      resources={resources}
+      resourceIdAccessor='id'
+      resourceTitleAccessor='title'
+      view={view}
+      onView={(newView) => setView(newView)}
+      selectable
+      style={{ height: 'calc(100vh - 100px)' }}
+      timeslots={1}
+      step={30}
+      min={setHours(setMinutes(new Date(), 0), 7)}
+      max={setHours(setMinutes(new Date(), 0), 23)}
+      scrollToTime={setHours(setMinutes(new Date(), 0), 7)}
+      components={{
+        toolbar: CustomToolbar,
+        event: CustomEventComponent,
       }}
-    >
-      <div className='flex flex-col'>
-        <span className='font-bold text-sm'>{event.title}</span>
-        {event.data?.subject && (
-          <span className='text-xs'>📚 {event.data.subject}</span>
-        )}
-        {event.data?.room && (
-          <span className='text-xs'>🏫 {event.data.room}</span>
-        )}
-        {event.data?.teacher && (
-          <span className='text-xs'>👨‍🏫 {event.data.teacher}</span>
-        )}
-      </div>
-    </div>
+    />
   );
 };
 
-export default CustomEventComponent;
+export default BigCalendar;
