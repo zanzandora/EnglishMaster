@@ -15,7 +15,9 @@ export default {
         },
         secondary: {
           DEFAULT: 'rgb(0,71,237,.6)',
-          lavender_fade: 'rgba(207,206,255,.35)',
+          blueLight: 'rgb(195,235,250)',
+          lavenderFade: 'rgba(207,206,255,.35)',
+          lavenderLight: 'rgb(254,242,242)',
           male: '#2daae2',
           female: '#e71873',
         },

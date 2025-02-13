@@ -60,7 +60,7 @@ const TeacherListPage = () => {
       <>
         <tr
           key={teacher.id}
-          className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavender_fade'
+          className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
         >
           <td className='flex teachers-center gap-4 p-4'>
             <img
@@ -82,7 +82,7 @@ const TeacherListPage = () => {
           <td className='hidden md:table-cell'>{teacher.address}</td>
           <td>
             <div className='flex teachers-center gap-2'>
-              <Link to={`/list/teachers/${teacher.id}`}>
+              <Link to={`/admin/list/teachers/${teacher.id}`}>
                 <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgViewIcon'>
                   <img
                     src='/view.png'

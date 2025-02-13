@@ -56,7 +56,7 @@ const ResultListPage = () => {
     return (
       <tr
         key={result.id}
-        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavender_fade'
+        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
         <td className='flex items-center gap-4 p-4'>{result.subject}</td>
         <td>{result.student}</td>

@@ -48,6 +48,7 @@ export const CustomToolbar: React.FC<ToolbarProps<ExtendedEvent>> = ({
         portalId='root'
         dateFormat='dd/MM/yyyy'
       />
+
       {/* Nút điều hướng */}
       <div className='flex items-center gap-2 mx-4'>
         <button

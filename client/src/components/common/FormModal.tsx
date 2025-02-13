@@ -3,12 +3,18 @@ import { useState, lazy, Suspense } from 'react';
 // Lazy load các form
 const TeacherForm = lazy(() => import('./forms/TeacherForm'));
 const StudentForm = lazy(() => import('./forms/StudentForm'));
+const CourseForm = lazy(() => import('./forms/CourseForm'));
+const ClassForm = lazy(() => import('./forms/ClassForm'));
+const LessonForm = lazy(() => import('./forms/LessonForm'));
 
 const forms: {
   [key: string]: (type: 'create' | 'update', data?: any) => JSX.Element;
 } = {
   teacher: (type, data) => <TeacherForm type={type} data={data} />,
   student: (type, data) => <StudentForm type={type} data={data} />,
+  course: (type, data) => <CourseForm type={type} data={data} />,
+  class: (type, data) => <ClassForm type={type} data={data} />,
+  lesson: (type, data) => <LessonForm type={type} data={data} />,
 };
 
 const FormModal = ({
@@ -20,7 +26,7 @@ const FormModal = ({
   table:
     | 'teacher'
     | 'student'
-    | 'subject'
+    | 'course'
     | 'class'
     | 'lesson'
     | 'exam'

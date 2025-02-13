@@ -1,103 +1,41 @@
 import { useForm } from 'react-hook-form';
-import { useEffect, useState } from 'react';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import InputField from '../InputField';
 
-// Định nghĩa interface cho dữ liệu form
-interface StudentFormData {
-  username: string;
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  address: string;
-  bloodType: string;
-  birthday: string;
-  sex: 'male' | 'female' | '';
-  img: FileList | null;
-}
+// Tạo schema bằng Zod
+const StudentSchema = z.object({
+  username: z
+    .string()
+    .min(3, 'Username must be at least 3 characters')
+    .max(20, 'Username must be at most 20 characters'),
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
+  phone: z.string().min(1, 'Phone is required'),
+  address: z.string().min(1, 'Address is required'),
+  bloodType: z.string().min(1, 'Blood Type is required'),
+  birthday: z.string().min(1, 'Birthday is required'),
+  sex: z.enum(['male', 'female'], { message: 'Sex is required!' }),
+});
 
-interface StudentErrors {
-  username?: string;
-  email?: string;
-  password?: string;
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-  address?: string;
-  bloodType?: string;
-  birthday?: string;
-  sex?: string;
-  img?: string;
-}
-
-const validateStudent = (data: StudentFormData): StudentErrors => {
-  const errors: StudentErrors = {};
-
-  if (
-    !data.username ||
-    data.username.trim() === '' ||
-    data.username.length < 3 ||
-    data.username.length > 20
-  ) {
-    errors.username = 'Username must be between 3 and 20 characters';
-  }
-  if (
-    !data.email ||
-    data.email.trim() === '' ||
-    !/\S+@\S+\.\S+/.test(data.email)
-  ) {
-    errors.email = 'Invalid email address';
-  }
-  if (
-    !data.password ||
-    data.password.trim() === '' ||
-    data.password.length < 8
-  ) {
-    errors.password = 'Password must be at least 8 characters long';
-  }
-  if (!data.firstName || data.firstName.trim() === '') {
-    errors.firstName = 'First name is required';
-  }
-  if (!data.lastName || data.lastName.trim() === '') {
-    errors.lastName = 'Last name is required';
-  }
-  if (!data.phone || data.phone.trim() === '') {
-    errors.phone = 'Phone is required';
-  }
-  if (!data.address || data.address.trim() === '') {
-    errors.address = 'Address is required';
-  }
-  if (!data.bloodType || data.bloodType.trim() === '') {
-    errors.bloodType = 'Blood Type is required';
-  }
-  if (!data.birthday || data.birthday.trim() === '') {
-    errors.birthday = 'Birthday is required';
-  }
-  if (!data.sex || data.sex.trim() === '') {
-    errors.sex = 'Sex is required';
-  }
-  if (!data.img || data.img.length === 0) {
-    errors.img = 'Image is required';
-  }
-
-  return errors;
-};
+// Tạo TypeScript type từ schema Zod
+type StudentFormData = z.infer<typeof StudentSchema>;
 
 const StudentForm = ({
   type,
   data,
 }: {
   type: 'create' | 'update';
-  data?: Partial<StudentFormData>;
+  data?: any;
 }) => {
   const {
     register,
     handleSubmit,
-    setError,
-    watch,
     formState: { errors },
   } = useForm<StudentFormData>({
+    resolver: zodResolver(StudentSchema),
     defaultValues: data || {
       username: '',
       email: '',
@@ -109,63 +47,13 @@ const StudentForm = ({
       bloodType: '',
       birthday: '',
       sex: '',
-      img: null,
     },
   });
 
-  const [localErrors, setLocalErrors] = useState<StudentErrors>({});
-
   const onSubmit = (formData: StudentFormData) => {
-    // Kiểm tra tất cả lỗi bằng validateStudent
-    const validationErrors = validateStudent(formData);
-
-    // Nếu có lỗi, lưu lỗi vào localErrors
-    if (Object.keys(validationErrors).length > 0) {
-      setLocalErrors(validationErrors);
-
-      // Đồng thời cập nhật lỗi lên React Hook Form để hiển thị ban đầu
-      Object.entries(validationErrors).forEach(([key, message]) => {
-        setError(key as keyof StudentFormData, { message, type: 'manual' });
-      });
-
-      // Dừng submit nếu có lỗi
-      return;
-    }
-
-    // Nếu không có lỗi, gửi dữ liệu
-    fetch(`/api/students`, {
-      method: type === 'create' ? 'POST' : 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    })
-      .then((response) => {
-        if (response.ok) {
-          alert(type === 'create' ? 'Student Created!' : 'Student Updated!');
-        } else {
-          alert('Something went wrong');
-        }
-      })
-      .catch((error) => console.error('Error:', error));
+    console.log('Submitted Data:', formData);
+    alert(type === 'create' ? 'Student Created!' : 'Student Updated!');
   };
-
-  // Cập nhật  khi nhập liệu và xóa khỏi localErrors khi input đã nhập đúng
-  useEffect(() => {
-    const subscription = watch((value, { name }) => {
-      // Kiểm tra lại lỗi khi nhập liệu
-      const newErrors = validateStudent(value);
-
-      // Nếu input đang nhập không còn lỗi, xóa khỏi localErrors
-      if (name && !newErrors[name]) {
-        setLocalErrors((prevErrors) => {
-          const updatedErrors = { ...prevErrors };
-          delete updatedErrors[name as keyof StudentFormData];
-          return updatedErrors;
-        });
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [watch]);
 
   return (
     <form className='flex flex-col gap-8' onSubmit={handleSubmit(onSubmit)}>
@@ -180,20 +68,20 @@ const StudentForm = ({
           label='Username'
           name='username'
           register={register}
-          error={errors.username || localErrors.username}
+          error={errors.username}
         />
         <InputField
           label='Email'
           name='email'
           register={register}
-          error={errors.email || localErrors.email}
+          error={errors.email}
         />
         <InputField
           label='Password'
           name='password'
           type='password'
           register={register}
-          error={errors.password || localErrors.password}
+          error={errors.password}
         />
       </div>
       <span className='text-xs text-gray-400 font-medium'>
@@ -204,38 +92,38 @@ const StudentForm = ({
           label='First Name'
           name='firstName'
           register={register}
-          error={errors.firstName || localErrors.firstName}
+          error={errors.firstName}
         />
         <InputField
           label='Last Name'
           name='lastName'
           register={register}
-          error={errors.lastName || localErrors.lastName}
+          error={errors.lastName}
         />
         <InputField
           label='Phone'
           name='phone'
           register={register}
-          error={errors.phone || localErrors.phone}
+          error={errors.phone}
         />
         <InputField
           label='Address'
           name='address'
           register={register}
-          error={errors.address || localErrors.address}
+          error={errors.address}
         />
         <InputField
           label='Blood Type'
           name='bloodType'
           register={register}
-          error={errors.bloodType || localErrors.bloodType}
+          error={errors.bloodType}
         />
         <InputField
           label='Birthday'
           name='birthday'
           type='date'
           register={register}
-          error={errors.birthday || localErrors.birthday}
+          error={errors.birthday}
         />
         <div className='flex flex-col gap-2 w-full md:w-1/4'>
           <label className='text-xs text-gray-500'>Sex</label>
@@ -248,9 +136,7 @@ const StudentForm = ({
             <option value='female'>Female</option>
           </select>
           {errors.sex && (
-            <p className='text-xs text-red-400'>
-              {errors.sex.message || localErrors.sex}
-            </p>
+            <p className='text-xs text-red-400'>{errors.sex.message}</p>
           )}
         </div>
       </div>

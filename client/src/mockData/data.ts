@@ -331,7 +331,7 @@ export const parentsData = [
   },
 ];
 
-export const subjectsData = [
+export const CoursesData = [
   {
     id: 1,
     name: "Math",
@@ -1011,6 +1011,34 @@ export const calendarEvents:ExtendedEvent[] = [
       type: "exam", // Thêm type để phân biệt
     },
   },
+  {
+    id: 3,
+    title: "Lớp C1",
+    start: new Date(2025, 2, 2, 13, 0), // Ngày thi
+    end: new Date(2025, 2, 2, 15, 0),
+    resource: "room101",
+    data: {
+      subject: "Toeic",
+      class: "C1",
+      room: "Phòng 101",
+      teacher: "Nguyen Van C",
+      type: "class", // Thêm type để phân biệt
+    },
+  },
+  {
+    id: 4,
+    title: "Lớp A1",
+    start: new Date(2025, 2, 5, 13, 0), // Ngày thi
+    end: new Date(2025, 2, 5, 15, 0),
+    resource: "room101",
+    data: {
+      subject: "Toeic",
+      class: "A1",
+      room: "Phòng 101",
+      teacher: "Nguyen Van Linh",
+      type: "class", // Thêm type để phân biệt
+    },
+  },
   
 ];
 
@@ -1021,3 +1049,4 @@ export const attendanceData = [
   { id: 4, name: 'Emma Watson', attendance: Array(20).fill(false) },
   { id: 5, name: 'Nguyen Thi Kim Huyen', attendance: Array(20).fill(false) },
 ]
+

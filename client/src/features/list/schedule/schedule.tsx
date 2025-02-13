@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Calendar, dateFnsLocalizer, Event, View } from 'react-big-calendar';
 import {
   format,
@@ -66,10 +66,12 @@ const normalizeEvent = (event: any): ExtendedEvent => {
     data: event.data || {}, // Đảm bảo có object data (không undefined)
   };
 };
+
 const Schedule: React.FC = () => {
   const [view, setView] = useState<View>('week');
   const [events, setEvents] = useState<Event[]>(calendarEvents);
   const [showPopup, setShowPopup] = useState(false);
+  const [selectedClass, setSelectedClass] = useState<string>('all');
   const [newEvent, setNewEvent] = useState<{
     id?: number;
     title: string;
@@ -83,11 +85,49 @@ const Schedule: React.FC = () => {
   });
   const [editing, setEditing] = useState(false);
   const normalizedEvents: ExtendedEvent[] = events.map(normalizeEvent);
+
+  const classOptions = useMemo(() => {
+    const classList = normalizedEvents
+      .map((event) => event.data?.class) // Lấy ra tên lớp từ data
+      .filter((className) => className) // Loại bỏ undefined
+      .filter((value, index, self) => self.indexOf(value) === index); // Loại bỏ trùng lặp
+
+    // Thêm tùy chọn "Tất cả lớp học" lên đầu
+    return [
+      { value: 'all', label: 'All Classes' },
+      ...classList.map((className) => ({ value: className, label: className })),
+    ];
+  }, [normalizedEvents]);
+
+  const filteredEvents = useMemo(() => {
+    if (selectedClass === 'all') return normalizedEvents;
+    return normalizedEvents.filter(
+      (event) => event.data?.class === selectedClass
+    );
+  }, [selectedClass, normalizedEvents]);
+
   return (
     <div className='p-4 bg-white shadow-md rounded-lg m-4 mt-0'>
+      <div className='flex items-center justify-between'>
+        <h1 className='hidden md:block text-lg font-semibold'>Schedule</h1>
+        <div className='flex flex-col md:flex-row items-center w-full md:w-auto px-5'>
+          <span className='text-lg font-semibold mx-4'>Filter: </span>
+          <select
+            value={selectedClass}
+            onChange={(e) => setSelectedClass(e.target.value)}
+            className='p-2 border rounded-md'
+          >
+            {classOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
       <Calendar
         localizer={localizer}
-        events={normalizedEvents}
+        events={filteredEvents}
         toolbar={true}
         startAccessor='start'
         endAccessor='end'

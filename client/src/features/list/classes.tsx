@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import { classesData } from '@mockData/data';
+import { role, classesData } from '@mockData/data';
+import FormModal from '@components/common/FormModal';
 
 type Class = {
   id: number;
@@ -44,7 +44,7 @@ const ClassListPage = () => {
     return (
       <tr
         key={classes.id}
-        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavender_fade'
+        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
         <td className='flex items-center gap-4 p-4'>{classes.name}</td>
         <td className='hidden md:table-cell'>{classes.capacity}</td>
@@ -52,28 +52,12 @@ const ClassListPage = () => {
         <td className='hidden md:table-cell'>{classes.supervisor}</td>
         <td>
           <div className='flex items-center gap-2'>
-            <Link to={`/list/teachers/${classes.id}`}>
-              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgEditIcon'>
-                <img
-                  src='/update.png'
-                  alt=''
-                  width={16}
-                  height={16}
-                  className='w-8/12'
-                />
-              </button>
-            </Link>
-            <Link to={`/list/teachers/${classes.id}`}>
-              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgDeleteIcon'>
-                <img
-                  src='/delete.png'
-                  alt=''
-                  width={16}
-                  height={16}
-                  className='w-8/12'
-                />
-              </button>
-            </Link>
+            {role === 'admin' && (
+              <>
+                <FormModal table='class' type='update' data={classes} />
+                <FormModal table='class' type='delete' id={classes.id} />
+              </>
+            )}
           </div>
         </td>
       </tr>
@@ -94,10 +78,7 @@ const ClassListPage = () => {
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/sort.png' alt='' width={14} height={14} />
             </button>
-            {/* {role === 'admin' && <FormModal table='class' type='create' />} */}
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
-              <img src='/create.png' alt='' width={14} height={14} />
-            </button>
+            {role === 'admin' && <FormModal table='class' type='create' />}
           </div>
         </div>
       </div>

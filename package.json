@@ -11,6 +11,7 @@
     "database": "npx drizzle-kit push"
   },
   "dependencies": {
+    "@hookform/resolvers": "^4.0.0",
     "@types/react-big-calendar": "^1.16.1",
     "compression": "^1.7.5",
     "date-fns": "^4.1.0",
@@ -30,7 +31,8 @@
     "recharts": "^2.15.0",
     "reflect-metadata": "^0.2.2",
     "sirv": "^3.0.0",
-    "tsx": "^4.19.2"
+    "tsx": "^4.19.2",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

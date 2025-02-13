@@ -14,7 +14,7 @@ type Exam = {
 
 const columns = [
   {
-    header: 'Subject Name',
+    header: 'Course Name',
     accessor: 'name',
   },
   {
@@ -43,7 +43,7 @@ const ExamListPage = () => {
     return (
       <tr
         key={exam.id}
-        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavender_fade'
+        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
         <td className='flex items-center gap-4 p-4'>{exam.subject}</td>
         <td>{exam.class}</td>

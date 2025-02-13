@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import { lessonsData } from '@mockData/data';
+import { role, lessonsData } from '@mockData/data';
+import FormModal from '@components/common/FormModal';
 
 type Lesson = {
   id: number;
@@ -13,7 +13,7 @@ type Lesson = {
 
 const columns = [
   {
-    header: 'Subject Name',
+    header: 'Course Name',
     accessor: 'name',
   },
   {
@@ -37,41 +37,19 @@ const LessonListPage = () => {
     return (
       <tr
         key={lesson.id}
-        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavender_fade'
+        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
         <td className='flex items-center gap-4 p-4'>{lesson.subject}</td>
         <td>{lesson.class}</td>
         <td className='hidden md:table-cell'>{lesson.teacher}</td>
         <td>
           <div className='flex items-center gap-2'>
-            {/* {role === "admin" && (
+            {role === 'admin' && (
               <>
-                <FormModal table="lesson" type="update" data={item} />
-                <FormModal table="lesson" type="delete" id={item.id} />
+                <FormModal table='lesson' type='update' data={lesson} />
+                <FormModal table='lesson' type='delete' id={lesson.id} />
               </>
-            )} */}
-            <Link to={`/list/teachers/${lesson.id}`}>
-              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgEditIcon'>
-                <img
-                  src='/update.png'
-                  alt=''
-                  width={16}
-                  height={16}
-                  className='w-8/12'
-                />
-              </button>
-            </Link>
-            <Link to={`/list/teachers/${lesson.id}`}>
-              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgDeleteIcon'>
-                <img
-                  src='/delete.png'
-                  alt=''
-                  width={16}
-                  height={16}
-                  className='w-8/12'
-                />
-              </button>
-            </Link>
+            )}
           </div>
         </td>
       </tr>
@@ -92,10 +70,7 @@ const LessonListPage = () => {
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/sort.png' alt='' width={14} height={14} />
             </button>
-            {/* {role === "admin" && <FormModal table="lesson" type="create" />} */}
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
-              <img src='/create.png' alt='' width={14} height={14} />
-            </button>
+            {role === 'admin' && <FormModal table='lesson' type='create' />}
           </div>
         </div>
       </div>

@@ -29,7 +29,7 @@ const menuItems = [
       },
       {
         icon: '/subject.png',
-        label: 'Subjects',
+        label: 'Courses',
         href: `${basePath[role]}/list/subjects`,
         visible: ['admin'],
       },

@@ -22,6 +22,8 @@ const Login = () => {
             alt='Background'
           />
         </div>
+
+        {/* Phần form đăng nhập hoặc đăng ký */}
         <div className='flex justify-end '>
           <div className='bg-red-50 min-h-screen w-2/5 flex justify-center items-center'>
             <div className=''>
@@ -36,9 +38,9 @@ const Login = () => {
                   )
                 }
               >
-                <div>
-                  <span className='font-semibold text-4xl mx-auto select-none mb-2 '>
-                    <h1 className='text-2xl font-bold mt-6'>
+                <div className='-mt-5'>
+                  <span className='mx-auto select-none mb-2 '>
+                    <h1 className='text-2xl font-bold '>
                       {isRegistering
                         ? 'Sign up for new'
                         : 'Login to your account'}
@@ -46,10 +48,13 @@ const Login = () => {
                   </span>
                 </div>
 
-                <div className='flex flex-col gap-5 mt-5'>
+                <div className='flex flex-col gap-2 mt-5'>
                   {/* Input Username */}
                   <div className='flex flex-col'>
-                    <label className='block text-md mb-2' htmlFor='username'>
+                    <label
+                      className='block text-md mb-0.5 ml-2'
+                      htmlFor='username'
+                    >
                       Username
                     </label>
                     <input
@@ -65,7 +70,10 @@ const Login = () => {
 
                   {/* Input Password */}
                   <div className='flex flex-col'>
-                    <label className='block text-md mb-2' htmlFor='password'>
+                    <label
+                      className='block text-md mb-0.5 ml-2'
+                      htmlFor='password'
+                    >
                       Password
                     </label>
                     <input
@@ -92,10 +100,13 @@ const Login = () => {
                     </>
                   ) : (
                     <>
-                      <div className='grid grid-cols-2 gap-5 max-w-full'>
+                      <div className='grid grid-cols-2 gap-2 max-w-full'>
                         {/* Full Name */}
                         <div className='flex flex-col col-span-2 '>
-                          <label className='block text-md mb-2' htmlFor='name'>
+                          <label
+                            className='block text-md mb-0.5 ml-2'
+                            htmlFor='name'
+                          >
                             Full Name
                           </label>
                           <input
@@ -111,7 +122,10 @@ const Login = () => {
 
                         {/* Email */}
                         <div className='flex flex-col col-span-2 '>
-                          <label className='block text-md mb-2' htmlFor='email'>
+                          <label
+                            className='block text-md mb-0.5 ml-2'
+                            htmlFor='email'
+                          >
                             Email
                           </label>
                           <input
@@ -128,13 +142,13 @@ const Login = () => {
                         {/* Address */}
                         <div className='flex flex-col col-span-2 '>
                           <label
-                            className='block text-md mb-2'
+                            className='block text-md mb-0.5 ml-2'
                             htmlFor='address'
                           >
                             Address
                           </label>
                           <input
-                            className='px-4 w-full border-2 py-2 rounded-md text-sm outline-none'
+                            className='p-2 w-full border-2 rounded-md text-sm outline-none'
                             type='text'
                             name='address'
                             placeholder='Address'
@@ -146,7 +160,10 @@ const Login = () => {
 
                         {/* Age */}
                         <div className='flex flex-col'>
-                          <label className='block text-md mb-2' htmlFor='age'>
+                          <label
+                            className='block text-md mb-0.5 ml-2'
+                            htmlFor='age'
+                          >
                             Age
                           </label>
                           <input
@@ -163,7 +180,7 @@ const Login = () => {
                         {/* Gender */}
                         <div className='flex flex-col'>
                           <label
-                            className='block text-md mb-2'
+                            className='block text-md mb-0.5 ml-2'
                             htmlFor='gender'
                           >
                             Gender
@@ -184,7 +201,10 @@ const Login = () => {
 
                         {/* Phone Number */}
                         <div className='flex flex-col col-span-2'>
-                          <label className='block text-md mb-2' htmlFor='phone'>
+                          <label
+                            className='block text-md mb-0.5 ml-2'
+                            htmlFor='phone'
+                          >
                             Phone Number
                           </label>
                           <input
@@ -207,20 +227,20 @@ const Login = () => {
                 <div className=''>
                   <button
                     type='submit'
-                    className='mt-6 mb-3 w-full bg-green-500 hover:bg-green-400 text-white py-2 rounded-md transition duration-100'
+                    className='mt-4 w-full bg-secondary hover:opacity-90 text-white py-2 rounded-full transition duration-100'
                   >
-                    {isRegistering ? 'Sign up' : 'Login now'}
+                    {isRegistering ? 'Sign up' : 'Login'}
                   </button>
                 </div>
               </form>
-              <div className='flex flex-row mx-auto gap-1 mt-3 select-none'>
+              <div className='flex flex-row mx-auto gap-1 mt-1 select-none'>
                 <span className='text-gray-500 text-sm'>
                   {isRegistering
                     ? 'Already have an account?'
                     : "Don't have an account?"}
                 </span>
                 <span
-                  className='text-red-500 text-sm underline cursor-pointer mb-20'
+                  className='text-red-500 text-sm underline cursor-pointer'
                   onClick={() => blueTextBottom(setNotice, setIsRegistering)}
                 >
                   Sign {isRegistering ? 'in' : 'up'}

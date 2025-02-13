@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import InputField from '../InputField';
 
 //* Định nghĩa schema bằng cách sử dụng z.object() để mô tả cấu trúc dữ liệu và điều kiện hợp lệ.
-const TeacherSchema = z.object({
+const CourseSchema = z.object({
   username: z
     .string()
     .min(3, 'Username must be at least 3 characters')
@@ -21,9 +21,9 @@ const TeacherSchema = z.object({
 });
 
 // *Tạo TypeScript type từ schema Zod, giúp đồng bộ schema và type
-type TeacherFormData = z.infer<typeof TeacherSchema>;
+type CourseFormData = z.infer<typeof CourseSchema>;
 
-const TeacherForm = ({
+const CourseForm = ({
   type,
   data,
 }: {
@@ -34,9 +34,9 @@ const TeacherForm = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<TeacherFormData>({
+  } = useForm<CourseFormData>({
     // *Khi submit form, Zod sẽ tự động kiểm tra dữ liệu dựa trên StudentSchema.
-    resolver: zodResolver(TeacherSchema),
+    resolver: zodResolver(CourseSchema),
     defaultValues: data || {
       // *defaultValues: Đặt giá trị mặc định cho các input trên form.
       username: '',
@@ -52,15 +52,15 @@ const TeacherForm = ({
     },
   });
 
-  const onSubmit = (formData: TeacherFormData) => {
+  const onSubmit = (formData: CourseFormData) => {
     console.log('Submitted Data:', formData);
-    alert(type === 'create' ? 'Teacher Created!' : 'Teacher Updated!');
+    alert(type === 'create' ? 'Course Created!' : 'Course Updated!');
   };
 
   return (
     <form className='flex flex-col gap-8' onSubmit={handleSubmit(onSubmit)}>
       <h1 className='text-xl font-semibold'>
-        {type === 'create' ? 'Create a new Teacher' : 'Update Teacher'}
+        {type === 'create' ? 'Create a new Course' : 'Update Course'}
       </h1>
       <span className='text-xs text-gray-400 font-medium'>
         Authentication Information
@@ -154,4 +154,4 @@ const TeacherForm = ({
   );
 };
 
-export default TeacherForm;
+export default CourseForm;

@@ -40,7 +40,7 @@ const AttendancePage = () => {
     return (
       <tr
         key={student.id}
-        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavender_fade'
+        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
         <td className='p-4'>{student.name}</td>
         {student.attendance.map((attended, dayIndex) => (
