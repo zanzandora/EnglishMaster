@@ -76,6 +76,8 @@
 }
 .datepicker-popup {
   z-index: 9999 !important;
+  margin-left: 30px;
+
 }
 
 

@@ -1,5 +1,5 @@
 // 📄 components/common/calendar/BigCalendar.tsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Calendar, View, ToolbarProps, EventProps } from 'react-big-calendar';
 import { setHours, setMinutes } from 'date-fns';
 import { ExtendedEvent, ResourceCalendar } from '@interfaces';
@@ -48,26 +48,61 @@ const CustomEventComponent: React.FC<EventProps<ExtendedEvent>> = ({
 const CustomToolbar: React.FC<
   ToolbarProps<ExtendedEvent, ResourceCalendar>
 > = ({ label, onNavigate, onView, view }) => {
+  const datePickerRef = useRef<any>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [isInputVisible, setIsInputVisible] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
   const memoizedDate = useMemo(() => selectedDate, [selectedDate]);
+
+  // *Theo dõi chiều rộng của div chứa DatePicker
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRef.current) {
+        const containerWidth = containerRef.current.offsetWidth;
+        // Nếu chiều rộng < 150px thì ẩn input, chỉ hiện icon
+        setIsInputVisible(containerWidth > 820);
+        console.log(containerWidth);
+      }
+    };
+
+    // Gọi lại handleResize khi resize
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
-    <div className='flex items-center justify-between  p-2  flex-wrap'>
+    <div
+      ref={containerRef}
+      className='flex items-center justify-between  p-2  flex-wrap'
+    >
       {/* DatePicker */}
       <DatePicker
-        showIcon
-        toggleCalendarOnIconClick
-        icon={<SearchBoldIcon />}
+        ref={datePickerRef}
         locale='en-GB'
         selected={memoizedDate}
         onChange={(date) =>
           date && (setSelectedDate(date), onNavigate('DATE', date))
         }
         showMonthDropdown
-        className='px-4 py-2 border rounded-lg border-primary hidden md:inline-block'
+        className={`transition-width duration-300 ease-in-out px-4 py-2 border rounded-lg border-primary ${
+          isInputVisible ? 'inline-block' : 'hidden'
+        }`}
         popperClassName='datepicker-popup'
         portalId='root'
         dateFormat='dd/MM/yyyy'
       />
+
+      {/* Icon chỉ hiện khi input bị co lại */}
+      {!isInputVisible && (
+        <button
+          className=' p-2 border rounded-full bg-secondary-blueLight'
+          onClick={() => datePickerRef.current?.setOpen(true)}
+        >
+          <SearchBoldIcon />
+        </button>
+      )}
 
       {/* Nút điều hướng */}
       <div className='flex items-center gap-2 mx-4'>

@@ -1,19 +1,13 @@
 import Announcements from '@components/admin/Announcements';
 import PerformanceChart from '@components/admin/charts/PerformanceChart';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import FormModal from '@components/common/FormModal';
-import { role } from '@mockData/data';
-import { Calendar, View, Views, dateFnsLocalizer } from 'react-big-calendar';
+import { role, calendarEvents } from '@mockData/data';
+import { View, dateFnsLocalizer } from 'react-big-calendar';
 import { Link, useParams } from 'react-router-dom';
-import {
-  format,
-  parse,
-  startOfWeek,
-  getDay,
-  setHours,
-  setMinutes,
-} from 'date-fns';
+import { format, parse, startOfWeek, getDay } from 'date-fns';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import BigCalendar from '@components/common/calendar/BigCalendar';
 
 const locales = {
   'en-US': import('date-fns/locale/en-US'),
@@ -29,11 +23,39 @@ const localizer = dateFnsLocalizer({
 
 const SingleTeacherPage = () => {
   const { id } = useParams();
-  const [view, setView] = useState<View>(Views.WORK_WEEK);
+  const [view, setView] = useState<View>('week');
+  const [selectedClass, setSelectedClass] = useState<string>('all');
 
-  const handleOnChangeView = (selectedView: View) => {
-    setView(selectedView);
+  // Room Resources cho Calendar
+  const resourcesRooms = [
+    { id: 'room101', title: 'Phòng 101', type: 'room' },
+    { id: 'room102', title: 'Phòng 102', type: 'room' },
+    { id: 'room103', title: 'Phòng 103', type: 'room' },
+  ];
+
+  // Chuẩn hóa dữ liệu sự kiện
+  const normalizeEvent = (event: any) => {
+    return {
+      id: event.id ?? Date.now(),
+      title: typeof event.title === 'string' ? event.title : 'No Title',
+      start: event.start instanceof Date ? event.start : new Date(event.start),
+      end: event.end instanceof Date ? event.end : new Date(event.end),
+      resource: event.resource ?? 'Unknown',
+      data: event.data || {},
+    };
   };
+
+  const normalizedEvents = useMemo(
+    () => calendarEvents.map(normalizeEvent),
+    []
+  );
+
+  const filteredEvents = useMemo(() => {
+    if (selectedClass === 'all') return normalizedEvents;
+    return normalizedEvents.filter(
+      (event) => event.data?.class === selectedClass
+    );
+  }, [selectedClass, normalizedEvents]);
 
   return (
     <div className='flex-1 p-4 flex flex-col gap-4 xl:flex-row'>
@@ -162,18 +184,14 @@ const SingleTeacherPage = () => {
         {/* BOTTOM */}
         <div className='mt-4 bg-white rounded-md p-4 h-[800px]'>
           <h1>Teacher&apos;s Schedule</h1>
-          {/* <Calendar
+          <BigCalendar
+            events={normalizedEvents}
+            resources={resourcesRooms}
+            view='week'
+            setView={setView}
+            filteredEvents={filteredEvents}
             localizer={localizer}
-            events={calendarEvents}
-            startAccessor='start'
-            endAccessor='end'
-            views={['work_week', 'day']}
-            view={view}
-            style={{ height: '98%' }}
-            onView={handleOnChangeView}
-            min={new Date(2025, 1, 0, 8, 0, 0)}
-            max={new Date(2025, 1, 0, 17, 0, 0)}
-          /> */}
+          />
         </div>
       </div>
       {/* RIGHT */}
