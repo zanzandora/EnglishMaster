@@ -1,12 +1,11 @@
 // 📄 components/common/calendar/BigCalendar.tsx
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Calendar, View, ToolbarProps, EventProps } from 'react-big-calendar';
-import { setHours, setMinutes } from 'date-fns';
+import { setHours, setMinutes, format } from 'date-fns';
 import { ExtendedEvent, ResourceCalendar } from '@interfaces';
 import DatePicker, { registerLocale } from 'react-datepicker';
-import { enGB } from 'date-fns/locale';
+import { enGB } from 'date-fns/locale/en-GB';
 import 'react-datepicker/dist/react-datepicker.css';
-import SearchBoldIcon from '@components/svg/SearchBoldIcon';
 
 registerLocale('en-GB', enGB);
 
@@ -61,7 +60,6 @@ const CustomToolbar: React.FC<
         const containerWidth = containerRef.current.offsetWidth;
         // Nếu chiều rộng < 150px thì ẩn input, chỉ hiện icon
         setIsInputVisible(containerWidth > 820);
-        console.log(containerWidth);
       }
     };
 
@@ -86,23 +84,11 @@ const CustomToolbar: React.FC<
           date && (setSelectedDate(date), onNavigate('DATE', date))
         }
         showMonthDropdown
-        className={`transition-width duration-300 ease-in-out px-4 py-2 border rounded-lg border-primary ${
-          isInputVisible ? 'inline-block' : 'hidden'
-        }`}
+        className={`transition-width duration-300 ease-in-out px-4 py-2 border rounded-lg border-primary `}
         popperClassName='datepicker-popup'
         portalId='root'
         dateFormat='dd/MM/yyyy'
       />
-
-      {/* Icon chỉ hiện khi input bị co lại */}
-      {!isInputVisible && (
-        <button
-          className=' p-2 border rounded-full bg-secondary-blueLight'
-          onClick={() => datePickerRef.current?.setOpen(true)}
-        >
-          <SearchBoldIcon />
-        </button>
-      )}
 
       {/* Nút điều hướng */}
       <div className='flex items-center gap-2 mx-4'>
@@ -120,7 +106,9 @@ const CustomToolbar: React.FC<
         </button>
 
         {/* Hiển thị tiêu đề ngày/tháng/năm */}
-        <span className='min-w-64 text-center px-6 py-2 rounded-lg bg-calendar-toolBar-label text-white font-semibold hidden xl:inline-block'>
+        <span
+          className={`min-w-64  text-center px-6 py-2 rounded-lg bg-calendar-toolBar-label text-white font-semibold hidden xl:inline-block`}
+        >
           {label}
         </span>
 
@@ -134,19 +122,28 @@ const CustomToolbar: React.FC<
 
       {/* Chế độ xem: Day / Week / Month */}
       <div className='flex gap-2'>
-        {['day', 'week', 'month'].map((mode) => (
-          <button
-            key={mode}
-            onClick={() => onView(mode as View)}
-            className={`px-4 py-2 rounded-lg ${
-              view === mode
-                ? 'bg-primary-redLight_fade font-bold text-orange-900 shadow-[0_1px_3px_rgba(0,0,0,0.5)] active:shadow-[0_0px_1px_rgba(0,0,0,0.5)] active:scale-[0.995]'
-                : 'bg-calendar-toolBar-btn text-sky-800 font-bold hover:opacity-80 shadow-[0_1px_3px_rgba(0,0,0,0.5)] active:shadow-[0_0px_1px_rgba(0,0,0,0.5)] active:scale-[0.995]'
-            }`}
-          >
-            {mode.charAt(0).toUpperCase() + mode.slice(1)}
-          </button>
-        ))}
+        {['day', 'week', 'month'].map((mode) => {
+          // Nếu isInputVisible là false và mode là 'day' hoặc 'week' thì return null để không render
+          if (
+            !isInputVisible &&
+            (mode === 'day' || mode === 'month' || mode === 'week')
+          )
+            return null;
+
+          return (
+            <button
+              key={mode}
+              onClick={() => onView(mode as View)}
+              className={`px-4 py-2 rounded-lg ${
+                view === mode
+                  ? 'bg-primary-redLight_fade font-bold text-orange-900 shadow-[0_1px_3px_rgba(0,0,0,0.5)] active:shadow-[0_0px_1px_rgba(0,0,0,0.5)] active:scale-[0.995]'
+                  : 'bg-calendar-toolBar-btn text-sky-800 font-bold hover:opacity-80 shadow-[0_1px_3px_rgba(0,0,0,0.5)] active:shadow-[0_0px_1px_rgba(0,0,0,0.5)] active:scale-[0.995]'
+              }`}
+            >
+              {mode.charAt(0).toUpperCase() + mode.slice(1)}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -179,6 +176,9 @@ const BigCalendar: React.FC<BigCalendarProps> = ({
       min={setHours(setMinutes(new Date(), 0), 7)}
       max={setHours(setMinutes(new Date(), 0), 23)}
       scrollToTime={setHours(setMinutes(new Date(), 0), 7)}
+      formats={{
+        dayFormat: (date) => format(date, 'EEEE', { locale: enGB }),
+      }}
       components={{
         toolbar: CustomToolbar,
         event: CustomEventComponent,

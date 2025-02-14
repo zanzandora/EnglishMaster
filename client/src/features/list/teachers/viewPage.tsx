@@ -184,14 +184,16 @@ const SingleTeacherPage = () => {
         {/* BOTTOM */}
         <div className='mt-4 bg-white rounded-md p-4 h-[800px]'>
           <h1>Teacher&apos;s Schedule</h1>
-          <BigCalendar
-            events={normalizedEvents}
-            resources={resourcesRooms}
-            view='week'
-            setView={setView}
-            filteredEvents={filteredEvents}
-            localizer={localizer}
-          />
+          <div className='calendar-wrapper'>
+            <BigCalendar
+              events={normalizedEvents}
+              resources={resourcesRooms}
+              view='week'
+              setView={setView}
+              filteredEvents={filteredEvents}
+              localizer={localizer}
+            />
+          </div>
         </div>
       </div>
       {/* RIGHT */}

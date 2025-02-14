@@ -51,6 +51,10 @@
   background-color: #eff4f7;
 }
 
+/* CALENDAR WRAPPER  */
+.calendar-wrapper{
+  max-width: 805px;
+}
 
 /* *EVENT STYLES */
 
@@ -76,7 +80,6 @@
 }
 .datepicker-popup {
   z-index: 9999 !important;
-  margin-left: 30px;
 
 }
 
