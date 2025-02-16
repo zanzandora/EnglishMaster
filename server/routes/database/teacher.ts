@@ -6,6 +6,41 @@ import { db } from '../../database/driver'
 
 const expressRouter = Router()
 
+expressRouter.get('/', async (req, res) => {
+  const username = req.body.username
+
+  let missingFields: string[] = []
+  if (!username) missingFields.push('username')
+  if (missingFields.length > 0) {
+    res.status(400).send(`Missing fields: ${missingFields.join(', ')}`)
+    return
+  }
+
+  try {
+    let selectedUsers = await db.select().from(Users).where(eq(Users.username, username))
+
+    if (selectedUsers.length === 0) {
+      res.status(404).send(`User "${username}" not found`)
+      return
+    }
+
+    let selectedTeachers = await db.select().from(Teachers).where((eq(Teachers.userID, selectedUsers[0].id)))
+
+    if (selectedTeachers.length === 0) {
+      res.status(404).send(`Teacher "${username}" not found`)
+      return
+    }
+
+    res.send({
+      ...selectedUsers[0],
+      ...selectedTeachers[0]
+    })
+  }
+  catch (err) {
+    res.status(500).send(err.toString())
+  }
+})
+
 expressRouter.post('/add', async (req, res) => {
   const username = req.body.username
   const password = req.body.password
