@@ -35,9 +35,9 @@ interface ExtendedEvent {
 
 // *Định nghĩa room resource
 const resourcesRooms = [
-  { id: 'room101', title: 'Phòng 101', type: 'room' },
-  { id: 'room102', title: 'Phòng 102', type: 'room' },
-  { id: 'room103', title: 'Phòng 103', type: 'room' },
+  { id: 'room101', title: 'Room 101', type: 'room' },
+  { id: 'room102', title: 'Room 102', type: 'room' },
+  { id: 'room103', title: 'Room 103', type: 'room' },
 ];
 
 const normalizeEvent = (event: any): ExtendedEvent => {
@@ -55,17 +55,9 @@ const Schedule: React.FC = () => {
   const [view, setView] = useState<View>('week');
   const [events, setEvents] = useState<Event[]>(calendarEvents);
   const [selectedClass, setSelectedClass] = useState<string>('all');
-  // const [newEvent, setNewEvent] = useState<{
-  //   id?: number;
-  //   title: string;
-  //   start: Date;
-  //   end: Date;
-  //   resource?: string;
-  // }>({
-  //   title: '',
-  //   start: new Date(),
-  //   end: new Date(),
-  // });
+  const [selectedRoom, setSelectedRoom] = useState<string>(
+    resourcesRooms[0].id
+  ); // Set initial room to the smallest room
   const normalizedEvents: ExtendedEvent[] = events.map(normalizeEvent);
 
   const classOptions = useMemo(() => {
@@ -81,12 +73,25 @@ const Schedule: React.FC = () => {
     ];
   }, [normalizedEvents]);
 
+  const roomOptions = useMemo(() => {
+    return resourcesRooms.map((room) => ({
+      value: room.id,
+      label: room.title,
+    }));
+  }, []);
+
   const filteredEvents = useMemo(() => {
-    if (selectedClass === 'all') return normalizedEvents;
-    return normalizedEvents.filter(
-      (event) => event.data?.class === selectedClass
-    );
-  }, [selectedClass, normalizedEvents]);
+    let filtered = normalizedEvents;
+    if (selectedClass !== 'all') {
+      filtered = filtered.filter(
+        (event) => event.data?.class === selectedClass
+      );
+    }
+    if (selectedRoom) {
+      filtered = filtered.filter((event) => event.resource === selectedRoom);
+    }
+    return filtered;
+  }, [selectedClass, selectedRoom, normalizedEvents]);
 
   return (
     <div className='p-4 bg-white shadow-md rounded-lg m-4 mt-0'>
@@ -105,15 +110,25 @@ const Schedule: React.FC = () => {
               </option>
             ))}
           </select>
+          <select
+            value={selectedRoom}
+            onChange={(e) => setSelectedRoom(e.target.value)}
+            className='p-2 border rounded-md ml-4'
+          >
+            {roomOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
       {/* Sử dụng BigCalendar */}
       <BigCalendar
-        events={normalizedEvents}
-        resources={resourcesRooms}
+        filteredEvents={filteredEvents}
+        resources={resourcesRooms.filter((room) => room.id === selectedRoom)}
         view={view}
         setView={setView}
-        filteredEvents={filteredEvents}
         localizer={localizer}
       />
       {/* Phân trang */}

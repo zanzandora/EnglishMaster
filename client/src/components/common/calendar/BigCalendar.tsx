@@ -177,7 +177,7 @@ const BigCalendar: React.FC<BigCalendarProps> = ({
       max={setHours(setMinutes(new Date(), 0), 23)}
       scrollToTime={setHours(setMinutes(new Date(), 0), 7)}
       formats={{
-        dayFormat: (date) => format(date, 'EEEE', { locale: enGB }),
+        dayFormat: (date) => format(date, 'EEE (dd/MM)', { locale: enGB }),
       }}
       components={{
         toolbar: CustomToolbar,

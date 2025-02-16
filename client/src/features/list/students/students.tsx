@@ -78,7 +78,7 @@ const StudentListPage = () => {
         <td className='hidden md:table-cell'>{student.address}</td>
         <td>
           <div className='flex items-center gap-2'>
-            <Link to={`/list/teachers/${student.id}`}>
+            <Link to={`/admin/list/students/${student.id}`}>
               <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgViewIcon'>
                 <img
                   src='/view.png'

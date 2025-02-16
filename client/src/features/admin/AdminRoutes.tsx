@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import ErrorPage from 'features/error/error';
 import AdminDashboard from './pages/AdminDashboard';
 import StudentListPage from '@list/students/students';
+import StudentViewPage from '@list/students/viewPage';
 import TeacherViewPage from '@list/teachers/viewPage';
 import TeacherListPage from '@list/teachers/teachers';
 import CoursesListPage from '@list/courses';
@@ -20,6 +21,7 @@ const AdminRoutes = () => {
       <Route path='/' element={<AdminDashboard />} />
 
       <Route path='list/students' element={<StudentListPage />} />
+      <Route path='list/students/:id' element={<StudentViewPage />} />
 
       <Route path='list/teachers' element={<TeacherListPage />} />
       <Route path='list/teachers/:id' element={<TeacherViewPage />} />
