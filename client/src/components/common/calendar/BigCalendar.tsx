@@ -1,10 +1,11 @@
-// 📄 components/common/calendar/BigCalendar.tsx
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Calendar, View, ToolbarProps, EventProps } from 'react-big-calendar';
+import DatePicker, { registerLocale } from 'react-datepicker';
+import { Tooltip } from 'react-tooltip';
 import { setHours, setMinutes, format } from 'date-fns';
 import { ExtendedEvent, ResourceCalendar } from '@interfaces';
-import DatePicker, { registerLocale } from 'react-datepicker';
 import { enGB } from 'date-fns/locale/en-GB';
+import 'react-tooltip/dist/react-tooltip.css';
 import 'react-datepicker/dist/react-datepicker.css';
 
 registerLocale('en-GB', enGB);
@@ -24,11 +25,13 @@ const CustomEventComponent: React.FC<EventProps<ExtendedEvent>> = ({
 }) => {
   return (
     <div
-      className='p-2 rounded-lg shadow-md text-white h-full'
+      className='p-2 rounded-lg shadow-md text-white h-full flex flex-col'
       style={{
         backgroundColor: event.data?.type === 'exam' ? '#e74c3c' : '#3498db',
       }}
+      data-tooltip-id={`event-tooltip-${event.id}`}
     >
+      {/* Phần hiển thị gốc vẫn giữ nguyên */}
       <span className='font-bold text-sm'>{event.title}</span>
       {event.data?.subject && (
         <span className='text-xs'>📚 {event.data.subject}</span>
@@ -39,6 +42,32 @@ const CustomEventComponent: React.FC<EventProps<ExtendedEvent>> = ({
       {event.data?.teacher && (
         <span className='text-xs'>👨‍🏫 {event.data.teacher}</span>
       )}
+      {/* Tooltip */}
+      <Tooltip
+        id={`event-tooltip-${event.id}`}
+        place='top'
+        variant='dark'
+        className='z-50 text-left'
+        render={() => (
+          <div>
+            <strong>{event.title}</strong>
+            <br />
+            {event.data?.subject && (
+              <>
+                📚 {event.data.subject}
+                <br />
+              </>
+            )}
+            {event.data?.room && (
+              <>
+                🏫 {event.data.room}
+                <br />
+              </>
+            )}
+            {event.data?.teacher && <>👨‍🏫 {event.data.teacher}</>}
+          </div>
+        )}
+      />
     </div>
   );
 };

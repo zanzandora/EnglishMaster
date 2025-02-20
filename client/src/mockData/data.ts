@@ -1,127 +1,127 @@
 // TEMPORARY DATA
-
+import { ExtendedEvent } from "@interfaces";
 export const role = 'admin';
 
 export const teachersData = [
   {
     id: 1,
     teacherId: '1234567890',
-    name: 'John Doe',
-    email: 'john@doe.com',
+    name: 'Nguyễn Văn An',
+    email: 'quang@gmail.com',
     photo:
       'https://images.pexels.com/photos/2888150/pexels-photo-2888150.jpeg?auto=compress&cs=tinysrgb&w=1200',
     phone: '1234567890',
-    subjects: ['Math', 'Geometry'],
+    subjects: ['Toán', 'Hình học'],
     classes: ['1B', '2A', '3C'],
-    address: '123 Main St, Anytown, USA',
+    address: 'Hà Nội',
   },
   {
     id: 2,
     teacherId: '1234567890',
-    name: 'Jane Doe',
+    name: 'Trần Thị Bình',
     email: 'jane@doe.com',
     photo:
       'https://images.pexels.com/photos/936126/pexels-photo-936126.jpeg?auto=compress&cs=tinysrgb&w=1200',
     phone: '1234567890',
-    subjects: ['Physics', 'Chemistry'],
+    subjects: ['Vật lý', 'Hóa học'],
     classes: ['5A', '4B', '3C'],
-    address: '123 Main St, Anytown, USA',
+    address: 'Hồ Chí Minh',
   },
   {
     id: 3,
     teacherId: '1234567890',
-    name: 'Mike Geller',
+    name: 'Lê Văn Cường',
     email: 'mike@geller.com',
     photo:
       'https://images.pexels.com/photos/428328/pexels-photo-428328.jpeg?auto=compress&cs=tinysrgb&w=1200',
     phone: '1234567890',
-    subjects: ['Biology'],
+    subjects: ['Sinh học'],
     classes: ['5A', '4B', '3C'],
-    address: '123 Main St, Anytown, USA',
+    address: 'Đà Nẵng',
   },
   {
     id: 4,
     teacherId: '1234567890',
-    name: 'Jay French',
+    name: 'Phạm Thị Diệu',
     email: 'jay@gmail.com',
     photo:
       'https://images.pexels.com/photos/1187765/pexels-photo-1187765.jpeg?auto=compress&cs=tinysrgb&w=1200',
     phone: '1234567890',
-    subjects: ['History'],
+    subjects: ['Lịch sử'],
     classes: ['5A', '4B', '3C'],
-    address: '123 Main St, Anytown, USA',
+    address: 'Hải Phòng',
   },
   {
     id: 5,
     teacherId: '1234567890',
-    name: 'Jane Smith',
+    name: 'Hoàng Thị Mai',
     email: 'jane@gmail.com',
     photo:
       'https://images.pexels.com/photos/1102341/pexels-photo-1102341.jpeg?auto=compress&cs=tinysrgb&w=1200',
     phone: '1234567890',
-    subjects: ['Music', 'History'],
+    subjects: ['Âm nhạc', 'Lịch sử'],
     classes: ['5A', '4B', '3C'],
-    address: '123 Main St, Anytown, USA',
+    address: 'Cần Thơ',
   },
   {
     id: 6,
     teacherId: '1234567890',
-    name: 'Anna Santiago',
+    name: 'Vũ Thị Ngọc',
     email: 'anna@gmail.com',
     photo:
       'https://images.pexels.com/photos/712513/pexels-photo-712513.jpeg?auto=compress&cs=tinysrgb&w=1200',
     phone: '1234567890',
-    subjects: ['Physics'],
+    subjects: ['Vật lý'],
     classes: ['5A', '4B', '3C'],
-    address: '123 Main St, Anytown, USA',
+    address: 'Huế',
   },
   {
     id: 7,
     teacherId: '1234567890',
-    name: 'Allen Black',
+    name: 'Nguyễn Văn Phong',
     email: 'allen@black.com',
     photo:
       'https://images.pexels.com/photos/1438081/pexels-photo-1438081.jpeg?auto=compress&cs=tinysrgb&w=1200',
     phone: '1234567890',
-    subjects: ['English', 'Spanish'],
+    subjects: ['Tiếng Anh', 'Tiếng Tây Ban Nha'],
     classes: ['5A', '4B', '3C'],
-    address: '123 Main St, Anytown, USA',
+    address: 'Nha Trang',
   },
   {
     id: 8,
     teacherId: '1234567890',
-    name: 'Ophelia Castro',
+    name: 'Trần Thị Quỳnh',
     email: 'ophelia@castro.com',
     photo:
       'https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=1200',
     phone: '1234567890',
-    subjects: ['Math', 'Geometry'],
+    subjects: ['Toán', 'Hình học'],
     classes: ['5A', '4B', '3C'],
-    address: '123 Main St, Anytown, USA',
+    address: 'Hạ Long',
   },
   {
     id: 9,
     teacherId: '1234567890',
-    name: 'Derek Briggs',
+    name: 'Lê Văn Sơn',
     email: 'derek@briggs.com',
     photo:
       'https://images.pexels.com/photos/842980/pexels-photo-842980.jpeg?auto=compress&cs=tinysrgb&w=1200',
     phone: '1234567890',
-    subjects: ['Literature', 'English'],
+    subjects: ['Văn học', 'Tiếng Anh'],
     classes: ['5A', '4B', '3C'],
-    address: '123 Main St, Anytown, USA',
+    address: 'Vũng Tàu',
   },
   {
     id: 10,
     teacherId: '1234567890',
-    name: 'John Glover',
+    name: 'Phạm Văn Tùng',
     email: 'john@glover.com',
     photo:
       'https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&w=1200',
     phone: '1234567890',
-    subjects: ['Biology'],
+    subjects: ['Sinh học'],
     classes: ['5A', '4B', '3C'],
-    address: '123 Main St, Anytown, USA',
+    address: 'Đà Lạt',
   },
 ];
 
@@ -129,122 +129,122 @@ export const studentsData = [
   {
     id: 1,
     studentId: '1234567890',
-    name: 'John Doe',
+    name: 'Nguyễn Văn A',
     email: 'john@doe.com',
     photo:
       'https://images.pexels.com/photos/2888150/pexels-photo-2888150.jpeg?auto=compress&cs=tinysrgb&w=1200',
     phone: '1234567890',
     experience: 5,
     class: '1B',
-    address: '123 Main St, Anytown, USA',
+    address: 'Hà Nội',
   },
   {
     id: 2,
     studentId: '1234567890',
-    name: 'Jane Doe',
+    name: 'Trần Thị B',
     email: 'jane@doe.com',
     photo:
       'https://images.pexels.com/photos/936126/pexels-photo-936126.jpeg?auto=compress&cs=tinysrgb&w=1200',
     phone: '1234567890',
     experience: 5,
     class: '5A',
-    address: '123 Main St, Anytown, USA',
+    address: 'Hồ Chí Minh',
   },
   {
     id: 3,
     studentId: '1234567890',
-    name: 'Mike Geller',
+    name: 'Lê Văn C',
     email: 'mike@geller.com',
     photo:
       'https://images.pexels.com/photos/428328/pexels-photo-428328.jpeg?auto=compress&cs=tinysrgb&w=1200',
     phone: '1234567890',
     experience: 5,
     class: '5A',
-    address: '123 Main St, Anytown, USA',
+    address: 'Đà Nẵng',
   },
   {
     id: 4,
     studentId: '1234567890',
-    name: 'Jay French',
+    name: 'Phạm Thị D',
     email: 'jay@gmail.com',
     photo:
       'https://images.pexels.com/photos/1187765/pexels-photo-1187765.jpeg?auto=compress&cs=tinysrgb&w=1200',
     phone: '1234567890',
     experience: 5,
     class: '5A',
-    address: '123 Main St, Anytown, USA',
+    address: 'Hải Phòng',
   },
   {
     id: 5,
     studentId: '1234567890',
-    name: 'Jane Smith',
+    name: 'Hoàng Văn E',
     email: 'jane@gmail.com',
     photo:
       'https://images.pexels.com/photos/1102341/pexels-photo-1102341.jpeg?auto=compress&cs=tinysrgb&w=1200',
     phone: '1234567890',
     experience: 5,
     class: '5A',
-    address: '123 Main St, Anytown, USA',
+    address: 'Cần Thơ',
   },
   {
     id: 6,
     studentId: '1234567890',
-    name: 'Anna Santiago',
+    name: 'Vũ Thị F',
     email: 'anna@gmail.com',
     photo:
       'https://images.pexels.com/photos/712513/pexels-photo-712513.jpeg?auto=compress&cs=tinysrgb&w=1200',
     phone: '1234567890',
     experience: 5,
     class: '5A',
-    address: '123 Main St, Anytown, USA',
+    address: 'Huế',
   },
   {
     id: 7,
     studentId: '1234567890',
-    name: 'Allen Black',
+    name: 'Nguyễn Văn G',
     email: 'allen@black.com',
     photo:
       'https://images.pexels.com/photos/1438081/pexels-photo-1438081.jpeg?auto=compress&cs=tinysrgb&w=1200',
     phone: '1234567890',
     experience: 5,
     class: '5A',
-    address: '123 Main St, Anytown, USA',
+    address: 'Nha Trang',
   },
   {
     id: 8,
     studentId: '1234567890',
-    name: 'Ophelia Castro',
+    name: 'Trần Thị H',
     email: 'ophelia@castro.com',
     photo:
       'https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=1200',
     phone: '1234567890',
     experience: 5,
     class: '5A',
-    address: '123 Main St, Anytown, USA',
+    address: 'Hạ Long',
   },
   {
     id: 9,
     studentId: '1234567890',
-    name: 'Derek Briggs',
+    name: 'Lê Văn I',
     email: 'derek@briggs.com',
     photo:
       'https://images.pexels.com/photos/842980/pexels-photo-842980.jpeg?auto=compress&cs=tinysrgb&w=1200',
     phone: '1234567890',
     experience: 5,
     class: '5A',
-    address: '123 Main St, Anytown, USA',
+    address: 'Vũng Tàu',
   },
   {
     id: 10,
     studentId: '1234567890',
-    name: 'John Glover',
+    name: 'Phạm Văn K',
     email: 'john@glover.com',
     photo:
       'https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&w=1200',
     phone: '1234567890',
     experience: 5,
     class: '5A',
-    address: '123 Main St, Anytown, USA',
+    address: 'Đà Lạt',
   },
 ];
 
@@ -334,53 +334,53 @@ export const parentsData = [
 export const CoursesData = [
   {
     id: 1,
-    name: 'Math',
-    teachers: ['Alice Phelps', 'Russell Davidson'],
+    name: 'Toán',
+    teachers: ['Nguyễn Văn An', 'Trần Thị Bình'],
   },
   {
     id: 2,
-    name: 'English',
-    teachers: ['Manuel Becker', 'Eddie Chavez'],
+    name: 'Tiếng Anh',
+    teachers: ['Lê Văn Cường', 'Phạm Thị Diệu'],
   },
   {
     id: 3,
-    name: 'Physics',
-    teachers: ['Lola Newman', 'Darrell Delgado'],
+    name: 'Vật lý',
+    teachers: ['Hoàng Văn E', 'Vũ Thị F'],
   },
   {
     id: 4,
-    name: 'Chemistry',
-    teachers: ['Nathan Kelly', 'Benjamin Snyder'],
+    name: 'Hóa học',
+    teachers: ['Nguyễn Văn G', 'Trần Thị H'],
   },
   {
     id: 5,
-    name: 'Biology',
-    teachers: ['Alma Benson', 'Lina Collier'],
+    name: 'Sinh học',
+    teachers: ['Lê Văn I', 'Phạm Văn K'],
   },
   {
     id: 6,
-    name: 'History',
-    teachers: ['Hannah Bowman', 'Betty Obrien'],
+    name: 'Lịch sử',
+    teachers: ['Nguyễn Thị L', 'Trần Văn M'],
   },
   {
     id: 7,
-    name: 'Geography',
-    teachers: ['Lora French', 'Sue Brady'],
+    name: 'Địa lý',
+    teachers: ['Lê Thị N', 'Phạm Xuân O'],
   },
   {
     id: 8,
-    name: 'Art',
-    teachers: ['Harriet Alvarado', 'Mayme Keller'],
+    name: 'Mỹ thuật',
+    teachers: ['Hoàng Văn P', 'Vũ Thị Q'],
   },
   {
     id: 9,
-    name: 'Music',
-    teachers: ['Gertrude Roy', 'Rosa Singleton'],
+    name: 'Âm nhạc',
+    teachers: ['Nguyễn Văn R', 'Trần Thị S'],
   },
   {
     id: 10,
-    name: 'Literature',
-    teachers: ['Effie Lynch', 'Brett Flowers'],
+    name: 'Văn học',
+    teachers: ['Lê Văn T', 'Phạm Thị U'],
   },
 ];
 
@@ -390,8 +390,8 @@ export const classesData = [
     name: '1A',
     capacity: 20,
     grade: 1,
-    supervisor: 'Joseph Padilla',
-    students: ['Le Thi B', 'Tran Van C'],
+    supervisor: 'Nguyễn Nhật Ánh',
+    students: ['Lê Thị B', 'Trần Văn C'],
     schedule: {
       start: new Date(2025, 1, 10, 10, 0),
       end: new Date(2025, 1, 10, 12, 0),
@@ -402,8 +402,8 @@ export const classesData = [
     name: '2B',
     capacity: 22,
     grade: 2,
-    supervisor: 'Blake Joseph',
-    students: ['Mai Minh Tu', 'Nguyen Van A'],
+    supervisor: 'Trần Thu Hà',
+    students: ['Mai Minh Tú', 'Nguyễn Văn A'],
     schedule: {
       start: new Date(2025, 1, 10, 8, 0),
       end: new Date(2025, 1, 10, 10, 0),
@@ -414,8 +414,8 @@ export const classesData = [
     name: '3C',
     capacity: 20,
     grade: 3,
-    supervisor: 'Tom Bennett',
-    students: ['Mai Minh Tu', 'Nguyen Van A'],
+    supervisor: 'Lê Minh Đức',
+    students: ['Nguyễn Tuấn Kiệt', 'Trần Khánh Linh'],
     schedule: {
       start: new Date(2025, 1, 10, 8, 0),
       end: new Date(2025, 1, 10, 10, 0),
@@ -426,8 +426,8 @@ export const classesData = [
     name: '4B',
     capacity: 18,
     grade: 4,
-    supervisor: 'Aaron Collins',
-    students: ['Mai Minh Tu', 'Nguyen Van A'],
+    supervisor: 'Phạm Ngọc Diệp',
+    students: ['Lê Bảo An', 'Phạm Gia Hưng'],
     schedule: {
       start: new Date(2025, 1, 10, 8, 0),
       end: new Date(2025, 1, 10, 10, 0),
@@ -438,20 +438,20 @@ export const classesData = [
     name: '5A',
     capacity: 16,
     grade: 5,
-    supervisor: 'Iva Frank',
-    students: ['Mai Minh Tu', 'Nguyen Van A'],
+    supervisor: 'Hoàng Sơn Tùng',
+    students: ['Hoàng Diệu Anh', 'Nguyễn Đức Bình'],
     schedule: {
       start: new Date(2025, 1, 10, 8, 0),
       end: new Date(2025, 1, 10, 10, 0),
     },
   },
   {
-    id: 5,
+    id: 6, // Đã sửa id trùng lặp
     name: '5B',
     capacity: 20,
     grade: 5,
-    supervisor: 'Leila Santos',
-    students: ['Mai Minh Tu', 'Nguyen Van A'],
+    supervisor: 'Nguyễn Thị Thúy', // Thêm tên
+    students: ['Trần Văn Nam', 'Lê Thị Hoa'], // Thêm tên
     schedule: {
       start: new Date(2025, 1, 10, 8, 0),
       end: new Date(2025, 1, 10, 10, 0),
@@ -462,8 +462,8 @@ export const classesData = [
     name: '7A',
     capacity: 18,
     grade: 7,
-    supervisor: 'Carrie Walton',
-    students: ['Mai Minh Tu', 'Nguyen Van A'],
+    supervisor: 'Trần Văn Mạnh', // Thêm tên
+    students: ['Phạm Hoàng Long', 'Nguyễn Phương Thảo'], // Thêm tên
     schedule: {
       start: new Date(2025, 1, 10, 8, 0),
       end: new Date(2025, 1, 10, 10, 0),
@@ -474,8 +474,8 @@ export const classesData = [
     name: '6B',
     capacity: 22,
     grade: 6,
-    supervisor: 'Christopher Butler',
-    students: ['Mai Minh Tu', 'Nguyen Van A'],
+    supervisor: 'Lê Hồng Nhung', // Thêm tên
+    students: ['Lê Minh Chiến', 'Trần Ngọc Linh'], // Thêm tên
     schedule: {
       start: new Date(2025, 1, 10, 8, 0),
       end: new Date(2025, 1, 10, 10, 0),
@@ -486,8 +486,8 @@ export const classesData = [
     name: '6C',
     capacity: 18,
     grade: 6,
-    supervisor: 'Marc Miller',
-    students: ['Mai Minh Tu', 'Nguyen Van A'],
+    supervisor: 'Vũ Xuân Trường', // Thêm tên
+    students: ['Nguyễn Anh Tuấn', 'Hoàng Thu Hương'], // Thêm tên
     schedule: {
       start: new Date(2025, 1, 10, 8, 0),
       end: new Date(2025, 1, 10, 10, 0),
@@ -498,8 +498,8 @@ export const classesData = [
     name: '6D',
     capacity: 20,
     grade: 6,
-    supervisor: 'Ophelia Marsh',
-    students: ['Mai Minh Tu', 'Nguyen Van A'],
+    supervisor: 'Đỗ Thị Lan', // Thêm tên
+    students: ['Phạm Đức Anh', 'Trần Khánh Ngọc'], // Thêm tên
     schedule: {
       start: new Date(2025, 1, 10, 8, 0),
       end: new Date(2025, 1, 10, 10, 0),
@@ -510,135 +510,135 @@ export const classesData = [
 export const lessonsData = [
   {
     id: 1,
-    subject: 'Math',
+    subject: 'Toán',
     class: '1A',
-    teacher: 'Tommy Wise',
+    teacher: 'Nguyễn Nhật Ánh',
   },
   {
     id: 2,
-    subject: 'English',
-    class: '2A',
-    teacher: 'Rhoda Frank',
+    subject: 'Tiếng Anh',
+    class: '2B',
+    teacher: 'Trần Thu Hà',
   },
   {
     id: 3,
-    subject: 'Science',
-    class: '3A',
-    teacher: 'Della Dunn',
+    subject: 'Khoa học',
+    class: '3C',
+    teacher: 'Lê Minh Đức',
   },
   {
     id: 4,
-    subject: 'Social Studies',
+    subject: 'Lịch sử',
     class: '1B',
-    teacher: 'Bruce Rodriguez',
+    teacher: 'Phạm Ngọc Diệp',
   },
   {
     id: 5,
-    subject: 'Art',
-    class: '4A',
-    teacher: 'Birdie Butler',
+    subject: 'Mỹ thuật',
+    class: '4B',
+    teacher: 'Hoàng Sơn Tùng',
   },
   {
     id: 6,
-    subject: 'Music',
+    subject: 'Âm nhạc',
     class: '5A',
-    teacher: 'Bettie Oliver',
+    teacher: 'Nguyễn Thị Thúy',
   },
   {
     id: 7,
-    subject: 'History',
+    subject: 'Lịch sử',
     class: '6A',
-    teacher: 'Herman Howard',
+    teacher: 'Trần Văn Mạnh',
   },
   {
     id: 8,
-    subject: 'Geography',
+    subject: 'Địa lý',
     class: '6B',
-    teacher: 'Lucinda Thomas',
+    teacher: 'Lê Hồng Nhung',
   },
   {
     id: 9,
-    subject: 'Physics',
+    subject: 'Vật lý',
     class: '6C',
-    teacher: 'Ronald Roberts',
+    teacher: 'Vũ Xuân Trường',
   },
   {
     id: 10,
-    subject: 'Chemistry',
-    class: '4B',
-    teacher: 'Julia Pittman',
+    subject: 'Hóa học',
+    class: '4A',
+    teacher: 'Đỗ Thị Lan',
   },
 ];
 
 export const examsData = [
   {
     id: 1,
-    subject: 'Math',
+    subject: 'Toán',
     class: '1A',
-    teacher: 'Martha Morris',
+    teacher: 'Nguyễn Nhật Ánh',
     date: '2025-01-01',
   },
   {
     id: 2,
-    subject: 'English',
-    class: '2A',
-    teacher: 'Randall Garcia',
+    subject: 'Tiếng Anh',
+    class: '2B',
+    teacher: 'Trần Thu Hà',
     date: '2025-01-01',
   },
   {
     id: 3,
-    subject: 'Science',
-    class: '3A',
-    teacher: 'Myrtie Scott',
+    subject: 'Khoa học',
+    class: '3C',
+    teacher: 'Lê Minh Đức',
     date: '2025-01-01',
   },
   {
     id: 4,
-    subject: 'Social Studies',
+    subject: 'Lịch sử',
     class: '1B',
-    teacher: 'Alvin Swanson',
+    teacher: 'Phạm Ngọc Diệp',
     date: '2025-01-01',
   },
   {
     id: 5,
-    subject: 'Art',
-    class: '4A',
-    teacher: 'Mabelle Wallace',
+    subject: 'Mỹ thuật',
+    class: '4B',
+    teacher: 'Hoàng Sơn Tùng',
     date: '2025-01-01',
   },
   {
     id: 6,
-    subject: 'Music',
+    subject: 'Âm nhạc',
     class: '5A',
-    teacher: 'Dale Thompson',
+    teacher: 'Nguyễn Thị Thúy',
     date: '2025-01-01',
   },
   {
     id: 7,
-    subject: 'History',
+    subject: 'Lịch sử',
     class: '6A',
-    teacher: 'Allie Conner',
+    teacher: 'Trần Văn Mạnh',
     date: '2025-01-01',
   },
   {
     id: 8,
-    subject: 'Geography',
+    subject: 'Địa lý',
     class: '6B',
-    teacher: 'Hunter Fuller',
+    teacher: 'Lê Hồng Nhung',
     date: '2025-01-01',
   },
   {
     id: 9,
-    subject: 'Physics',
-    class: '7A',
-    teacher: 'Lois Lindsey',
+    subject: 'Vật lý',
+    class: '6C',  // Đã sửa lớp để khớp với dữ liệu lớp
+    teacher: 'Vũ Xuân Trường',
     date: '2025-01-01',
   },
   {
     id: 10,
-    subject: 'Chemistry',
-    class: '8A',
-    teacher: 'Vera Soto',
+    subject: 'Hóa học',
+    class: '4A', // Đã sửa lớp để khớp với dữ liệu lớp
+    teacher: 'Đỗ Thị Lan',
     date: '2025-01-01',
   },
 ];
@@ -646,72 +646,72 @@ export const examsData = [
 export const assignmentsData = [
   {
     id: 1,
-    subject: 'Math',
+    subject: 'Toán',
     class: '1A',
-    teacher: 'Anthony Boone',
+    teacher: 'Nguyễn Nhật Ánh',
     dueDate: '2025-01-01',
   },
   {
     id: 2,
-    subject: 'English',
-    class: '2A',
-    teacher: 'Clifford Bowen',
+    subject: 'Tiếng Anh',
+    class: '2B',
+    teacher: 'Trần Thu Hà',
     dueDate: '2025-01-01',
   },
   {
     id: 3,
-    subject: 'Science',
-    class: '3A',
-    teacher: 'Catherine Malone',
+    subject: 'Khoa học',
+    class: '3C',
+    teacher: 'Lê Minh Đức',
     dueDate: '2025-01-01',
   },
   {
     id: 4,
-    subject: 'Social Studies',
+    subject: 'Lịch sử',
     class: '1B',
-    teacher: 'Willie Medina',
+    teacher: 'Phạm Ngọc Diệp',
     dueDate: '2025-01-01',
   },
   {
     id: 5,
-    subject: 'Art',
-    class: '4A',
-    teacher: 'Jose Ruiz',
+    subject: 'Mỹ thuật',
+    class: '4B',
+    teacher: 'Hoàng Sơn Tùng',
     dueDate: '2025-01-01',
   },
   {
     id: 6,
-    subject: 'Music',
+    subject: 'Âm nhạc',
     class: '5A',
-    teacher: 'Katharine Owens',
+    teacher: 'Nguyễn Thị Thúy',
     dueDate: '2025-01-01',
   },
   {
     id: 7,
-    subject: 'History',
+    subject: 'Lịch sử',
     class: '6A',
-    teacher: 'Shawn Norman',
+    teacher: 'Trần Văn Mạnh',
     dueDate: '2025-01-01',
   },
   {
     id: 8,
-    subject: 'Geography',
+    subject: 'Địa lý',
     class: '6B',
-    teacher: 'Don Holloway',
+    teacher: 'Lê Hồng Nhung',
     dueDate: '2025-01-01',
   },
   {
     id: 9,
-    subject: 'Physics',
-    class: '7A',
-    teacher: 'Franklin Gregory',
+    subject: 'Vật lý',
+    class: '6C', // Đã sửa lớp để khớp với dữ liệu lớp
+    teacher: 'Vũ Xuân Trường',
     dueDate: '2025-01-01',
   },
   {
     id: 10,
-    subject: 'Chemistry',
-    class: '8A',
-    teacher: 'Danny Nguyen',
+    subject: 'Hóa học',
+    class: '4A', // Đã sửa lớp để khớp với dữ liệu lớp
+    teacher: 'Đỗ Thị Lan',
     dueDate: '2025-01-01',
   },
 ];
@@ -719,110 +719,110 @@ export const assignmentsData = [
 export const resultsData = [
   {
     id: 1,
-    subject: 'Math',
+    subject: 'Toán',
     class: '1A',
-    teacher: 'John Doe',
-    student: 'John Doe',
+    teacher: 'Nguyễn Nhật Ánh',
+    student: 'Nguyễn Văn A',
     date: '2025-01-01',
-    type: 'exam',
+    type: 'Kiểm tra', // Hoặc 'Bài thi'
     score: 90,
   },
   {
     id: 2,
-    subject: 'English',
-    class: '2A',
-    teacher: 'John Doe',
-    student: 'John Doe',
+    subject: 'Tiếng Anh',
+    class: '2B',
+    teacher: 'Trần Thu Hà',
+    student: 'Trần Thị B',
     date: '2025-01-01',
-    type: 'exam',
-    score: 90,
+    type: 'Kiểm tra',
+    score: 85,
   },
   {
     id: 3,
-    subject: 'Science',
-    class: '3A',
-    teacher: 'John Doe',
-    student: 'John Doe',
+    subject: 'Khoa học',
+    class: '3C',
+    teacher: 'Lê Minh Đức',
+    student: 'Lê Văn C',
     date: '2025-01-01',
-    type: 'exam',
-    score: 90,
+    type: 'Kiểm tra',
+    score: 95,
   },
   {
     id: 4,
-    subject: 'Social Studies',
+    subject: 'Lịch sử',
     class: '1B',
-    teacher: 'John Doe',
-    student: 'John Doe',
+    teacher: 'Phạm Ngọc Diệp',
+    student: 'Phạm Thị D',
     date: '2025-01-01',
-    type: 'exam',
-    score: 90,
+    type: 'Kiểm tra',
+    score: 80,
   },
   {
     id: 5,
-    subject: 'Art',
-    class: '4A',
-    teacher: 'John Doe',
-    student: 'John Doe',
+    subject: 'Mỹ thuật',
+    class: '4B',
+    teacher: 'Hoàng Sơn Tùng',
+    student: 'Hoàng Văn E',
     date: '2025-01-01',
-    type: 'exam',
-    score: 90,
+    type: 'Kiểm tra',
+    score: 92,
   },
   {
     id: 6,
-    subject: 'Music',
+    subject: 'Âm nhạc',
     class: '5A',
-    teacher: 'John Doe',
-    student: 'John Doe',
+    teacher: 'Nguyễn Thị Thúy',
+    student: 'Vũ Thị F',
     date: '2025-01-01',
-    type: 'exam',
-    score: 90,
+    type: 'Kiểm tra',
+    score: 88,
   },
   {
     id: 7,
-    subject: 'History',
+    subject: 'Lịch sử',
     class: '6A',
-    teacher: 'John Doe',
-    student: 'John Doe',
+    teacher: 'Trần Văn Mạnh',
+    student: 'Nguyễn Văn G',
     date: '2025-01-01',
-    type: 'exam',
-    score: 90,
+    type: 'Kiểm tra',
+    score: 75,
   },
   {
     id: 8,
-    subject: 'Geography',
+    subject: 'Địa lý',
     class: '6B',
-    teacher: 'John Doe',
-    student: 'John Doe',
+    teacher: 'Lê Hồng Nhung',
+    student: 'Trần Thị H',
     date: '2025-01-01',
-    type: 'exam',
-    score: 90,
+    type: 'Kiểm tra',
+    score: 82,
   },
   {
     id: 9,
-    subject: 'Physics',
-    class: '7A',
-    teacher: 'John Doe',
-    student: 'John Doe',
+    subject: 'Vật lý',
+    class: '6C',
+    teacher: 'Vũ Xuân Trường',
+    student: 'Lê Văn I',
     date: '2025-01-01',
-    type: 'exam',
-    score: 90,
+    type: 'Kiểm tra',
+    score: 98,
   },
   {
     id: 10,
-    subject: 'Chemistry',
-    class: '8A',
-    teacher: 'John Doe',
-    student: 'John Doe',
+    subject: 'Hóa học',
+    class: '4A',
+    teacher: 'Đỗ Thị Lan',
+    student: 'Phạm Văn K',
     date: '2025-01-01',
-    type: 'exam',
-    score: 90,
+    type: 'Kiểm tra',
+    score: 89,
   },
 ];
 
 export const eventsData = [
   {
     id: 1,
-    title: 'Lake Trip',
+    title: 'Tham quan Hồ Gươm', // Lake Trip
     class: '1A',
     date: '2025-01-01',
     startTime: '10:00',
@@ -830,31 +830,31 @@ export const eventsData = [
   },
   {
     id: 2,
-    title: 'Picnic',
-    class: '2A',
+    title: 'Dã ngoại công viên', // Picnic
+    class: '2B',
     date: '2025-01-01',
     startTime: '10:00',
     endTime: '11:00',
   },
   {
     id: 3,
-    title: 'Beach Trip',
-    class: '3A',
+    title: 'Du lịch biển Nha Trang', // Beach Trip
+    class: '3C',
     date: '2025-01-01',
     startTime: '10:00',
     endTime: '11:00',
   },
   {
     id: 4,
-    title: 'Museum Trip',
-    class: '4A',
+    title: 'Thăm quan Bảo tàng Lịch sử', // Museum Trip
+    class: '4B',
     date: '2025-01-01',
     startTime: '10:00',
     endTime: '11:00',
   },
   {
     id: 5,
-    title: 'Music Concert',
+    title: 'Hòa nhạc thính phòng', // Music Concert
     class: '5A',
     date: '2025-01-01',
     startTime: '10:00',
@@ -862,7 +862,7 @@ export const eventsData = [
   },
   {
     id: 6,
-    title: 'Magician Show',
+    title: 'Chương trình ảo thuật', // Magician Show
     class: '1B',
     date: '2025-01-01',
     startTime: '10:00',
@@ -870,7 +870,7 @@ export const eventsData = [
   },
   {
     id: 7,
-    title: 'Lake Trip',
+    title: 'Tham quan Lăng Bác', // Lake Trip (Sửa lại cho phù hợp hơn)
     class: '2B',
     date: '2025-01-01',
     startTime: '10:00',
@@ -878,7 +878,7 @@ export const eventsData = [
   },
   {
     id: 8,
-    title: 'Cycling Race',
+    title: 'Cuộc đua xe đạp', // Cycling Race
     class: '3B',
     date: '2025-01-01',
     startTime: '10:00',
@@ -886,15 +886,15 @@ export const eventsData = [
   },
   {
     id: 9,
-    title: 'Art Exhibition',
-    class: '4B',
+    title: 'Triển lãm tranh', // Art Exhibition
+    class: '4A',
     date: '2025-01-01',
     startTime: '10:00',
     endTime: '11:00',
   },
   {
     id: 10,
-    title: 'Sports Tournament',
+    title: 'Giải đấu thể thao', // Sports Tournament
     class: '5B',
     date: '2025-01-01',
     startTime: '10:00',
@@ -905,82 +905,68 @@ export const eventsData = [
 export const announcementsData = [
   {
     id: 1,
-    title: 'About 4A Math Test',
+    title: 'Thông báo về kỳ thi Toán lớp 4A', // About 4A Math Test
     class: '4A',
     date: '2025-01-01',
   },
   {
     id: 2,
-    title: 'About 3A Math Test',
+    title: 'Thông báo về kỳ thi Toán lớp 3A', // About 3A Math Test
     class: '3A',
     date: '2025-01-01',
   },
   {
     id: 3,
-    title: 'About 3B Math Test',
+    title: 'Thông báo về kỳ thi Toán lớp 3B', // About 3B Math Test
     class: '3B',
     date: '2025-01-01',
   },
   {
     id: 4,
-    title: 'About 6A Math Test',
+    title: 'Thông báo về kỳ thi Toán lớp 6A', // About 6A Math Test
     class: '6A',
     date: '2025-01-01',
   },
   {
     id: 5,
-    title: 'About 8C Math Test',
+    title: 'Thông báo về kỳ thi Toán lớp 8C', // About 8C Math Test
     class: '8C',
     date: '2025-01-01',
   },
   {
     id: 6,
-    title: 'About 2A Math Test',
+    title: 'Thông báo về kỳ thi Toán lớp 2A', // About 2A Math Test
     class: '2A',
     date: '2025-01-01',
   },
   {
     id: 7,
-    title: 'About 4C Math Test',
+    title: 'Thông báo về kỳ thi Toán lớp 4C', // About 4C Math Test
     class: '4C',
     date: '2025-01-01',
   },
   {
     id: 8,
-    title: 'About 4B Math Test',
+    title: 'Thông báo về kỳ thi Toán lớp 4B', // About 4B Math Test
     class: '4B',
     date: '2025-01-01',
   },
   {
     id: 9,
-    title: 'About 3C Math Test',
+    title: 'Thông báo về kỳ thi Toán lớp 3C', // About 3C Math Test
     class: '3C',
     date: '2025-01-01',
   },
   {
     id: 10,
-    title: 'About 1C Math Test',
+    title: 'Thông báo về kỳ thi Toán lớp 1C', // About 1C Math Test
     class: '1C',
     date: '2025-01-01',
   },
 ];
 
 // YOU SHOULD CHANGE THE DATES OF THE EVENTS TO THE CURRENT DATE TO SEE THE EVENTS ON THE CALENDAR
-interface ExtendedEvent {
-  id?: string | number;
-  title: string;
-  allDay?: boolean;
-  start: Date;
-  end: Date;
-  resource?: string;
-  data?: {
-    subject?: string;
-    class?: string;
-    room?: string;
-    teacher?: string;
-    type?: string;
-  };
-}
+
 export const calendarEvents: ExtendedEvent[] = [
   {
     id: 1,
@@ -1043,81 +1029,39 @@ export const calendarEvents: ExtendedEvent[] = [
 export const attendanceData = [
   {
     id: 1,
-    name: 'Rahul S',
-
-    attendance: [
-      true,
-      false,
-      true,
-      true,
-      false,
-      false,
-      true,
-      false,
-      true,
-      true,
-      false,
-      true,
-      false,
-      true,
-      true,
-      false,
-      true,
-      false,
-      true,
-      false,
-      true,
-      true,
-      false,
-      false,
-      true,
-      true,
-      false,
-      true,
-      true,
-      false,
-    ],
+    name: 'Đoàn Huy Hoàng',
+    className: 'Class 1',
+    teacher: 'Teacher A',
+    attendance: {
+      '15/02/2025': true,
+      '18/02/2025': true,
+      '20/02/2025': false,
+      '25/02/2025': true,
+    },
   },
   {
     id: 2,
-    name: 'Harry Potter',
-
-    attendance: Array(30).fill(false),
+    name: 'Lê Anh Dũng',
+    className: 'Class 1',
+    teacher: 'Teacher A',
+    attendance: {
+      '10/02/2025': true,
+      '12/02/2025': false,
+      '15/02/2025': true,
+      '28/02/2025': true,
+    },
   },
   {
     id: 3,
-    name: 'Jhon C',
-
-    attendance: Array(30).fill(false),
-  },
-  {
-    id: 4,
-    name: 'Emma Watson',
-
-    attendance: Array(30).fill(false),
-  },
-  {
-    id: 5,
-    name: 'Nguyen Thi Kim Huyen',
-
-    attendance: Array(30).fill(false),
-  },
-  {
-    id: 6,
-    name: 'Mai Minh Tu',
-
-    attendance: Array(30).fill(false),
-  },
-  {
-    id: 7,
-    name: 'Von Gladi',
-
-    attendance: Array(30).fill(false),
-  },
-  {
-    id: 8,
-    name: 'Gremory Alask',
-
-    attendance: Array(30).fill(false),
+    name: 'Mai Minh Tú',
+    className: 'Class 2',
+    teacher: 'Teacher B',
+    attendance: {
+      '05/02/2025': true,
+      '10/02/2025': true,
+      '12/02/2025': false,
+      '22/02/2025': true,
+    },
   },
 ];
+

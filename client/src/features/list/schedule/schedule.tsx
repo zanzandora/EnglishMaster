@@ -5,6 +5,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { calendarEvents } from '@mockData/data';
 import Pagination from '@components/common/Pagination';
 import BigCalendar from '@components/common/calendar/BigCalendar';
+import { ExtendedEvent } from '@interfaces';
 
 const locales = {
   'en-US': import('date-fns/locale/en-US'),
@@ -17,21 +18,6 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales,
 });
-
-interface ExtendedEvent {
-  id: string | number;
-  title: string; // Đảm bảo đây là string
-  start: Date;
-  end: Date;
-  resource: string;
-  data: {
-    subject?: string;
-    class?: string;
-    room?: string;
-    teacher?: string;
-    type?: string; // Để xác định màu sắc
-  };
-}
 
 // *Định nghĩa room resource
 const resourcesRooms = [

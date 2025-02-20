@@ -13,7 +13,8 @@ import AssignmentListPage from '@list/assignments';
 import ResultListPage from '@list/results';
 import ScheduleListPage from '@list/schedule/schedule';
 import AnnouncementListPage from '@list/announcements';
-import AttendanceListPage from '@list/attendance';
+import AttendanceListPage from '@list/attendances';
+import ReportListPage from '@list/reports';
 
 const AdminRoutes = () => {
   return (
@@ -34,6 +35,7 @@ const AdminRoutes = () => {
       <Route path='list/attendance' element={<AttendanceListPage />} />
       <Route path='list/results' element={<ResultListPage />} />
       <Route path='list/schedule' element={<ScheduleListPage />} />
+      <Route path='list/reports' element={<ReportListPage />} />
       <Route path='list/announcements' element={<AnnouncementListPage />} />
       <Route path='*' element={<ErrorPage />} />
     </Routes>

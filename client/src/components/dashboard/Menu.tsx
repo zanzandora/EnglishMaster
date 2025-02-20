@@ -76,9 +76,9 @@ const menuItems = [
         visible: ['admin', 'teacher', 'student', 'parent'],
       },
       {
-        icon: '/message.png',
-        label: 'Messages',
-        href: `${basePath[role]}/list/messages`,
+        icon: '/report.png',
+        label: 'Report',
+        href: `${basePath[role]}/list/reports`,
         visible: ['admin', 'teacher', 'student', 'parent'],
       },
       {
