@@ -1019,7 +1019,21 @@ export const calendarEvents: ExtendedEvent[] = [
     data: {
       subject: 'Toeic',
       class: 'A1',
-      room: 'Phòng 101',
+      room: 'Phòng 102',
+      teacher: 'Nguyen Van Linh',
+      type: 'class', // Thêm type để phân biệt
+    },
+  },
+  {
+    id: 5,
+    title: 'Lớp A1',
+    start: new Date(2025, 2, 7, 13, 0), // Ngày thi
+    end: new Date(2025, 2, 7, 15, 0),
+    resource: 'room103',
+    data: {
+      subject: 'Toeic',
+      class: 'A1',
+      room: 'Phòng 103',
       teacher: 'Nguyen Van Linh',
       type: 'class', // Thêm type để phân biệt
     },

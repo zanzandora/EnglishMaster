@@ -111,6 +111,7 @@ const Schedule: React.FC = () => {
       </div>
       {/* Sử dụng BigCalendar */}
       <BigCalendar
+        events={filteredEvents}
         filteredEvents={filteredEvents}
         resources={resourcesRooms.filter((room) => room.id === selectedRoom)}
         view={view}

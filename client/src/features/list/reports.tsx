@@ -1,60 +1,93 @@
 import { useState } from 'react';
+import DatePicker from 'react-datepicker';
+import Table from '@components/common/table/Table';
+import Pagination from '@components/common/Pagination';
+
+type ReportData = {
+  learning: { id: number; name: string; progress: string; score: string }[];
+  teacher: { id: number; name: string; rating: string; sessions: number }[];
+  course: {
+    id: number;
+    name: string;
+    completion: string;
+    students: number;
+  }[];
+  finance: { id: number; category: string; amount: string }[];
+};
+
+const data: ReportData = {
+  learning: [
+    { id: 1, name: 'Nguyễn Văn A', progress: '80%', score: '85/100' },
+    { id: 2, name: 'Trần Thị B', progress: '60%', score: '70/100' },
+    { id: 3, name: 'Trần Thị B', progress: '60%', score: '70/100' },
+    { id: 4, name: 'Trần Thị B', progress: '60%', score: '70/100' },
+    { id: 5, name: 'Trần Thị B', progress: '60%', score: '70/100' },
+  ],
+  teacher: [
+    { id: 1, name: 'GV. Lê Văn C', rating: '4.8', sessions: 20 },
+    { id: 2, name: 'GV. Phạm Văn D', rating: '4.5', sessions: 18 },
+  ],
+  course: [
+    { id: 1, name: 'Tiếng Anh Cơ Bản', completion: '75%', students: 30 },
+    { id: 2, name: 'Tiếng Anh Giao Tiếp', completion: '85%', students: 25 },
+  ],
+  finance: [
+    { id: 1, category: 'Học phí', amount: '10,000,000 VND' },
+    { id: 2, category: 'Chi phí vận hành', amount: '3,500,000 VND' },
+  ],
+};
 
 const ReportPage = () => {
   const [selectedReport, setSelectedReport] =
     useState<keyof ReportData>('learning');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [dateRange, setDateRange] = useState({ from: '', to: '' });
+
+  const columns = Object.keys(data[selectedReport][0] || {}).map((key) => ({
+    header: key.charAt(0).toUpperCase() + key.slice(1),
+    accessor: key,
+    className: 'p-2 border-b',
+  }));
+
+  const [startDate, setStartDate] = useState(() => {
+    const date = new Date();
+    date.setDate(date.getDate() - 3);
+    return date;
+  });
+  const [endDate, setEndDate] = useState(new Date());
 
   const reports = [
-    { key: 'learning', label: 'Học tập' },
-    { key: 'teacher', label: 'Giảng viên' },
-    { key: 'course', label: 'Khóa học' },
-    { key: 'finance', label: 'Tài chính' },
+    { key: 'learning', label: 'Learning' },
+    { key: 'teacher', label: 'Teacher' },
+    { key: 'course', label: 'Course' },
+    { key: 'finance', label: 'Finance' },
   ];
 
-  type ReportData = {
-    learning: { id: number; name: string; progress: string; score: string }[];
-    teacher: { id: number; name: string; rating: string; sessions: number }[];
-    course: {
-      id: number;
-      name: string;
-      completion: string;
-      students: number;
-    }[];
-    finance: { id: number; category: string; amount: string }[];
-  };
-
-  const data: ReportData = {
-    learning: [
-      { id: 1, name: 'Nguyễn Văn A', progress: '80%', score: '85/100' },
-      { id: 2, name: 'Trần Thị B', progress: '60%', score: '70/100' },
-    ],
-    teacher: [
-      { id: 1, name: 'GV. Lê Văn C', rating: '4.8', sessions: 20 },
-      { id: 2, name: 'GV. Phạm Văn D', rating: '4.5', sessions: 18 },
-    ],
-    course: [
-      { id: 1, name: 'Tiếng Anh Cơ Bản', completion: '75%', students: 30 },
-      { id: 2, name: 'Tiếng Anh Giao Tiếp', completion: '85%', students: 25 },
-    ],
-    finance: [
-      { id: 1, category: 'Học phí', amount: '10,000,000 VND' },
-      { id: 2, category: 'Chi phí vận hành', amount: '3,500,000 VND' },
-    ],
+  const renderRow = (item: unknown) => {
+    const reportItem = item as (typeof data)[typeof selectedReport][0];
+    return (
+      <tr
+        key={reportItem.id}
+        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
+      >
+        {Object.keys(reportItem).map((key) => (
+          <td key={key} className='p-4'>
+            {reportItem[key as keyof typeof reportItem]}
+          </td>
+        ))}
+      </tr>
+    );
   };
 
   return (
-    <div className='p-5'>
+    <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0'>
       {/* Thanh điều hướng báo cáo */}
       <div className='flex gap-4 mb-5'>
         {reports.map((report) => (
           <button
             key={report.key}
-            className={`px-4 py-2 border rounded ${
+            className={`px-4 py-2 rounded flex grow text-center justify-center ${
               selectedReport === report.key
-                ? 'bg-blue-500 text-white'
-                : 'bg-white text-black border-gray-300'
+                ? 'bg-primary-redLight_fade font-bold text-orange-900 shadow-[0_1px_3px_rgba(0,0,0,0.5)] active:shadow-[0_0px_1px_rgba(0,0,0,0.5)] active:scale-[0.995]'
+                : 'bg-calendar-toolBar-btn text-sky-800 font-bold hover:opacity-80 shadow-[0_1px_3px_rgba(0,0,0,0.5)] active:shadow-[0_0px_1px_rgba(0,0,0,0.5)] active:scale-[0.995]'
             }`}
             onClick={() => setSelectedReport(report.key as keyof ReportData)}
           >
@@ -65,50 +98,43 @@ const ReportPage = () => {
 
       {/* Bộ lọc */}
       <div className='flex gap-4 mb-5'>
-        <input
-          type='text'
-          placeholder='Tìm kiếm...'
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className='px-3 py-2 border border-gray-300 rounded w-52'
+        <div className='hidden md:flex items-center gap-2 text-xs rounded-full ring-[1.5px] ring-gray-300 px-2'>
+          <img src='/search.png' alt='' width={14} height={14} />
+          <input
+            type='text'
+            placeholder='Search...'
+            className='w-[200px] p-2 bg-transparent outline-none'
+          />
+        </div>
+        <DatePicker
+          selected={startDate}
+          onChange={(date) => setStartDate(date || new Date())}
+          selectsStart
+          startDate={startDate}
+          endDate={endDate}
+          className={`transition-width duration-300 ease-in-out px-4 py-2 border rounded-full border-primary `}
+          portalId='root'
         />
-        <input
-          type='date'
-          value={dateRange.from}
-          onChange={(e) => setDateRange({ ...dateRange, from: e.target.value })}
-          className='px-3 py-2 border border-gray-300 rounded'
-        />
-        <input
-          type='date'
-          value={dateRange.to}
-          onChange={(e) => setDateRange({ ...dateRange, to: e.target.value })}
-          className='px-3 py-2 border border-gray-300 rounded'
+        <DatePicker
+          selected={endDate}
+          onChange={(date) => setEndDate(date || new Date())}
+          selectsEnd
+          startDate={startDate}
+          endDate={endDate}
+          minDate={startDate}
+          className={`transition-width duration-300 ease-in-out px-4 py-2 border rounded-full border-primary `}
+          portalId='root'
         />
       </div>
 
       {/* Bảng dữ liệu */}
-      <table className='w-full border-collapse border border-gray-300'>
-        <thead>
-          <tr className='bg-gray-100'>
-            {Object.keys(data[selectedReport][0] || {}).map((key) => (
-              <th key={key} className='border border-gray-300 p-2 text-left'>
-                {key.toUpperCase()}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data[selectedReport].map((item) => (
-            <tr key={item.id} className='border border-gray-300'>
-              {Object.values(item).map((val, idx) => (
-                <td key={idx} className='border border-gray-300 p-2'>
-                  {val}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Table
+        columns={columns}
+        data={data[selectedReport]}
+        renderRow={renderRow}
+      />
+      {/* Phân trang */}
+      <Pagination />
     </div>
   );
 };

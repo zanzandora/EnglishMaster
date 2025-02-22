@@ -76,7 +76,6 @@ const CustomEventComponent: React.FC<EventProps<ExtendedEvent>> = ({
 const CustomToolbar: React.FC<
   ToolbarProps<ExtendedEvent, ResourceCalendar>
 > = ({ label, onNavigate, onView, view }) => {
-  const datePickerRef = useRef<any>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [isInputVisible, setIsInputVisible] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -87,7 +86,7 @@ const CustomToolbar: React.FC<
     const handleResize = () => {
       if (containerRef.current) {
         const containerWidth = containerRef.current.offsetWidth;
-        // Nếu chiều rộng < 150px thì ẩn input, chỉ hiện icon
+        // Nếu chiều rộng < 150px thì thực hiện thay đổi
         setIsInputVisible(containerWidth > 820);
       }
     };
@@ -106,14 +105,13 @@ const CustomToolbar: React.FC<
     >
       {/* DatePicker */}
       <DatePicker
-        ref={datePickerRef}
         locale='en-GB'
         selected={memoizedDate}
         onChange={(date) =>
           date && (setSelectedDate(date), onNavigate('DATE', date))
         }
         showMonthDropdown
-        className={`transition-width duration-300 ease-in-out px-4 py-2 border rounded-lg border-primary `}
+        className={`transition-width duration-300 ease-in-out px-4 py-2 border rounded-full border-primary `}
         popperClassName='datepicker-popup'
         portalId='root'
         dateFormat='dd/MM/yyyy'

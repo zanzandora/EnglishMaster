@@ -20,7 +20,7 @@ const FAQ = () => {
 
   return (
     <div className='min-w-12 h-full m-4 rounded-md p-6 bg-white'>
-      <h1 className='text-2xl font-bold mb-4 ml-7'>Câu hỏi thường gặp (FAQ)</h1>
+      <h1 className='text-2xl font-bold mb-4 ml-7'>FAQ</h1>
       <div className='space-y-4'>
         {faqs.map((faq, index) => (
           <div key={index} className='border rounded-lg shadow-sm'>
