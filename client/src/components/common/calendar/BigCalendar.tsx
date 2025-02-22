@@ -1,0 +1,217 @@
+import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { Calendar, View, ToolbarProps, EventProps } from 'react-big-calendar';
+import DatePicker, { registerLocale } from 'react-datepicker';
+import { Tooltip } from 'react-tooltip';
+import { setHours, setMinutes, format } from 'date-fns';
+import { ExtendedEvent, ResourceCalendar } from '@interfaces';
+import { enGB } from 'date-fns/locale/en-GB';
+import 'react-tooltip/dist/react-tooltip.css';
+import 'react-datepicker/dist/react-datepicker.css';
+
+registerLocale('en-GB', enGB);
+
+interface BigCalendarProps {
+  events: ExtendedEvent[];
+  resources: ResourceCalendar[];
+  view: View;
+  setView: (view: View) => void;
+  filteredEvents: ExtendedEvent[];
+  localizer: any;
+}
+
+// Custom Event Component
+const CustomEventComponent: React.FC<EventProps<ExtendedEvent>> = ({
+  event,
+}) => {
+  return (
+    <div
+      className='p-2 rounded-lg shadow-md text-white h-full flex flex-col'
+      style={{
+        backgroundColor: event.data?.type === 'exam' ? '#e74c3c' : '#3498db',
+      }}
+      data-tooltip-id={`event-tooltip-${event.id}`}
+    >
+      {/* Phần hiển thị gốc vẫn giữ nguyên */}
+      <span className='font-bold text-sm'>{event.title}</span>
+      {event.data?.subject && (
+        <span className='text-xs'>📚 {event.data.subject}</span>
+      )}
+      {event.data?.room && (
+        <span className='text-xs'>🏫 {event.data.room}</span>
+      )}
+      {event.data?.teacher && (
+        <span className='text-xs'>👨‍🏫 {event.data.teacher}</span>
+      )}
+      {/* Tooltip */}
+      <Tooltip
+        id={`event-tooltip-${event.id}`}
+        place='top'
+        variant='dark'
+        className='z-50 text-left'
+        render={() => (
+          <div>
+            <strong>{event.title}</strong>
+            <br />
+            {event.data?.subject && (
+              <>
+                📚 {event.data.subject}
+                <br />
+              </>
+            )}
+            {event.data?.room && (
+              <>
+                🏫 {event.data.room}
+                <br />
+              </>
+            )}
+            {event.data?.teacher && <>👨‍🏫 {event.data.teacher}</>}
+          </div>
+        )}
+      />
+    </div>
+  );
+};
+
+// Custom Toolbar Component
+const CustomToolbar: React.FC<
+  ToolbarProps<ExtendedEvent, ResourceCalendar>
+> = ({ label, onNavigate, onView, view }) => {
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [isInputVisible, setIsInputVisible] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const memoizedDate = useMemo(() => selectedDate, [selectedDate]);
+
+  // *Theo dõi chiều rộng của div chứa DatePicker
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRef.current) {
+        const containerWidth = containerRef.current.offsetWidth;
+        // Nếu chiều rộng < 150px thì thực hiện thay đổi
+        setIsInputVisible(containerWidth > 820);
+      }
+    };
+
+    // Gọi lại handleResize khi resize
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      className='flex items-center justify-between  p-2  flex-wrap'
+    >
+      {/* DatePicker */}
+      <DatePicker
+        locale='en-GB'
+        selected={memoizedDate}
+        onChange={(date) =>
+          date && (setSelectedDate(date), onNavigate('DATE', date))
+        }
+        showMonthDropdown
+        className={`transition-width duration-300 ease-in-out px-4 py-2 border rounded-full border-primary `}
+        popperClassName='datepicker-popup'
+        portalId='root'
+        dateFormat='dd/MM/yyyy'
+      />
+
+      {/* Nút điều hướng */}
+      <div className='flex items-center gap-2 mx-4'>
+        <button
+          onClick={() => onNavigate('TODAY')}
+          className='px-4 py-2 rounded-lg bg-calendar-today-btn text-white text-lg font-semibold tracking-wider  shadow-[0_1px_3px_rgba(0,0,0,0.5)] active:shadow-[0_0px_1px_rgba(0,0,0,0.5)] active:scale-[0.995]'
+        >
+          Today
+        </button>
+        <button
+          onClick={() => onNavigate('PREV')}
+          className='px-4 py-2 rounded-lg bg-calendar-toolBar-btn hover:bg-calendar-toolBar-hover shadow-[0_1px_3px_rgba(0,0,0,0.5)] active:shadow-[0_0px_1px_rgba(0,0,0,0.5)] active:scale-[0.995]'
+        >
+          ←
+        </button>
+
+        {/* Hiển thị tiêu đề ngày/tháng/năm */}
+        <span
+          className={`min-w-64  text-center px-6 py-2 rounded-lg bg-calendar-toolBar-label text-white font-semibold hidden xl:inline-block`}
+        >
+          {label}
+        </span>
+
+        <button
+          onClick={() => onNavigate('NEXT')}
+          className='px-4 py-2 rounded-lg bg-calendar-toolBar-btn text-gray-700 hover:bg-calendar-toolBar-hover shadow-[0_1px_3px_rgba(0,0,0,0.5)] active:shadow-[0_0px_1px_rgba(0,0,0,0.5)] active:scale-[0.995]'
+        >
+          →
+        </button>
+      </div>
+
+      {/* Chế độ xem: Day / Week / Month */}
+      <div className='flex gap-2'>
+        {['day', 'week', 'month'].map((mode) => {
+          // Nếu isInputVisible là false và mode là 'day' hoặc 'week' thì return null để không render
+          if (
+            !isInputVisible &&
+            (mode === 'day' || mode === 'month' || mode === 'week')
+          )
+            return null;
+
+          return (
+            <button
+              key={mode}
+              onClick={() => onView(mode as View)}
+              className={`px-4 py-2 rounded-lg ${
+                view === mode
+                  ? 'bg-primary-redLight_fade font-bold text-orange-900 shadow-[0_1px_3px_rgba(0,0,0,0.5)] active:shadow-[0_0px_1px_rgba(0,0,0,0.5)] active:scale-[0.995]'
+                  : 'bg-calendar-toolBar-btn text-sky-800 font-bold hover:opacity-80 shadow-[0_1px_3px_rgba(0,0,0,0.5)] active:shadow-[0_0px_1px_rgba(0,0,0,0.5)] active:scale-[0.995]'
+              }`}
+            >
+              {mode.charAt(0).toUpperCase() + mode.slice(1)}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const BigCalendar: React.FC<BigCalendarProps> = ({
+  events,
+  resources,
+  view,
+  setView,
+  filteredEvents,
+  localizer,
+}) => {
+  return (
+    <Calendar
+      localizer={localizer}
+      events={filteredEvents}
+      startAccessor='start'
+      endAccessor='end'
+      resourceAccessor='resource'
+      resources={resources}
+      resourceIdAccessor='id'
+      resourceTitleAccessor='title'
+      view={view}
+      onView={(newView) => setView(newView)}
+      selectable
+      style={{ height: 'calc(100vh - 100px)' }}
+      timeslots={1}
+      step={30}
+      min={setHours(setMinutes(new Date(), 0), 7)}
+      max={setHours(setMinutes(new Date(), 0), 23)}
+      scrollToTime={setHours(setMinutes(new Date(), 0), 7)}
+      formats={{
+        dayFormat: (date) => format(date, 'EEE (dd/MM)', { locale: enGB }),
+      }}
+      components={{
+        toolbar: CustomToolbar,
+        event: CustomEventComponent,
+      }}
+    />
+  );
+};
+
+export default BigCalendar;

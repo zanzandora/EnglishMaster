@@ -24,7 +24,9 @@
     "paths": {
       "@components/*": ["components/*"],
       "@mockData/*": ["mockData/*"],
-      "@list/*": ["features/list/*"]
+      "@list/*": ["features/list/*"],
+      "@interfaces/*": ["interfaces/*"],
+      "@interfaces": ["interfaces"]
     }
   },
   "include": ["client"]

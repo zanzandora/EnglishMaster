@@ -6,7 +6,7 @@ const UserCard = ({ type }: { type: string }) => {
           2024/25
         </span>
       </div>
-      <h1 className='text-2xl font-semibold my-4'>1,234</h1>
+      <h1 className='text-2xl font-bold my-4'>1,234</h1>
       <h2 className='capitalize text-sm font-medium text-zinc-700'>{type}s</h2>
     </div>
   );
@@ -20,9 +20,7 @@ const RevenueCard = ({ revenue }: { revenue: number }) => {
           This month
         </span>
       </div>
-      <h1 className='text-2xl font-semibold my-4'>
-        ${revenue.toLocaleString()}
-      </h1>
+      <h1 className='text-2xl font-bold my-4'>${revenue.toLocaleString()}</h1>
       <h2 className='capitalize text-sm font-medium text-zinc-700'>Revenue</h2>
     </div>
   );

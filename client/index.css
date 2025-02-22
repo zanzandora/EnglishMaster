@@ -20,7 +20,7 @@
 
 #root {
   height: 100dvh;
-  width: 100dvw;
+  width: 100%;
 }
 
 .custome-react-calender{
@@ -51,6 +51,9 @@
   background-color: #eff4f7;
 }
 
+/* CALENDAR WRAPPER  */
+.calendar-wrapper{
+}
 
 /* *EVENT STYLES */
 
@@ -76,6 +79,7 @@
 }
 .datepicker-popup {
   z-index: 9999 !important;
+
 }
 
 

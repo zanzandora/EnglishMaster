@@ -14,7 +14,7 @@ type Assignment = {
 
 const columns = [
   {
-    header: 'Subject Name',
+    header: 'Course Name',
     accessor: 'name',
   },
   {
@@ -43,7 +43,7 @@ const AssignmentListPage = () => {
     return (
       <tr
         key={assignment.id}
-        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavender_fade'
+        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
         <td className='flex items-center gap-4 p-4'>{assignment.subject}</td>
         <td>{assignment.class}</td>
@@ -51,17 +51,6 @@ const AssignmentListPage = () => {
         <td className='hidden md:table-cell'>{assignment.dueDate}</td>
         <td>
           <div className='flex items-center gap-2'>
-            <Link to={`/list/teachers/${assignment.id}`}>
-              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgViewIcon'>
-                <img
-                  src='/update.png'
-                  alt=''
-                  width={16}
-                  height={16}
-                  className='w-8/12'
-                />
-              </button>
-            </Link>
             <Link to={`/list/teachers/${assignment.id}`}>
               <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgDeleteIcon'>
                 <img

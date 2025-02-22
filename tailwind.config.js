@@ -15,7 +15,9 @@ export default {
         },
         secondary: {
           DEFAULT: 'rgb(0,71,237,.6)',
-          lavender_fade: 'rgba(207,206,255,.35)',
+          blueLight: 'rgb(195,235,250)',
+          lavenderFade: 'rgba(207,206,255,.35)',
+          lavenderLight: 'rgb(254,242,242)',
           male: '#2daae2',
           female: '#e71873',
         },
@@ -35,7 +37,8 @@ export default {
         tables: {
           actions: {
             bgViewIcon: 'rgb(156,222,247)',
-            bgEditIcon: 'rgb(242,242,242)',
+            bgCreateIcon: 'var(--color-primary-redLight_fade)',
+            bgEditIcon: 'rgb(144,238,144)',
             bgDeleteIcon: 'rgb(156,152,255)',
           },
         },

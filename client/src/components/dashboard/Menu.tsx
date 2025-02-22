@@ -8,7 +8,6 @@ const basePath = {
 const role = 'admin';
 const menuItems = [
   {
-    title: 'MENU',
     items: [
       {
         icon: '/home.png',
@@ -30,7 +29,7 @@ const menuItems = [
       },
       {
         icon: '/subject.png',
-        label: 'Subjects',
+        label: 'Courses',
         href: `${basePath[role]}/list/subjects`,
         visible: ['admin'],
       },
@@ -77,9 +76,9 @@ const menuItems = [
         visible: ['admin', 'teacher', 'student', 'parent'],
       },
       {
-        icon: '/message.png',
-        label: 'Messages',
-        href: `${basePath[role]}/list/messages`,
+        icon: '/report.png',
+        label: 'Report',
+        href: `${basePath[role]}/list/reports`,
         visible: ['admin', 'teacher', 'student', 'parent'],
       },
       {
@@ -95,13 +94,8 @@ const menuItems = [
 const Menu = () => {
   return (
     <div className='mt-4 text-sm '>
-      {menuItems.map((menu) => (
-        <MenuList
-          key={menu.title}
-          title={menu.title}
-          items={menu.items}
-          role={role}
-        />
+      {menuItems.map((menu, index) => (
+        <MenuList key={index} items={menu.items} role={role} />
       ))}
     </div>
   );

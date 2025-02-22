@@ -56,7 +56,7 @@ const ResultListPage = () => {
     return (
       <tr
         key={result.id}
-        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavender_fade'
+        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
         <td className='flex items-center gap-4 p-4'>{result.subject}</td>
         <td>{result.student}</td>
@@ -67,7 +67,7 @@ const ResultListPage = () => {
         <td>
           <div className='flex items-center gap-2'>
             <Link to={`/list/teachers/${result.id}`}>
-              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgViewIcon'>
+              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgEditIcon'>
                 <img
                   src='/update.png'
                   alt=''

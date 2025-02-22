@@ -37,7 +37,7 @@ const AnnouncementListPage = () => {
     return (
       <tr
         key={announcement.id}
-        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavender_fade'
+        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
         <td className='flex items-center gap-4 p-4'>{announcement.title}</td>
         <td>{announcement.class}</td>
@@ -45,7 +45,7 @@ const AnnouncementListPage = () => {
         <td>
           <div className='flex items-center gap-2'>
             <Link to={`/list/teachers/${announcement.id}`}>
-              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgViewIcon'>
+              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgEditIcon'>
                 <img
                   src='/update.png'
                   alt=''
