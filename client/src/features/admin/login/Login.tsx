@@ -1,15 +1,19 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react'
 
-import { blueTextBottom, submitForm } from './login/functions';
-import { hideInvalidate, showInvalidate } from './login/validation';
-import { Link, useNavigate } from 'react-router-dom';
+import { blueTextBottom, submitForm } from './login/functions'
+import { hideInvalidate, showInvalidate } from './login/validation'
+import { Link, useNavigate } from 'react-router-dom'
 
 const Login = () => {
-  const [isRegistering, setIsRegistering] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false)
 
-  const [notice, setNotice] = useState('');
+  const [notice, setNotice] = useState('')
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (document.cookie.includes('token=')) navigate('/admin', { replace: true })
+  }, [])
 
   return (
     <>
@@ -251,7 +255,7 @@ const Login = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

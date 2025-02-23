@@ -3,11 +3,15 @@
 import 'dotenv/config'
 import fs from 'node:fs/promises'
 import express from 'express'
-import { ViteDevServer } from 'vite'
+import cookieParser from 'cookie-parser'
+
+import type { ViteDevServer } from 'vite'
+import { authenticateToken } from './routes/middleware'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
 const app = express()
+app.use(cookieParser())
 app.use(express.static('./client/public'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -27,13 +31,18 @@ else {
   app.use('/', (await import('sirv')).default('./dist/client', { extensions: [] }))
 }
 
-app.post(['/login', '/register', '/forgot'], (await import('./routes/login')).router)
-app.use('/student', (await import('./routes/database/student')).router)
-app.use('/teacher', (await import('./routes/database/teacher')).router)
-app.use('/user', (await import('./routes/database/user')).router)
-app.use('/course', (await import('./routes/database/course')).router)
-app.use('/attendance', (await import('./routes/database/attendance')).router)
-app.use('/class', (await import('./routes/database/class')).router)
+app.post(['/login', '/logout', '/register', '/forgot'], (await import('./routes/login')).router)
+app.use('/student', authenticateToken, (await import('./routes/database/student')).router)
+app.use('/teacher', authenticateToken, (await import('./routes/database/teacher')).router)
+app.use('/user', authenticateToken, (await import('./routes/database/user')).router)
+app.use('/course', authenticateToken, (await import('./routes/database/course')).router)
+app.use('/attendance', authenticateToken, (await import('./routes/database/attendance')).router)
+app.use('/class', authenticateToken, (await import('./routes/database/class')).router)
+
+app.use('*all', async (req, res, next) => {
+  if (req.originalUrl.startsWith('/login')) return next()
+  authenticateToken(req, res, next)
+})
 
 app.use('*all', async (req, res) => {
   try {
