@@ -1,0 +1,24 @@
+{
+  "login.title": "Đăng nhập",
+  "login.username": "Tên đăng nhập",
+  "login.password": "Mật khẩu",
+  "login.forgot": "Quên mật khẩu?",
+  "login.submit": "Đăng nhập",
+  "login.error": "Tên đăng nhập hoặc mật khẩu không hợp lệ",
+  "login.registerText": "Chưa có tài khoản?",
+  "login.register": "Đăng ký",
+
+  "register.title": "Đăng ký",
+  "register.fullName": "Họ và tên",
+  "register.email": "Email",
+  "register.address": "Địa chỉ",
+  "register.age": "Tuổi",
+  "register.gender": "Giới tính",
+  "register.gender.select": "Chọn giới tính",
+  "register.gender.male": "Nam",
+  "register.gender.female": "Nữ",
+  "register.phoneNumber": "Số điện thoại",
+  "register.submit": "Đăng ký",
+  "register.loginText": "Đã có tài khoản?",
+  "register.login": "Đăng nhập"
+}

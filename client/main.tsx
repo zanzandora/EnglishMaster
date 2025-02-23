@@ -2,6 +2,7 @@ import { hydrateRoot } from 'react-dom/client'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 import './index.css'
+import './src/i18n'
 
 import ErrorPage from 'features/error/error'
 import DashboardLayout from '@components/dashboard/DashboardLayout'

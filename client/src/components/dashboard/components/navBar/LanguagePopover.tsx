@@ -1,9 +1,12 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 const LanguagePopover = () => {
-  const [open, setOpen] = useState(false);
-  const [language, setLanguage] = useState('English');
-  const popoverRef = useRef(null);
+  const [open, setOpen] = useState(false)
+  const [flag, setFlag] = useState('English')
+  const popoverRef = useRef(null)
+
+  const { i18n } = useTranslation()
 
   // *Đóng popover khi click ra ngoài
   useEffect(() => {
@@ -12,19 +15,20 @@ const LanguagePopover = () => {
         popoverRef.current &&
         !(popoverRef.current as HTMLElement).contains(event.target as Node)
       ) {
-        setOpen(false);
+        setOpen(false)
       }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
+    }
+    document.addEventListener('mousedown', handleClickOutside)
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [popoverRef]);
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [popoverRef])
 
   const handleLanguageChange = (lang: string) => {
-    setLanguage(lang);
-    setOpen(false);
-  };
+    setFlag(lang)
+    i18n.changeLanguage(lang.substring(0, 2).toLowerCase())
+    setOpen(false)
+  }
 
   return (
     <div className='relative' ref={popoverRef}>
@@ -34,11 +38,11 @@ const LanguagePopover = () => {
       >
         <img
           src={
-            language === 'English'
+            flag === 'English'
               ? '/united_kingdom_flag.png'
-              : '/vietnam_flag.png'
+              : '/vietnamese_flag.png'
           }
-          alt={language === 'English' ? 'United Kingdom flag' : 'Vietnam flag'}
+          alt={flag === 'English' ? 'United Kingdom flag' : 'Vietnamese flag'}
           className='rounded-full'
           width={30}
           height={30}
@@ -47,20 +51,20 @@ const LanguagePopover = () => {
 
       {/* Popover Content */}
       {open && (
-        <div className='absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-50'>
+        <div className='absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50'>
           <div className=''>
             <button
-              onClick={() => handleLanguageChange('Vietnam')}
+              onClick={() => handleLanguageChange('Vietnamese')}
               className='w-full flex items-center gap-2 justify-start px-4 py-2 text-sm hover:bg-gray-100'
             >
               <img
-                src='/vietnam_flag.png'
-                alt='Vietnam flag'
+                src='/vietnamese_flag.png'
+                alt='Vietnamese flag'
                 className='rounded-full'
                 width={30}
                 height={30}
               />
-              <span>VietNam</span>
+              <span>Tiếng Việt</span>
             </button>
             <button
               onClick={() => handleLanguageChange('English')}
@@ -79,7 +83,7 @@ const LanguagePopover = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default LanguagePopover;
+export default LanguagePopover
