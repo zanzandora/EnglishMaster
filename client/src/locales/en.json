@@ -1,0 +1,24 @@
+{
+  "login.title": "Login",
+  "login.username": "Username",
+  "login.password": "Password",
+  "login.forgot": "Forgot password?",
+  "login.submit": "Login",
+  "login.error": "Invalid username or password",
+  "login.registerText": "Don't have an account?",
+  "login.register": "Register",
+
+  "register.title": "Register",
+  "register.fullName": "Full Name",
+  "register.email": "Email",
+  "register.address": "Address",
+  "register.age": "Age",
+  "register.gender": "Gender",
+  "register.gender.select": "Select Gender",
+  "register.gender.male": "Male",
+  "register.gender.female": "Female",
+  "register.phoneNumber": "Phone Number",
+  "register.submit": "Register",
+  "register.loginText": "Already have an account?",
+  "register.login": "Login"
+}

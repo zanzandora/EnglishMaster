@@ -1,15 +1,15 @@
-import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useRef, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const AccountPopover = () => {
-  const [open, setOpen] = useState(false);
-  const navigate = useNavigate();
-  const popoverRef = useRef(null);
+  const [open, setOpen] = useState(false)
+  const navigate = useNavigate()
+  const popoverRef = useRef(null)
 
-  const handleLogout = () => {
-    localStorage.removeItem('role');
-    navigate('/login');
-  };
+  const handleLogout = async () => {
+    await fetch('/logout', { method: 'POST' })
+    navigate(0)
+  }
 
   // *Đóng popover khi click ra ngoài
   useEffect(() => {
@@ -18,14 +18,14 @@ const AccountPopover = () => {
         popoverRef.current &&
         !(popoverRef.current as HTMLElement).contains(event.target as Node)
       ) {
-        setOpen(false);
+        setOpen(false)
       }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
+    }
+    document.addEventListener('mousedown', handleClickOutside)
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [popoverRef]);
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [popoverRef])
 
   return (
     <div className='relative' ref={popoverRef}>
@@ -75,7 +75,7 @@ const AccountPopover = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default AccountPopover;
+export default AccountPopover

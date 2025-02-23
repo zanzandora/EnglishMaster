@@ -1,10 +1,39 @@
 import { Router } from 'express'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 
 import { Attendances } from '../../database/entity'
 import { db } from '../../database/driver'
 
 const expressRouter = Router()
+
+expressRouter.get('/', async (req, res) => {
+  const classID = req.body.classID
+  const studentID = req.body.studentID
+
+  let missingFields: string[] = []
+  if (!classID) missingFields.push('classID')
+  if (!studentID) missingFields.push('studentID')
+  if (missingFields.length > 0) {
+    res.status(400).send(`Missing fields: ${missingFields.join(', ')}`)
+    return
+  }
+
+  try {
+    let selectedAttendances = await db.select().from(Attendances).where(and(eq(Attendances.classID, classID), eq(Attendances.studentID, studentID)))
+
+    if (selectedAttendances.length === 0) {
+      res.status(404).send(`Attendance with "${classID}" and student "${studentID}" not found`)
+      return
+    }
+
+    res.send({
+      ...selectedAttendances[0]
+    })
+  }
+  catch (err) {
+    res.status(500).send(err.toString())
+  }
+})
 
 expressRouter.post('/add', async (req, res) => {
   const classID = req.body.classID
