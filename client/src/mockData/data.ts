@@ -724,7 +724,7 @@ export const resultsData = [
     teacher: 'Nguyễn Nhật Ánh',
     student: 'Nguyễn Văn A',
     date: '2025-01-01',
-    type: 'Kiểm tra', // Hoặc 'Bài thi'
+    type: 'Kiểmexam', // Hoặc 'Bài thi'
     score: 90,
   },
   {
@@ -734,7 +734,7 @@ export const resultsData = [
     teacher: 'Trần Thu Hà',
     student: 'Trần Thị B',
     date: '2025-01-01',
-    type: 'Kiểm tra',
+    type: 'exam',
     score: 85,
   },
   {
@@ -744,7 +744,7 @@ export const resultsData = [
     teacher: 'Lê Minh Đức',
     student: 'Lê Văn C',
     date: '2025-01-01',
-    type: 'Kiểm tra',
+    type: 'exam',
     score: 95,
   },
   {
@@ -754,7 +754,7 @@ export const resultsData = [
     teacher: 'Phạm Ngọc Diệp',
     student: 'Phạm Thị D',
     date: '2025-01-01',
-    type: 'Kiểm tra',
+    type: 'exam',
     score: 80,
   },
   {
@@ -764,7 +764,7 @@ export const resultsData = [
     teacher: 'Hoàng Sơn Tùng',
     student: 'Hoàng Văn E',
     date: '2025-01-01',
-    type: 'Kiểm tra',
+    type: 'exam',
     score: 92,
   },
   {
@@ -774,7 +774,7 @@ export const resultsData = [
     teacher: 'Nguyễn Thị Thúy',
     student: 'Vũ Thị F',
     date: '2025-01-01',
-    type: 'Kiểm tra',
+    type: 'exam',
     score: 88,
   },
   {
@@ -784,7 +784,7 @@ export const resultsData = [
     teacher: 'Trần Văn Mạnh',
     student: 'Nguyễn Văn G',
     date: '2025-01-01',
-    type: 'Kiểm tra',
+    type: 'exam',
     score: 75,
   },
   {
@@ -794,7 +794,7 @@ export const resultsData = [
     teacher: 'Lê Hồng Nhung',
     student: 'Trần Thị H',
     date: '2025-01-01',
-    type: 'Kiểm tra',
+    type: 'exam',
     score: 82,
   },
   {
@@ -804,7 +804,7 @@ export const resultsData = [
     teacher: 'Vũ Xuân Trường',
     student: 'Lê Văn I',
     date: '2025-01-01',
-    type: 'Kiểm tra',
+    type: 'exam',
     score: 98,
   },
   {
@@ -814,7 +814,7 @@ export const resultsData = [
     teacher: 'Đỗ Thị Lan',
     student: 'Phạm Văn K',
     date: '2025-01-01',
-    type: 'Kiểm tra',
+    type: 'exam',
     score: 89,
   },
 ];

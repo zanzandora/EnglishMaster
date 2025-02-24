@@ -58,7 +58,7 @@ expressRouter.post('/register', async (req, res) => {
 
   const user = (await db.select().from(Users).where(or(eq(Users.username, username), eq(Users.email, email)))).at(0)
   if (!user) {
-    let insertedUser = await db.insert(Users).values({
+    const insertedUser = await db.insert(Users).values({
       username,
       password: await bcrypt.hash(password, +process.env.SALT_ROUND!),
       email,

@@ -9,7 +9,7 @@ const expressRouter = Router()
 expressRouter.get('/', async (req, res) => {
   const username = req.body.username
 
-  let missingFields: string[] = []
+  const missingFields: string[] = []
   if (!username) missingFields.push('username')
   if (missingFields.length > 0) {
     res.status(400).send(`Missing fields: ${missingFields.join(', ')}`)
@@ -17,7 +17,7 @@ expressRouter.get('/', async (req, res) => {
   }
 
   try {
-    let selectedUsers = await db.select().from(Users).where(eq(Users.username, username))
+    const selectedUsers = await db.select().from(Users).where(eq(Users.username, username))
 
     if (selectedUsers.length === 0) {
       res.status(404).send(`User "${username}" not found`)
@@ -43,7 +43,7 @@ expressRouter.post('/add', async (req, res) => {
   const phoneNumber = req.body.phoneNumber
   const address = req.body.address
 
-  let missingFields: string[] = []
+  const missingFields: string[] = []
   if (!username) missingFields.push('username')
   if (!password) missingFields.push('password')
   if (!email) missingFields.push('email')
@@ -93,7 +93,7 @@ expressRouter.post('/edit', async (req, res) => {
   const phoneNumber = req.body.phoneNumber
   const address = req.body.address
 
-  let set1 = {}
+  const set1 = {}
   if (email) set1['email'] = email
   if (name) set1['name'] = name
   if (age) set1['age'] = age

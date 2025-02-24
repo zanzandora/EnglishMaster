@@ -4,6 +4,7 @@ import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
 import { role, teachersData } from '@mockData/data';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 type Teacher = {
   id: number;
@@ -17,43 +18,44 @@ type Teacher = {
   address: string;
 };
 
-const columns = [
+const columns = (t: any) => [
   {
-    header: 'Info',
+    header: t('table.teachers.header.info'),
     accessor: 'info',
   },
   {
-    header: 'Teacher ID',
+    header: t('table.teachers.header.teacherId'),
     accessor: 'teacherId',
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Subjects',
+    header: t('table.teachers.header.subjects'),
     accessor: 'subjects',
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Classes',
+    header: t('table.teachers.header.classes'),
     accessor: 'classes',
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Phone',
+    header: t('table.teachers.header.phone'),
     accessor: 'phone',
     className: 'hidden lg:table-cell',
   },
   {
-    header: 'Address',
+    header: t('table.teachers.header.address'),
     accessor: 'address',
     className: 'hidden lg:table-cell',
   },
   {
-    header: 'Actions',
+    header: t('table.teachers.header.actions'),
     accessor: 'action',
   },
 ];
 
 const TeacherListPage = () => {
+  const { t } = useTranslation();
   const renderRow = (item: unknown) => {
     const teacher = item as Teacher;
     return (
@@ -110,7 +112,9 @@ const TeacherListPage = () => {
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0'>
       {/* TOP */}
       <div className='flex teachers-center justify-between'>
-        <h1 className='hidden md:block text-lg font-semibold'>Teachers</h1>
+        <h1 className='hidden md:block text-lg font-semibold'>
+          {t('table.teachers.title')}
+        </h1>
         <div className='flex flex-col md:flex-row teachers-center gap-4 w-full md:w-auto'>
           <TableSearch />
           <div className='flex teachers-center gap-4 self-end'>
@@ -125,7 +129,7 @@ const TeacherListPage = () => {
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={teachersData} />
+      <Table columns={columns(t)} renderRow={renderRow} data={teachersData} />
       {/* PAGINATION */}
       <Pagination />
     </div>

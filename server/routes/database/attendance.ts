@@ -10,7 +10,7 @@ expressRouter.get('/', async (req, res) => {
   const classID = req.body.classID
   const studentID = req.body.studentID
 
-  let missingFields: string[] = []
+  const missingFields: string[] = []
   if (!classID) missingFields.push('classID')
   if (!studentID) missingFields.push('studentID')
   if (missingFields.length > 0) {
@@ -19,7 +19,7 @@ expressRouter.get('/', async (req, res) => {
   }
 
   try {
-    let selectedAttendances = await db.select().from(Attendances).where(and(eq(Attendances.classID, classID), eq(Attendances.studentID, studentID)))
+    const selectedAttendances = await db.select().from(Attendances).where(and(eq(Attendances.classID, classID), eq(Attendances.studentID, studentID)))
 
     if (selectedAttendances.length === 0) {
       res.status(404).send(`Attendance with "${classID}" and student "${studentID}" not found`)
@@ -41,7 +41,7 @@ expressRouter.post('/add', async (req, res) => {
   const date = req.body.date
   const status = req.body.status
 
-  let missingFields: string[] = []
+  const missingFields: string[] = []
   if (!classID) missingFields.push('classID')
   if (!studentID) missingFields.push('studentID')
   if (!date) missingFields.push('date')
@@ -81,7 +81,7 @@ expressRouter.post('/edit', async (req, res) => {
   const date = req.body.date
   const status = req.body.status
 
-  let set1 = {}
+  const set1 = {}
   if (classID) set1['classID'] = classID
   if (studentID) set1['studentID'] = studentID
   if (date) set1['date'] = date

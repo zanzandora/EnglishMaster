@@ -9,7 +9,7 @@ const expressRouter = Router()
 expressRouter.get('/', async (req, res) => {
   const username = req.body.username
 
-  let missingFields: string[] = []
+  const missingFields: string[] = []
   if (!username) missingFields.push('username')
   if (missingFields.length > 0) {
     res.status(400).send(`Missing fields: ${missingFields.join(', ')}`)
@@ -17,14 +17,14 @@ expressRouter.get('/', async (req, res) => {
   }
 
   try {
-    let selectedUsers = await db.select().from(Users).where(eq(Users.username, username))
+    const selectedUsers = await db.select().from(Users).where(eq(Users.username, username))
 
     if (selectedUsers.length === 0) {
       res.status(404).send(`User "${username}" not found`)
       return
     }
 
-    let selectedTeachers = await db.select().from(Teachers).where((eq(Teachers.userID, selectedUsers[0].id)))
+    const selectedTeachers = await db.select().from(Teachers).where((eq(Teachers.userID, selectedUsers[0].id)))
 
     if (selectedTeachers.length === 0) {
       res.status(404).send(`Teacher "${username}" not found`)
@@ -53,7 +53,7 @@ expressRouter.post('/add', async (req, res) => {
   const specialization = req.body.specialization
   const experience = req.body.experience
 
-  let missingFields: string[] = []
+  const missingFields: string[] = []
   if (!username) missingFields.push('username')
   if (!password) missingFields.push('password')
   if (!email) missingFields.push('email')
@@ -71,7 +71,7 @@ expressRouter.post('/add', async (req, res) => {
   }
 
   try {
-    let insertedUser = await db.insert(Users).values({
+    const insertedUser = await db.insert(Users).values({
       username,
       password,
       email,
@@ -109,7 +109,7 @@ expressRouter.post('/edit', async (req, res) => {
   const specialization = req.body.specialization
   const experience = req.body.experience
 
-  let set1 = {}
+  const set1 = {}
   if (email) set1['email'] = email
   if (name) set1['name'] = name
   if (age) set1['age'] = age
@@ -117,7 +117,7 @@ expressRouter.post('/edit', async (req, res) => {
   if (phoneNumber) set1['phoneNumber'] = phoneNumber
   if (address) set1['address'] = address
 
-  let set2 = {}
+  const set2 = {}
   if (specialization) set2['specialization'] = specialization
   if (experience) set2['experience'] = experience
 

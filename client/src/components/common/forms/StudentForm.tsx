@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import InputField from '../InputField';
+import { useTranslation } from 'react-i18next';
 
 // Tạo schema bằng Zod
 const StudentSchema = z.object({
@@ -15,7 +16,6 @@ const StudentSchema = z.object({
   lastName: z.string().min(1, 'Last name is required'),
   phone: z.string().min(1, 'Phone is required'),
   address: z.string().min(1, 'Address is required'),
-  bloodType: z.string().min(1, 'Blood Type is required'),
   birthday: z.string().min(1, 'Birthday is required'),
   sex: z.enum(['male', 'female'], { message: 'Sex is required!' }),
 });
@@ -30,6 +30,7 @@ const StudentForm = ({
   type: 'create' | 'update';
   data?: any;
 }) => {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -61,79 +62,80 @@ const StudentForm = ({
         {type === 'create' ? 'Create a new student' : 'Update student'}
       </h1>
       <span className='text-xs text-gray-400 font-medium'>
-        Authentication Information
+        {t('form.sections.authenticationInformation')}
       </span>
-      <div className='flex justify-between flex-wrap gap-4'>
+      <div className='flex flex-wrap gap-4'>
+        <div className='flex justify-between items-center flex-1 gap-8'>
+          <InputField
+            label={t('form.teacher.username')}
+            name='username'
+            register={register}
+            error={errors.username}
+            className='flex-1 '
+          />
+          <InputField
+            label={t('form.teacher.password')}
+            name='password'
+            type='password'
+            register={register}
+            error={errors.password}
+            className='flex-1'
+          />
+        </div>
         <InputField
-          label='Username'
-          name='username'
-          register={register}
-          error={errors.username}
-        />
-        <InputField
-          label='Email'
+          label={t('form.teacher.email')}
           name='email'
           register={register}
           error={errors.email}
-        />
-        <InputField
-          label='Password'
-          name='password'
-          type='password'
-          register={register}
-          error={errors.password}
+          className='min-w-full'
         />
       </div>
       <span className='text-xs text-gray-400 font-medium'>
-        Personal Information
+        {t('form.sections.personalInformation')}
       </span>
       <div className='flex justify-between flex-wrap gap-4'>
         <InputField
-          label='First Name'
+          label={t('form.teacher.firstName')}
           name='firstName'
           register={register}
           error={errors.firstName}
         />
         <InputField
-          label='Last Name'
+          label={t('form.teacher.lastName')}
           name='lastName'
           register={register}
           error={errors.lastName}
         />
         <InputField
-          label='Phone'
+          label={t('form.teacher.phone')}
           name='phone'
           register={register}
           error={errors.phone}
         />
         <InputField
-          label='Address'
+          label={t('form.teacher.address')}
           name='address'
           register={register}
           error={errors.address}
         />
         <InputField
-          label='Blood Type'
-          name='bloodType'
-          register={register}
-          error={errors.bloodType}
-        />
-        <InputField
-          label='Birthday'
+          label={t('form.teacher.birthday')}
           name='birthday'
           type='date'
           register={register}
           error={errors.birthday}
         />
         <div className='flex flex-col gap-2 w-full md:w-1/4'>
-          <label className='text-xs text-gray-500'>Sex</label>
+          <label className='text-xs text-gray-500'>
+            {t('form.teacher.sex')}
+          </label>
           <select
             className='ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full'
             {...register('sex')}
           >
-            <option value=''>Select</option>
-            <option value='male'>Male</option>
-            <option value='female'>Female</option>
+            <option value=''>{t('form.placeholders.select')}</option>
+            <option value='male'>{t('form.options.male')}</option>
+            <option value='female'>{t('form.options.female')}</option>
           </select>
           {errors.sex && (
             <p className='text-xs text-red-400'>{errors.sex.message}</p>
@@ -141,7 +143,9 @@ const StudentForm = ({
         </div>
       </div>
       <button className='bg-blue-400 text-white p-2 rounded-md'>
-        {type === 'create' ? 'Create' : 'Update'}
+        {type === 'create'
+          ? t('form.actions.create')
+          : t('form.actions.update')}
       </button>
     </form>
   );

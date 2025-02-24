@@ -3,6 +3,7 @@ import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
 import { role, classesData } from '@mockData/data';
 import FormModal from '@components/common/FormModal';
+import { useTranslation } from 'react-i18next';
 
 type Class = {
   id: number;
@@ -12,33 +13,34 @@ type Class = {
   supervisor: string;
 };
 
-const columns = [
+const columns = (t: any) => [
   {
-    header: 'Class Name',
+    header: t('table.classes.header.name'),
     accessor: 'name',
   },
   {
-    header: 'Capacity',
+    header: t('table.classes.header.capacity'),
     accessor: 'capacity',
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Grade',
+    header: t('table.classes.header.grade'),
     accessor: 'grade',
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Supervisor',
+    header: t('table.classes.header.supervisor'),
     accessor: 'supervisor',
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Actions',
+    header: t('table.classes.header.actions'),
     accessor: 'action',
   },
 ];
 
 const ClassListPage = () => {
+  const { t } = useTranslation();
   const renderRow = (item: unknown) => {
     const classes = item as Class;
     return (
@@ -68,7 +70,9 @@ const ClassListPage = () => {
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0'>
       {/* TOP */}
       <div className='flex items-center justify-between'>
-        <h1 className='hidden md:block text-lg font-semibold'>Classes</h1>
+        <h1 className='hidden md:block text-lg font-semibold'>
+          {t('table.classes.title')}
+        </h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
           <TableSearch />
           <div className='flex items-center gap-4 self-end'>
@@ -83,7 +87,7 @@ const ClassListPage = () => {
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={classesData} />
+      <Table columns={columns(t)} renderRow={renderRow} data={classesData} />
       {/* PAGINATION */}
       <Pagination />
     </div>

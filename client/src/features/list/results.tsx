@@ -3,6 +3,7 @@ import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
 import { resultsData } from '@mockData/data';
+import { useTranslation } from 'react-i18next';
 
 type Result = {
   id: number;
@@ -15,42 +16,43 @@ type Result = {
   score: number;
 };
 
-const columns = [
+const columns = (t: any) => [
   {
-    header: 'Subject Name',
+    header: t('table.results.header.name'),
     accessor: 'name',
   },
   {
-    header: 'Student',
+    header: t('table.results.header.student'),
     accessor: 'student',
   },
   {
-    header: 'Score',
+    header: t('table.results.header.score'),
     accessor: 'score',
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Teacher',
+    header: t('table.results.header.teacher'),
     accessor: 'teacher',
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Class',
+    header: t('table.results.header.class'),
     accessor: 'class',
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Date',
+    header: t('table.results.header.date'),
     accessor: 'date',
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Actions',
+    header: t('table.results.header.actions'),
     accessor: 'action',
   },
 ];
 
 const ResultListPage = () => {
+  const { t } = useTranslation();
   const renderRow = (item: unknown) => {
     const result = item as Result;
     return (
@@ -98,7 +100,9 @@ const ResultListPage = () => {
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0'>
       {/* TOP */}
       <div className='flex items-center justify-between'>
-        <h1 className='hidden md:block text-lg font-semibold'>Classes</h1>
+        <h1 className='hidden md:block text-lg font-semibold'>
+          {t('table.results.title')}
+        </h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
           <TableSearch />
           <div className='flex items-center gap-4 self-end'>
@@ -116,7 +120,7 @@ const ResultListPage = () => {
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={resultsData} />
+      <Table columns={columns(t)} renderRow={renderRow} data={resultsData} />
       {/* PAGINATION */}
       <Pagination />
     </div>

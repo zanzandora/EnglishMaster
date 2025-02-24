@@ -1,4 +1,5 @@
 import { useState, lazy, Suspense } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // Lazy load các form
 const TeacherForm = lazy(() => import('./forms/TeacherForm'));
@@ -39,6 +40,7 @@ const FormModal = ({
   data?: any;
   id?: number;
 }) => {
+  const { t } = useTranslation();
   const size = type === 'create' ? 'w-8 h-8' : 'w-7 h-7';
   const bgColor =
     type === 'create'
@@ -53,10 +55,10 @@ const FormModal = ({
     return type === 'delete' && id ? (
       <form className='p-4 flex flex-col gap-4'>
         <span className='text-center font-medium'>
-          All data will be lost. Are you sure you want to delete this {table}?
+          {t('form.actions.message')} {t(`form.table.${table}`)}?
         </span>
         <button className='bg-primary text-white py-2 px-4 rounded-md border-none w-max self-center'>
-          Delete
+          {t('form.actions.delete')}
         </button>
       </form>
     ) : type === 'create' || type === 'update' ? (

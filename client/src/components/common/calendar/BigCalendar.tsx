@@ -5,10 +5,13 @@ import { Tooltip } from 'react-tooltip';
 import { setHours, setMinutes, format } from 'date-fns';
 import { ExtendedEvent, ResourceCalendar } from '@interfaces';
 import { enGB } from 'date-fns/locale/en-GB';
+import { vi } from 'date-fns/locale/vi';
+import { useTranslation } from 'react-i18next';
 import 'react-tooltip/dist/react-tooltip.css';
 import 'react-datepicker/dist/react-datepicker.css';
 
 registerLocale('en-GB', enGB);
+registerLocale('vi', vi);
 
 interface BigCalendarProps {
   events: ExtendedEvent[];
@@ -23,6 +26,7 @@ interface BigCalendarProps {
 const CustomEventComponent: React.FC<EventProps<ExtendedEvent>> = ({
   event,
 }) => {
+  const { t } = useTranslation();
   return (
     <div
       className='p-2 rounded-lg shadow-md text-white h-full flex flex-col'
@@ -76,6 +80,7 @@ const CustomEventComponent: React.FC<EventProps<ExtendedEvent>> = ({
 const CustomToolbar: React.FC<
   ToolbarProps<ExtendedEvent, ResourceCalendar>
 > = ({ label, onNavigate, onView, view }) => {
+  const { t } = useTranslation();
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [isInputVisible, setIsInputVisible] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -105,7 +110,7 @@ const CustomToolbar: React.FC<
     >
       {/* DatePicker */}
       <DatePicker
-        locale='en-GB'
+        locale={t('calendar.locale')}
         selected={memoizedDate}
         onChange={(date) =>
           date && (setSelectedDate(date), onNavigate('DATE', date))
@@ -123,7 +128,7 @@ const CustomToolbar: React.FC<
           onClick={() => onNavigate('TODAY')}
           className='px-4 py-2 rounded-lg bg-calendar-today-btn text-white text-lg font-semibold tracking-wider  shadow-[0_1px_3px_rgba(0,0,0,0.5)] active:shadow-[0_0px_1px_rgba(0,0,0,0.5)] active:scale-[0.995]'
         >
-          Today
+          {t('calendar.today')}
         </button>
         <button
           onClick={() => onNavigate('PREV')}
@@ -167,7 +172,7 @@ const CustomToolbar: React.FC<
                   : 'bg-calendar-toolBar-btn text-sky-800 font-bold hover:opacity-80 shadow-[0_1px_3px_rgba(0,0,0,0.5)] active:shadow-[0_0px_1px_rgba(0,0,0,0.5)] active:scale-[0.995]'
               }`}
             >
-              {mode.charAt(0).toUpperCase() + mode.slice(1)}
+              {t(`calendar.${mode}`)}
             </button>
           );
         })}
@@ -184,6 +189,8 @@ const BigCalendar: React.FC<BigCalendarProps> = ({
   filteredEvents,
   localizer,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <Calendar
       localizer={localizer}
@@ -204,7 +211,28 @@ const BigCalendar: React.FC<BigCalendarProps> = ({
       max={setHours(setMinutes(new Date(), 0), 23)}
       scrollToTime={setHours(setMinutes(new Date(), 0), 7)}
       formats={{
-        dayFormat: (date) => format(date, 'EEE (dd/MM)', { locale: enGB }),
+        dayFormat: (date) =>
+          format(date, 'EEE (dd/MM)', {
+            locale: t('calendar.locale') === 'en-GB' ? enGB : vi,
+          }),
+        weekdayFormat: (date) =>
+          format(date, 'EEE (dd/MM)', {
+            locale: t('calendar.locale') === 'en-GB' ? enGB : vi,
+          }),
+        monthHeaderFormat: (date) =>
+          format(date, 'MM / yyyy', {
+            locale: t('calendar.locale') === 'en-GB' ? enGB : vi,
+          }),
+        dayRangeHeaderFormat: ({ start, end }) =>
+          `${format(start, 'dd/MM/yyyy', {
+            locale: t('calendar.locale') === 'en-GB' ? enGB : vi,
+          })} - ${format(end, 'dd/MM/yyyy', {
+            locale: t('calendar.locale') === 'en-GB' ? enGB : vi,
+          })}`,
+        dayHeaderFormat: (date) =>
+          format(date, 'EEE (dd/MM)', {
+            locale: t('calendar.locale') === 'en-GB' ? enGB : vi,
+          }),
       }}
       components={{
         toolbar: CustomToolbar,

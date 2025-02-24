@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
+import { useTranslation } from 'react-i18next';
 import 'react-calendar/dist/Calendar.css';
 
 type ValuePiece = Date | null;
@@ -29,6 +30,7 @@ const events = [
 ];
 
 const EventCalendar = () => {
+  const { t } = useTranslation();
   const [date, setDate] = useState<Value>(new Date());
   const [isClient, setIsClient] = useState(false);
 
@@ -44,11 +46,13 @@ const EventCalendar = () => {
       <Calendar
         onChange={setDate}
         value={date}
-        locale='en-US'
+        locale={t('calendar.locale')}
         className={'custome-react-calender'}
       />
       <div className='flex items-center justify-between'>
-        <h1 className='text-xl font-semibold my-4'>Events</h1>
+        <h1 className='text-xl font-semibold my-4 capitalize'>
+          {t('calendar.events')}
+        </h1>
         <img src='/moreDark.png' alt='' width={20} height={20} />
       </div>
       <div className='flex flex-col gap-4'>

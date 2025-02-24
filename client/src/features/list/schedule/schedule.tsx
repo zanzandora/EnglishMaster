@@ -6,6 +6,7 @@ import { calendarEvents } from '@mockData/data';
 import Pagination from '@components/common/Pagination';
 import BigCalendar from '@components/common/calendar/BigCalendar';
 import { ExtendedEvent } from '@interfaces';
+import { useTranslation } from 'react-i18next';
 
 const locales = {
   'en-US': import('date-fns/locale/en-US'),
@@ -38,6 +39,7 @@ const normalizeEvent = (event: any): ExtendedEvent => {
 };
 
 const Schedule: React.FC = () => {
+  const { t } = useTranslation();
   const [view, setView] = useState<View>('week');
   const [events, setEvents] = useState<Event[]>(calendarEvents);
   const [selectedClass, setSelectedClass] = useState<string>('all');
@@ -92,7 +94,9 @@ const Schedule: React.FC = () => {
           >
             {classOptions.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {option.value === 'all'
+                  ? t('filters.classes.all')
+                  : option.label}
               </option>
             ))}
           </select>

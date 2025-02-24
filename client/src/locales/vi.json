@@ -1,24 +1,285 @@
 {
-  "login.title": "Đăng nhập",
-  "login.username": "Tên đăng nhập",
-  "login.password": "Mật khẩu",
-  "login.forgot": "Quên mật khẩu?",
-  "login.submit": "Đăng nhập",
-  "login.error": "Tên đăng nhập hoặc mật khẩu không hợp lệ",
-  "login.registerText": "Chưa có tài khoản?",
-  "login.register": "Đăng ký",
-
-  "register.title": "Đăng ký",
-  "register.fullName": "Họ và tên",
-  "register.email": "Email",
-  "register.address": "Địa chỉ",
-  "register.age": "Tuổi",
-  "register.gender": "Giới tính",
-  "register.gender.select": "Chọn giới tính",
-  "register.gender.male": "Nam",
-  "register.gender.female": "Nữ",
-  "register.phoneNumber": "Số điện thoại",
-  "register.submit": "Đăng ký",
-  "register.loginText": "Đã có tài khoản?",
-  "register.login": "Đăng nhập"
+  "login": {
+    "title": "Đăng nhập",
+    "username": "Tên đăng nhập",
+    "password": "Mật khẩu",
+    "forgot": "Quên mật khẩu?",
+    "submit": "Đăng nhập",
+    "error": "Tên đăng nhập hoặc mật khẩu không hợp lệ",
+    "registerText": "Chưa có tài khoản?",
+    "register": "Đăng ký"
+  },
+  "register": {
+    "title": "Đăng ký",
+    "fullName": "Họ và tên",
+    "email": "Email",
+    "address": "Địa chỉ",
+    "age": "Tuổi",
+    "gender": {
+      "label": "Giới tính",
+      "select": "Chọn giới tính",
+      "male": "Nam",
+      "female": "Nữ"
+    },
+    "phoneNumber": "Số điện thoại",
+    "submit": "Đăng ký",
+    "loginText": "Đã có tài khoản?",
+    "login": "Đăng nhập"
+  },
+  "menu": {
+    "home": "Trang chủ",
+    "teachers": "Giáo viên",
+    "students": "Học viên",
+    "courses": "Khóa học",
+    "classes": "Lớp học",
+    "lessons": "Bài giảng",
+    "exams": "Kỳ thi",
+    "assignments": "Bài tập",
+    "results": "Kết quả",
+    "attendance": "Điểm danh",
+    "schedule": "Lịch học",
+    "report": "Báo cáo",
+    "announcements": "Thông báo",
+    "profile": "Hồ sơ",
+    "settings": "Cài đặt",
+    "logout": "Đăng xuất"
+  },
+  "calendar": {
+    "locale": "vi",
+    "events": "sự kiện",
+    "today": "Hôm nay",
+    "day": "Ngày",
+    "week": "Tuần",
+    "month": "Tháng"
+  },
+  "card": {
+    "label":{
+      "students": "học sinh",
+      "teachers": "giáo viên",
+      "staffs": "nhân viên",
+      "revenue": "doanh thu"
+    }
+  },
+  "chart": {
+    "title": {
+      "students": "học sinh",
+      "studentGrowth": "học sinh tăng trưởng hàng tháng",
+      "finance":"doanh thu"
+    },
+    "label": {
+      "boys": "trai",
+      "girls": "gái"
+    },
+    "legend": {
+      "growth": "Tăng trưởng",
+      "expense": "Chi phí",
+      "income": "Thu nhập"
+    }
+  },
+  "announcements":{
+    "title": "thông báo"
+  },
+  "table": {
+    "teachers":{
+      "title": "Giáo viên",
+      "header": {
+        "info": "Thông tin",
+        "teacherId": "Mã giáo viên",
+        "subjects": "Môn học",
+        "classes": "Lớp học",
+        "phone": "Điện thoại",
+        "address": "Địa chỉ",
+        "actions": "Hành động"
+      }
+    },
+    "students": {
+      "title": "Học sinh",
+      "header": {
+        "info": "Thông tin",
+        "studentId": "Mã học sinh",
+        "experience": "Kinh nghiệm",
+        "phone": "Điện thoại",
+        "address": "Địa chỉ",
+        "actions": "Hành động"
+      }
+    },
+    "courses": {
+      "title": "Khóa học",
+      "header": {
+        "courseId": "Mã khóa học",
+        "name": "Tên khóa học",
+        "description": "Mô tả",
+        "credits": "Số tín chỉ",
+        "teachers": "Giáo viên",
+        "actions": "Hành động"
+      }
+    },
+    "classes": {
+      "title": "Lớp học",
+      "header": {
+        "name": "Tên lớp",
+        "classId": "Mã lớp học",
+        "course": "Khóa học",
+        "supervisor": "Giám sát viên",
+        "capacity": "Sức chứa",
+        "grade": "Cấp",
+        "schedule": "Lịch học",
+        "actions": "Hành động"
+      }
+    },
+    "exams": {
+      "title": "Bài kiểm tra",
+      "header": {
+        "name": "Tên bài thi",
+        "examId": "Mã bài kiểm tra",
+        "course": "Khóa học",
+        "class": "Lớp",
+        "teacher": "Giáo viên",
+        "date": "Ngày",
+        "time": "Thời gian",
+        "actions": "Hành động"
+      }
+    },
+    "lessons": {
+      "title": "Bài học",
+      "header": {
+        "name": "Tên bài",
+        "lessonId": "Mã bài học",
+        "course": "Khóa học",
+        "date": "Ngày",
+        "topic": "Chủ đề",
+        "classes": "Lớp học",
+        "teachers": "Giáo viên",
+        "actions": "Hành động"
+      }
+    },
+    "results": {
+      "title": "Kết quả",
+      "header": {
+        "name": "Tên kết quả",
+        "resultId": "Mã kết quả",
+        "student": "Học sinh",
+        "teacher": "Giáo viên",
+        "class": "Lớp học",
+        "date": "Ngày",
+        "score": "Điểm",
+        "actions": "Hành động"
+      }
+    },
+    "announcements": {
+      "title": "Thông báo",
+      "header": {
+        "announcementId": "Mã thông báo",
+        "title": "Tiêu đề",
+        "content": "Nội dung",
+        "class": "Lớp",
+        "date": "Ngày",
+        "actions": "Hành động"
+      }
+    },
+    "attendances": {
+      "title": "Điểm danh",
+      "header": {
+        "name": "Tên học sinh",
+        "attendanceId": "Mã điểm danh",
+        "total": "Tổng/tuần",
+        "attendancePercentage": "Điểm danh % ",
+        "date": "Ngày"
+      }
+    },
+    "reports":{
+      "learning":{
+        "label": "Học tập",
+        "id":"Mã học sinh",
+        "name":"Tên học sinh",
+        "progress":"Tiến trình",
+        "score":"Điểm"
+      },
+      "teacher":{
+        "label": "Giảng viên",
+        "id":"Mã giáo viên",
+        "name":"Tên giáo viên",
+        "rating":"Đánh giá"
+      },
+      "course":{
+        "label": "Khóa học",
+        "id":"Mã khóa học",
+        "name":"Tên khóa học",
+        "completion":"Hoàn thành",
+        "students":"Học sinh"
+      },
+      "finance":{
+        "label":"Tài chính",
+        "id":"Mã khoản chi",
+        "category":"Danh mục",
+        "amount":"Số tiền",
+        "date":"Ngày"
+      }
+    }
+  },
+  "filters": {
+    "teachers": {
+      "all": "Tất cả giáo viên"
+    },
+    "students": {
+      "all": "Tất cả học sinh"
+    },
+    "classes": {
+      "all": "Tất cả lớp học"
+    }
+  },
+  "form":{
+    "actions": {
+      "message":"Tất cả dữ liệu sẽ bị mất. Bạn có chắc chắn muốn xóa",
+      "delete":"Xóa",
+      "update":"Cập nhập",
+      "create":"Thêm mới"
+    },
+    "table": {
+      "teacher": "giáo viên",
+      "student": "học sinh",
+      "course": "khóa học",
+      "class": "lớp học",
+      "lesson": "bài học",
+      "exam": "bài kiểm tra",
+      "assignment": "bài tập",
+      "result": "kết quả",
+      "attendance": "điểm danh",
+      "event": "sự kiện",
+      "announcement": "thông báo"
+    },
+    "sections": {
+      "personalInformation": "Thông tin cá nhân",
+      "authenticationInformation": "Thông tin xác thực"
+    },
+    "placeholders": {
+      "select": "Chọn"
+    },
+    "options": {
+      "male": "Nam",
+      "female": "Nữ"
+    },
+    "student": {
+      "username": "Tên đăng nhập",
+      "password": "Mật khẩu",
+      "email": "Email",
+      "firstName": "Tên",
+      "lastName": "Họ",
+      "phone": "Điện thoại",
+      "address": "Địa chỉ",
+      "birthday": "Ngày sinh",
+      "sex": "Giới tính"
+    },
+    "teacher": {
+      "username": "Tên đăng nhập",
+      "password": "Mật khẩu",
+      "email": "Email",
+      "firstName": "Tên",
+      "lastName": "Họ",
+      "phone": "Điện thoại",
+      "address": "Địa chỉ",
+      "birthday": "Ngày sinh",
+      "sex": "Giới tính"
+    }
+  }
 }

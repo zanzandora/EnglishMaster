@@ -3,6 +3,7 @@ import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
 import { examsData } from '@mockData/data';
+import { useTranslation } from 'react-i18next';
 
 type Exam = {
   id: number;
@@ -12,32 +13,33 @@ type Exam = {
   date: string;
 };
 
-const columns = [
+const columns = (t: any) => [
   {
-    header: 'Course Name',
+    header: t('table.exams.header.name'),
     accessor: 'name',
   },
   {
-    header: 'Class',
+    header: t('table.exams.header.class'),
     accessor: 'class',
   },
   {
-    header: 'Teacher',
+    header: t('table.exams.header.teacher'),
     accessor: 'teacher',
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Date',
+    header: t('table.exams.header.date'),
     accessor: 'date',
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Actions',
+    header: t('table.exams.header.actions'),
     accessor: 'action',
   },
 ];
 
 const ExamListPage = () => {
+  const { t } = useTranslation();
   const renderRow = (item: unknown) => {
     const exam = item as Exam;
     return (
@@ -83,7 +85,9 @@ const ExamListPage = () => {
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0'>
       {/* TOP */}
       <div className='flex items-center justify-between'>
-        <h1 className='hidden md:block text-lg font-semibold'>Exams</h1>
+        <h1 className='hidden md:block text-lg font-semibold'>
+          {t('table.exams.title')}
+        </h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
           <TableSearch />
           <div className='flex items-center gap-4 self-end'>
@@ -100,7 +104,7 @@ const ExamListPage = () => {
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={examsData} />
+      <Table columns={columns(t)} renderRow={renderRow} data={examsData} />
       {/* PAGINATION */}
       <Pagination />
     </div>

@@ -1,12 +1,21 @@
-import { useState, useRef, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const LanguagePopover = () => {
-  const [open, setOpen] = useState(false)
-  const [flag, setFlag] = useState('English')
-  const popoverRef = useRef(null)
+  const [open, setOpen] = useState(false);
+  const [flag, setFlag] = useState('English');
+  const popoverRef = useRef(null);
 
-  const { i18n } = useTranslation()
+  const { i18n } = useTranslation();
+
+  // *Truy xuất ngôn ngữ đã chọn từ local storage
+  useEffect(() => {
+    const storedLanguage = localStorage.getItem('language');
+    if (storedLanguage) {
+      setFlag(storedLanguage);
+      i18n.changeLanguage(storedLanguage.substring(0, 2).toLowerCase());
+    }
+  }, [i18n]);
 
   // *Đóng popover khi click ra ngoài
   useEffect(() => {
@@ -15,20 +24,21 @@ const LanguagePopover = () => {
         popoverRef.current &&
         !(popoverRef.current as HTMLElement).contains(event.target as Node)
       ) {
-        setOpen(false)
+        setOpen(false);
       }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
+    };
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [popoverRef])
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [popoverRef]);
 
   const handleLanguageChange = (lang: string) => {
-    setFlag(lang)
-    i18n.changeLanguage(lang.substring(0, 2).toLowerCase())
-    setOpen(false)
-  }
+    setFlag(lang);
+    i18n.changeLanguage(lang.substring(0, 2).toLowerCase());
+    setOpen(false);
+    localStorage.setItem('language', lang);
+  };
 
   return (
     <div className='relative' ref={popoverRef}>
@@ -83,7 +93,7 @@ const LanguagePopover = () => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default LanguagePopover
+export default LanguagePopover;

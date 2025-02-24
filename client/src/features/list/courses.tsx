@@ -3,6 +3,7 @@ import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
 import { role, CoursesData } from '@mockData/data';
+import { useTranslation } from 'react-i18next';
 
 type Subject = {
   id: number;
@@ -10,23 +11,24 @@ type Subject = {
   teachers: string[];
 };
 
-const columns = [
+const columns = (t: any) => [
   {
-    header: 'Course Name',
+    header: t('table.courses.header.name'),
     accessor: 'name',
   },
   {
-    header: 'Teachers',
+    header: t('table.courses.header.teachers'),
     accessor: 'teachers',
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Actions',
+    header: t('table.courses.header.actions'),
     accessor: 'action',
   },
 ];
 
 const SubjectListPage = () => {
+  const { t } = useTranslation();
   const renderRow = (item: unknown) => {
     const subject = item as Subject;
     return (
@@ -54,7 +56,9 @@ const SubjectListPage = () => {
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0'>
       {/* TOP */}
       <div className='flex items-center justify-between'>
-        <h1 className='hidden md:block text-lg font-semibold'>Courses</h1>
+        <h1 className='hidden md:block text-lg font-semibold'>
+          {t('table.courses.title')}
+        </h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
           <TableSearch />
           <div className='flex items-center gap-4 self-end'>
@@ -69,7 +73,7 @@ const SubjectListPage = () => {
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={CoursesData} />
+      <Table columns={columns(t)} renderRow={renderRow} data={CoursesData} />
       {/* PAGINATION */}
       <Pagination />
     </div>
