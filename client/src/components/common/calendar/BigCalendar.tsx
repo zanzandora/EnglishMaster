@@ -20,13 +20,13 @@ interface BigCalendarProps {
   setView: (view: View) => void;
   filteredEvents: ExtendedEvent[];
   localizer: any;
+  onDoubleClickEvent?: (event: ExtendedEvent) => void;
 }
 
 // Custom Event Component
 const CustomEventComponent: React.FC<EventProps<ExtendedEvent>> = ({
   event,
 }) => {
-  const { t } = useTranslation();
   return (
     <div
       className='p-2 rounded-lg shadow-md text-white h-full flex flex-col'
@@ -188,6 +188,7 @@ const BigCalendar: React.FC<BigCalendarProps> = ({
   setView,
   filteredEvents,
   localizer,
+  onDoubleClickEvent,
 }) => {
   const { t } = useTranslation();
 
@@ -210,6 +211,7 @@ const BigCalendar: React.FC<BigCalendarProps> = ({
       min={setHours(setMinutes(new Date(), 0), 7)}
       max={setHours(setMinutes(new Date(), 0), 23)}
       scrollToTime={setHours(setMinutes(new Date(), 0), 7)}
+      onDoubleClickEvent={onDoubleClickEvent}
       formats={{
         dayFormat: (date) =>
           format(date, 'EEE (dd/MM)', {

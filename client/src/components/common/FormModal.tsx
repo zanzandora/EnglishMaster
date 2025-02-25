@@ -7,6 +7,7 @@ const StudentForm = lazy(() => import('./forms/StudentForm'));
 const CourseForm = lazy(() => import('./forms/CourseForm'));
 const ClassForm = lazy(() => import('./forms/ClassForm'));
 const LessonForm = lazy(() => import('./forms/LessonForm'));
+const EventForm = lazy(() => import('./forms/EventForm'));
 
 const forms: {
   [key: string]: (type: 'create' | 'update', data?: any) => JSX.Element;
@@ -16,6 +17,7 @@ const forms: {
   course: (type, data) => <CourseForm type={type} data={data} />,
   class: (type, data) => <ClassForm type={type} data={data} />,
   lesson: (type, data) => <LessonForm type={type} data={data} />,
+  event: (type, data) => <EventForm type={type} data={data} />,
 };
 
 const FormModal = ({
@@ -77,7 +79,7 @@ const FormModal = ({
         <img src={`/${type}.png`} alt='' width={16} height={16} />
       </button>
       {open && (
-        <div className='w-screen h-screen absolute left-0 top-0 bg-black bg-opacity-60 z-50 flex items-center justify-center'>
+        <div className='w-screen h-screen absolute left-0 top-0 bg-black bg-opacity-60 z-50 flex items-center justify-center overflow-scroll'>
           <div className='bg-white p-4 rounded-md relative w-[90%] md:w-[70%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]'>
             <Suspense fallback={<h1>Loading...</h1>}>
               <Form />

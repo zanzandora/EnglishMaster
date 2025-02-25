@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod'; // !valadiaton schema
 import { zodResolver } from '@hookform/resolvers/zod';
 import InputField from '../InputField';
+import { useTranslation } from 'react-i18next';
 
 //* Định nghĩa schema bằng cách sử dụng z.object() để mô tả cấu trúc dữ liệu và điều kiện hợp lệ.
 const LesonSchema = z.object({
@@ -30,6 +31,7 @@ const LesonForm = ({
   type: 'create' | 'update';
   data?: any;
 }) => {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -132,20 +134,16 @@ const LesonForm = ({
           register={register}
           error={errors.birthday}
         />
-        <div className='flex flex-col gap-2 w-full md:w-1/4'>
-          <label className='text-xs text-gray-500'>Sex</label>
-          <select
-            className='ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full'
-            {...register('sex')}
-          >
-            <option value=''>Select</option>
-            <option value='male'>Male</option>
-            <option value='female'>Female</option>
-          </select>
-          {errors.sex && (
-            <p className='text-xs text-red-400'>{errors.sex.message}</p>
-          )}
-        </div>
+        <InputField
+          label={t('form.teacher.sex')}
+          name='sex'
+          register={register}
+          error={errors.sex}
+        >
+          <option value=''>{t('form.placeholders.select')}</option>
+          <option value='male'>{t('form.options.male')}</option>
+          <option value='female'>{t('form.options.female')}</option>
+        </InputField>
       </div>
       <button className='bg-blue-400 text-white p-2 rounded-md'>
         {type === 'create' ? 'Create' : 'Update'}

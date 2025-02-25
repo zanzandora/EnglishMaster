@@ -260,26 +260,37 @@
       "female": "Nữ"
     },
     "student": {
+      "titleAdd":"Thêm học sinh",
+      "titleEdit":"Cập nhập học sinh",
       "username": "Tên đăng nhập",
       "password": "Mật khẩu",
       "email": "Email",
-      "firstName": "Tên",
-      "lastName": "Họ",
+      "fullName": "Tên đầy đủ",
       "phone": "Điện thoại",
       "address": "Địa chỉ",
       "birthday": "Ngày sinh",
       "sex": "Giới tính"
     },
     "teacher": {
+      "titleAdd":"Thêm giáo viên",
+      "titleEdit":"Cập nhập giáo viên",
       "username": "Tên đăng nhập",
       "password": "Mật khẩu",
       "email": "Email",
-      "firstName": "Tên",
-      "lastName": "Họ",
+      "fullName": "Tên đầy đủ",
       "phone": "Điện thoại",
       "address": "Địa chỉ",
       "birthday": "Ngày sinh",
       "sex": "Giới tính"
+    },
+    "events": {
+      "titleAdd":"Thêm lịch",
+      "titleEdit":"Cập nhập lịch",
+      "name": "Tên sự kiện",
+      "description": "Mô tả",
+      "date": "Ngày",
+      "time": "Th��i gian",
+      "location": "Địa điểm"
     }
   }
 }

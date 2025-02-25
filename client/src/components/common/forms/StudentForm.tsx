@@ -12,8 +12,7 @@ const StudentSchema = z.object({
     .max(20, 'Username must be at most 20 characters'),
   email: z.string().email('Invalid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
+  fullName: z.string().min(1, 'Name is required'),
   phone: z.string().min(1, 'Phone is required'),
   address: z.string().min(1, 'Address is required'),
   birthday: z.string().min(1, 'Birthday is required'),
@@ -41,7 +40,7 @@ const StudentForm = ({
       username: '',
       email: '',
       password: '',
-      firstName: '',
+      fullName: '',
       lastName: '',
       phone: '',
       address: '',
@@ -59,7 +58,9 @@ const StudentForm = ({
   return (
     <form className='flex flex-col gap-8' onSubmit={handleSubmit(onSubmit)}>
       <h1 className='text-xl font-semibold'>
-        {type === 'create' ? 'Create a new student' : 'Update student'}
+        {type === 'create'
+          ? t('form.student.titleAdd')
+          : t('form.student.titleEdit')}
       </h1>
       <span className='text-xs text-gray-400 font-medium'>
         {t('form.sections.authenticationInformation')}
@@ -94,52 +95,47 @@ const StudentForm = ({
         {t('form.sections.personalInformation')}
       </span>
       <div className='flex justify-between flex-wrap gap-4'>
-        <InputField
-          label={t('form.teacher.firstName')}
-          name='firstName'
-          register={register}
-          error={errors.firstName}
-        />
-        <InputField
-          label={t('form.teacher.lastName')}
-          name='lastName'
-          register={register}
-          error={errors.lastName}
-        />
-        <InputField
-          label={t('form.teacher.phone')}
-          name='phone'
-          register={register}
-          error={errors.phone}
-        />
+        <div className='flex justify-between items-center flex-1 gap-8'>
+          <InputField
+            label={t('form.teacher.fullName')}
+            name='firstName'
+            register={register}
+            error={errors.fullName}
+            className='flex-1'
+          />
+          <InputField
+            label={t('form.teacher.phone')}
+            name='phone'
+            register={register}
+            error={errors.phone}
+            className='flex-1'
+          />
+        </div>
         <InputField
           label={t('form.teacher.address')}
           name='address'
           register={register}
           error={errors.address}
+          className='min-w-full'
         />
-        <InputField
-          label={t('form.teacher.birthday')}
-          name='birthday'
-          type='date'
-          register={register}
-          error={errors.birthday}
-        />
-        <div className='flex flex-col gap-2 w-full md:w-1/4'>
-          <label className='text-xs text-gray-500'>
-            {t('form.teacher.sex')}
-          </label>
-          <select
-            className='ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full'
-            {...register('sex')}
+        <div className='flex gap-4 items-center justify-start min-w-full'>
+          <InputField
+            label={t('form.teacher.birthday')}
+            name='birthday'
+            type='date'
+            register={register}
+            error={errors.birthday}
+          />
+          <InputField
+            label={t('form.teacher.sex')}
+            name='sex'
+            register={register}
+            error={errors.sex}
           >
             <option value=''>{t('form.placeholders.select')}</option>
             <option value='male'>{t('form.options.male')}</option>
             <option value='female'>{t('form.options.female')}</option>
-          </select>
-          {errors.sex && (
-            <p className='text-xs text-red-400'>{errors.sex.message}</p>
-          )}
+          </InputField>
         </div>
       </div>
       <button className='bg-blue-400 text-white p-2 rounded-md'>

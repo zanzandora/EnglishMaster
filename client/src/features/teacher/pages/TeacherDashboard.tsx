@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import FormModal from '@components/common/FormModal';
 import { role, calendarEvents } from '@mockData/data';
 import { View, dateFnsLocalizer } from 'react-big-calendar';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import BigCalendar from '@components/common/calendar/BigCalendar';

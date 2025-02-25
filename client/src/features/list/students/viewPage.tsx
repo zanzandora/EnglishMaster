@@ -217,7 +217,7 @@ const SingleStudentPage = () => {
             </Link>
           </div>
         </div>
-        <PerformanceChart />
+        {/* <PerformanceChart /> */}
         <Announcements />
       </div>
     </div>

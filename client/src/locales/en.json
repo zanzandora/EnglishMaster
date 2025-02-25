@@ -260,26 +260,36 @@
       "female": "Female"
     },
     "student": {
+      "titleAdd":"Create a new Student",
+      "titleEdit":"Student Updated",
       "username": "Username",
       "password": "Password",
       "email": "Email",
-      "firstName": "First Name",
-      "lastName": "Last Name",
+      "fullName": "Full Name",
       "phone": "Phone",
       "address": "Address",
       "birthday": "Birthday",
       "sex": "Sex"
     },
-    "teahcer": {
+    "teacher": {
+      "titleAdd":"Create a new Teacher",
+      "titleEdit":"Teacher Updated",
       "username": "Username",
       "password": "Password",
       "email": "Email",
-      "firstName": "First Name",
-      "lastName": "Last Name",
+      "fullName": "Full Name",
       "phone": "Phone",
       "address": "Address",
       "birthday": "Birthday",
       "sex": "Sex"
+    },
+    "event": {
+      "titleAdd":"Create a new Schedule",
+      "titleEdit":"Schedule Updated",
+      "name": "Name",
+      "description": "Description",
+      "startDate": "Start Date",
+      "endDate": "End Date"
     }
   }
 }

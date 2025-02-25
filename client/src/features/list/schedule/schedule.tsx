@@ -2,11 +2,13 @@ import { useState, useMemo } from 'react';
 import { dateFnsLocalizer, Event, View } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { calendarEvents } from '@mockData/data';
+import { role, calendarEvents } from '@mockData/data';
 import Pagination from '@components/common/Pagination';
 import BigCalendar from '@components/common/calendar/BigCalendar';
 import { ExtendedEvent } from '@interfaces';
 import { useTranslation } from 'react-i18next';
+import FormModal from '@components/common/FormModal';
+import ScheduleEventForm from '@components/common/forms/ScheduleEventForm';
 
 const locales = {
   'en-US': import('date-fns/locale/en-US'),
@@ -40,13 +42,25 @@ const normalizeEvent = (event: any): ExtendedEvent => {
 
 const Schedule: React.FC = () => {
   const { t } = useTranslation();
+
   const [view, setView] = useState<View>('week');
   const [events, setEvents] = useState<Event[]>(calendarEvents);
+
   const [selectedClass, setSelectedClass] = useState<string>('all');
   const [selectedRoom, setSelectedRoom] = useState<string>(
     resourcesRooms[0].id
   ); // Set initial room to the smallest room
+  const [selectedEvent, setSelectedEvent] = useState<ExtendedEvent | null>(
+    null
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const normalizedEvents: ExtendedEvent[] = events.map(normalizeEvent);
+
+  const handleDoubleClickEvent = (event: ExtendedEvent) => {
+    setSelectedEvent(event); // Lưu sự kiện được chọn
+    setIsModalOpen(true); // Mở modal chỉnh sửa
+  };
 
   const classOptions = useMemo(() => {
     const classList = normalizedEvents
@@ -111,6 +125,9 @@ const Schedule: React.FC = () => {
               </option>
             ))}
           </select>
+          <div className='pl-5'>
+            {role === 'admin' && <FormModal table='event' type='create' />}
+          </div>
         </div>
       </div>
       {/* Sử dụng BigCalendar */}
@@ -121,10 +138,25 @@ const Schedule: React.FC = () => {
         view={view}
         setView={setView}
         localizer={localizer}
+        onDoubleClickEvent={handleDoubleClickEvent}
       />
       {/* Phân trang */}
       <Pagination />
       {/* Popup thêm sự kiện */}
+      {isModalOpen && selectedEvent && (
+        <ScheduleEventForm
+          event={selectedEvent}
+          onSave={(updatedEvent) => {
+            setEvents(
+              events.map((evt) =>
+                evt.id === updatedEvent.id ? updatedEvent : evt
+              )
+            );
+            setIsModalOpen(false);
+          }}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
     </div>
   );
 };
