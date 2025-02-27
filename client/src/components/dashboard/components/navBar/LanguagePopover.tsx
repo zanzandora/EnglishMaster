@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 const LanguagePopover = () => {
   const [open, setOpen] = useState(false);
-  const [flag, setFlag] = useState('English');
+  const [flag, setFlag] = useState('Vietnamese');
   const popoverRef = useRef(null);
 
   const { i18n } = useTranslation();

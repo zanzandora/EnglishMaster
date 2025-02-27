@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import InputField from '../InputField';
+import { ExtendedEvent } from '@interfaces';
 
 const EventSchema = z.object({
   title: z.string().min(1, 'Vui lòng nhập tiêu đề'),
@@ -17,8 +18,8 @@ const ScheduleEventForm = ({
   onSave,
   onClose,
 }: {
-  event: any;
-  onSave: (event: any) => void;
+  event: ExtendedEvent;
+  onSave: (event: ExtendedEvent) => void;
   onClose: () => void;
 }) => {
   const {

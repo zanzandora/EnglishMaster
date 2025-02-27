@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import InputField from '../InputField';
 import { useTranslation } from 'react-i18next';
+import FormModal from '../FormModal';
+import { useState } from 'react';
 
 const shifts = [
   { label: 'Ca 1: 18:00 - 19:30', value: '18:00-19:30' },
@@ -33,6 +35,8 @@ const EventForm = ({
   data?: Partial<EventFormData>;
 }) => {
   const { t } = useTranslation();
+  const [selectedShift, setSelectedShift] = useState(data?.shift || '');
+  const [shiftsData, setShiftsData] = useState(shifts);
   const {
     register,
     handleSubmit,
@@ -48,6 +52,15 @@ const EventForm = ({
     },
   });
 
+  const handleShiftChange = (newShift: { value: string; label: string }) => {
+    setShiftsData((prev) => {
+      const exists = prev.some((s) => s.value === newShift.value);
+      return exists
+        ? prev.map((s) => (s.value === newShift.value ? newShift : s))
+        : [...prev, newShift];
+    });
+    setSelectedShift(newShift.value); // Cập nhật giá trị được chọn ngay lập tức
+  };
   const onSubmit = (formData: EventFormData) => {
     console.log('Submitted Data:', formData);
     alert(type === 'create' ? 'Event Created!' : 'Event Updated!');
@@ -118,21 +131,44 @@ const EventForm = ({
         className='min-w-full'
       />
 
-      {/* Khung giờ */}
-      <InputField
-        label='Ca học'
-        name='shift'
-        register={register}
-        error={errors.shift}
-        className='w-full'
-      >
-        <option value=''>Chọn ca học</option>
-        {shifts.map((shift) => (
-          <option key={shift.value} value={shift.value}>
-            {shift.label}
-          </option>
-        ))}
-      </InputField>
+      <div className='flex items-center gap-4'>
+        {/* Khung giờ */}
+        <InputField
+          label='Ca học'
+          name='shift'
+          register={register}
+          error={errors.shift}
+          className='w-full'
+          inputProps={{
+            onChange: (e: any) => setSelectedShift(e.target.value),
+          }}
+        >
+          <option value=''>Chọn ca học</option>
+          {shifts.map((shift) => (
+            <option key={shift.value} value={shift.value}>
+              {shift.label}
+            </option>
+          ))}
+        </InputField>
+        {/* Nút mở FormModal để Create Shift */}
+        <div className='relative mt-6  flex items-center gap-2'>
+          <FormModal
+            table='shift'
+            type='create'
+            data={{}} // Truyền data rỗng để tạo mới
+            onShiftChange={handleShiftChange}
+          />
+          {/* Nút mở FormModal để Update Shift */}
+          {selectedShift && (
+            <FormModal
+              table='shift'
+              type='update'
+              data={shiftsData.find((s) => s.value === selectedShift)}
+              onShiftChange={handleShiftChange}
+            />
+          )}
+        </div>
+      </div>
 
       <button className='bg-blue-400 text-white p-2 rounded-md'>
         {type === 'create'

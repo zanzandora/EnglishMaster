@@ -36,7 +36,6 @@ const columns = (currentWeekDays: Date[], t: any) => [
   {
     header: t('table.attendances.header.total'),
     accessor: 'total',
-    className: 'text-center min-w-10',
   },
   ...currentWeekDays.map((date) => ({
     header: format(date, 'dd/MM'),
@@ -143,7 +142,7 @@ const AttendancePage = () => {
         className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
         <td className='p-4'>{student.name}</td>
-        <td className='text-center'>{student.total}</td>
+        <td className='p-4'>{student.total}</td>
         {currentWeekDays.map((date) => {
           const formattedDate = format(date, 'dd/MM/yyyy');
           const attended = student.attendance[formattedDate] || false;

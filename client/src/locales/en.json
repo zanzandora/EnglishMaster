@@ -181,6 +181,7 @@
       "title": "Attendance",
       "header": {
         "name": "Sutdent Name",
+        "inCharge":"Teacher Name",
         "attendanceId": "ID",
         "total": "Total/week",
         "attendancePercentage": "Attendance % ",

@@ -3,21 +3,15 @@ import { Link } from 'react-router-dom';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import { role, studentsData } from '@mockData/data';
+import {
+  role,
+  mockStudents,
+  mockClassStudents,
+  mockClasses,
+} from '@mockData/mockData';
 import FormModal from '@components/common/FormModal';
 import { useTranslation } from 'react-i18next';
-
-type Student = {
-  id: number;
-  studentId: string;
-  name: string;
-  email?: string;
-  photo: string;
-  phone?: string;
-  experience: number;
-  class: string;
-  address: string;
-};
+import usePagination from 'hooks/usePagination';
 
 const columns = (t: any) => [
   {
@@ -52,35 +46,43 @@ const columns = (t: any) => [
 
 const StudentListPage = () => {
   const { t } = useTranslation();
-  const renderRow = (item: unknown) => {
-    const student = item as Student;
+  const { currentData, currentPage, totalPages, setCurrentPage } =
+    usePagination(mockStudents, 10);
+  const classStudentMap = new Map(
+    mockClassStudents.map((cs) => [cs.student_id, cs])
+  );
+  const classMap = new Map(mockClasses.map((c) => [c.id, c]));
+
+  const renderRow = (item: any) => {
+    const classStudent = classStudentMap.get(item.student_code);
+    const classInfo = classStudent ? classMap.get(classStudent.class_id) : null;
+
     return (
       <tr
-        key={student.id}
+        key={item.student_code}
         className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
         <td className='flex items-center gap-4 p-4'>
           <img
-            src={student.photo}
+            src={item.photo}
             alt=''
             width={40}
             height={40}
             className='md:hidden xl:block w-10 h-10 rounded-full object-cover'
           />
           <div className='flex flex-col'>
-            <h3 className='font-semibold'>{student.name}</h3>
-            <p className='text-xs text-gray-500'>{student.class}</p>
+            <h3 className='font-semibold'>{item.full_name}</h3>
+            <p className='text-xs text-gray-500'>
+              {classInfo ? classInfo.class_name : 'No class assigned'}
+            </p>
           </div>
         </td>
-        <td className='hidden md:table-cell'>{student.studentId}</td>
-        {/* <td className='hidden md:table-cell'>
-          {student.experience !== undefined ? student.experience : 'N/A'}
-        </td> */}
-        <td className='hidden md:table-cell'>{student.phone}</td>
-        <td className='hidden md:table-cell'>{student.address}</td>
+        <td className='hidden md:table-cell'>{item.student_code}</td>
+        <td className='hidden md:table-cell'>{item.phone}</td>
+        <td className='hidden md:table-cell'>{item.address}</td>
         <td>
           <div className='flex items-center gap-2'>
-            <Link to={`/admin/list/students/${student.id}`}>
+            <Link to={`/admin/list/students/${item.student_code}`}>
               <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgViewIcon'>
                 <img
                   src='/view.png'
@@ -93,8 +95,16 @@ const StudentListPage = () => {
             </Link>
             {role === 'admin' && (
               <>
-                <FormModal table='student' type='update' id={student.id} />
-                <FormModal table='student' type='delete' id={student.id} />
+                <FormModal
+                  table='student'
+                  type='update'
+                  id={item.student_code}
+                />
+                <FormModal
+                  table='student'
+                  type='delete'
+                  id={item.student_code}
+                />
               </>
             )}
           </div>
@@ -124,9 +134,13 @@ const StudentListPage = () => {
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns(t)} renderRow={renderRow} data={studentsData} />
+      <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
       {/* PAGINATION */}
-      <Pagination />
+      <Pagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };

@@ -54,7 +54,7 @@
   },
   "card": {
     "label":{
-      "students": "học sinh",
+      "students": "học viên",
       "teachers": "giáo viên",
       "staffs": "nhân viên",
       "revenue": "doanh thu"
@@ -62,8 +62,8 @@
   },
   "chart": {
     "title": {
-      "students": "học sinh",
-      "studentGrowth": "học sinh tăng trưởng hàng tháng",
+      "students": "học viên",
+      "studentGrowth": "học viên tăng trưởng hàng tháng",
       "finance":"doanh thu"
     },
     "label": {
@@ -93,10 +93,10 @@
       }
     },
     "students": {
-      "title": "Học sinh",
+      "title": "Học viên",
       "header": {
         "info": "Thông tin",
-        "studentId": "Mã học sinh",
+        "studentId": "Mã học viên",
         "experience": "Kinh nghiệm",
         "phone": "Điện thoại",
         "address": "Địa chỉ",
@@ -158,7 +158,7 @@
       "header": {
         "name": "Tên kết quả",
         "resultId": "Mã kết quả",
-        "student": "Học sinh",
+        "student": "Học viên",
         "teacher": "Giáo viên",
         "class": "Lớp học",
         "date": "Ngày",
@@ -180,7 +180,8 @@
     "attendances": {
       "title": "Điểm danh",
       "header": {
-        "name": "Tên học sinh",
+        "name": "Tên học viên",
+        "inCharge":"Tên giáo viên",
         "attendanceId": "Mã điểm danh",
         "total": "Tổng/tuần",
         "attendancePercentage": "Điểm danh % ",
@@ -190,8 +191,8 @@
     "reports":{
       "learning":{
         "label": "Học tập",
-        "id":"Mã học sinh",
-        "name":"Tên học sinh",
+        "id":"Mã học viên",
+        "name":"Tên học viên",
         "progress":"Tiến trình",
         "score":"Điểm"
       },
@@ -206,7 +207,7 @@
         "id":"Mã khóa học",
         "name":"Tên khóa học",
         "completion":"Hoàn thành",
-        "students":"Học sinh"
+        "students":"Học viên"
       },
       "finance":{
         "label":"Tài chính",
@@ -222,7 +223,7 @@
       "all": "Tất cả giáo viên"
     },
     "students": {
-      "all": "Tất cả học sinh"
+      "all": "Tất cả học viên"
     },
     "classes": {
       "all": "Tất cả lớp học"
@@ -237,7 +238,7 @@
     },
     "table": {
       "teacher": "giáo viên",
-      "student": "học sinh",
+      "student": "học viên",
       "course": "khóa học",
       "class": "lớp học",
       "lesson": "bài học",
@@ -260,8 +261,8 @@
       "female": "Nữ"
     },
     "student": {
-      "titleAdd":"Thêm học sinh",
-      "titleEdit":"Cập nhập học sinh",
+      "titleAdd":"Thêm học viên",
+      "titleEdit":"Cập nhập học viên",
       "username": "Tên đăng nhập",
       "password": "Mật khẩu",
       "email": "Email",

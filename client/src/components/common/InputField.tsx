@@ -26,7 +26,9 @@ const InputField: FC<InputFieldProps> = ({
   children,
 }: InputFieldProps) => {
   return (
-    <div className={`flex flex-col gap-2 w-full md:w-1/4 ${className}`}>
+    <div
+      className={` relative flex flex-col gap-2 w-full my-1 md:w-1/4 ${className}`}
+    >
       <label className='text-xs text-gray-500'>{label}</label>
       {children ? (
         // Nếu có children -> dùng select
@@ -47,10 +49,14 @@ const InputField: FC<InputFieldProps> = ({
         />
       )}
       {typeof error === 'object' && error?.message && (
-        <span className='text-xs text-red-400'>{error.message.toString()}</span>
+        <span className='absolute left-0 top-full mt-1 text-xs text-red-400'>
+          {error.message.toString()}
+        </span>
       )}
       {typeof error === 'string' && (
-        <span className='text-xs text-red-400'>{error}</span>
+        <span className='absolute left-0 top-full mt-1 text-xs text-red-400'>
+          {error}
+        </span>
       )}
     </div>
   );
