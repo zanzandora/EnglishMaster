@@ -14,7 +14,7 @@
     "fullName": "Họ và tên",
     "email": "Email",
     "address": "Địa chỉ",
-    "age": "Tuổi",
+    "birth": "Ngày sinh",
     "gender": {
       "label": "Giới tính",
       "select": "Chọn giới tính",

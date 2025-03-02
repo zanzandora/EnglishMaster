@@ -52,12 +52,12 @@ const getMenuItems = (t: any) => [
         href: `${basePath[role]}/list/exams`,
         visible: ['admin', 'teacher', 'student', 'parent'],
       },
-      {
-        icon: '/assignment.png',
-        label: t('menu.assignments'),
-        href: `${basePath[role]}/list/assignments`,
-        visible: ['admin', 'teacher', 'student', 'parent'],
-      },
+      // {
+      //   icon: '/assignment.png',
+      //   label: t('menu.assignments'),
+      //   href: `${basePath[role]}/list/assignments`,
+      //   visible: ['admin', 'teacher', 'student', 'parent'],
+      // },
       {
         icon: '/result.png',
         label: t('menu.results'),

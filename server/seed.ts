@@ -1,7 +1,7 @@
+import { db } from './database/driver'; // Import kết nối database
+import { Users,Teachers,Students,Courses,Classes,Schedule,ClassStudents,Lessons,Exams } from './database/entity'; // Import schema
 import { fakerVI as faker } from '@faker-js/faker';
-import { formatDate } from '@utils/dateUtils';
 
-export const role = 'admin';
 
 const majors = [
   'ENG-B1 English Beginner Level 1',
@@ -26,8 +26,7 @@ const majors = [
   'TRVL-1 English for Travel',
   'TRVL-2 English for Travel',
 ];
-
-// Generate mock data
+// Tạo mảng `mockUsers`
 const mockUsers = Array.from({ length: 10 }).map(() => ({
   id: faker.string.uuid(),
   username: faker.internet.userName(),
@@ -47,8 +46,6 @@ const mockUsers = Array.from({ length: 10 }).map(() => ({
  const mockTeachers = mockUsers.map((user) => ({
       id: faker.string.uuid(),
       userId: user.id,
-      username: user.username,
-      password: user.password,
       name: user.name,
       phoneNumber: user.phoneNumber,
       dateOfBirth: user.dateOfBirth,
@@ -61,37 +58,22 @@ const mockUsers = Array.from({ length: 10 }).map(() => ({
     }));
 
 
-    const getMockStudents = () => {
-      // Kiểm tra xem đã có dữ liệu trong localStorage chưa
-      const storedData = localStorage.getItem("mockStudents");
-      if (storedData) return JSON.parse(storedData);
-    
-      // Nếu chưa có, tạo mới
-      const newStudents = Array.from({ length: 30 }).map(() => ({
-        id: faker.string.uuid(),
-        fullName: faker.person.fullName(),
-        email: faker.internet.email(),
-        phone: faker.phone.number(),
-        dateOfBirth: formatDate(faker.date.birthdate()),
-        address: faker.address.city(),
-        photo: faker.image.avatar(),
-        gender: faker.person.sex(),
-        createdAt: faker.date.past().toISOString(),
-        updatedAt: faker.date.recent().toISOString(),
-      }));
-    
-      // Lưu vào localStorage
-      localStorage.setItem("mockStudents", JSON.stringify(newStudents));
-    
-      return newStudents;
-    };
-    
-    // Gọi hàm để lấy dữ liệu
-    const mockStudents = getMockStudents();
-
-const mockCourses = Array.from({ length: 5 }).map(() => ({
+const mockStudents = Array.from({ length: 20 }).map(() => ({
   id: faker.string.uuid(),
-  coursename: faker.helpers.arrayElement(majors),
+  fuleName: faker.person.fullName(),
+  email: faker.internet.email(),
+  phone: faker.phone.number(),
+  dateOfBirth: faker.date.birthdate().toISOString().split('T')[0],
+  address: faker.address.city(),
+  photo: faker.image.avatar(),
+  gender: faker.person.gender(),
+  createdAt: faker.date.past().toISOString(),
+  updatedAt: faker.date.recent().toISOString(),
+}));
+
+const mockCourses = majors.map((major) => ({
+  id: faker.string.uuid(),
+  coursename: major, // Thuộc tính major
   description: faker.lorem.paragraph(),
   duration: faker.number.int({ min: 1, max: 6 }), // 1 - 6 tháng
   fee: faker.number.int({ min: 1000000, max: 5000000 }), // 1.000.000 - 5.000.000 VND
@@ -99,20 +81,23 @@ const mockCourses = Array.from({ length: 5 }).map(() => ({
   updatedAt: faker.date.recent().toISOString(),
 }));
 
-const mockClasses = Array.from({ length: 20 }).map(() => ({
-  id: faker.string.uuid(),
-  courseId: faker.helpers.arrayElement(mockCourses).id,
-  teacherId: faker.helpers.arrayElement(mockTeachers).userId,
-  className: majors, // Chọn tên lớp từ danh sách majors
-  capacity: faker.number.int({ min: 10, max: 30 }), // Sức chứa lớp từ 10 - 30 học viên
-  startDate: faker.date.future().toISOString(),
-  endDate: faker.date.future().toISOString(),
-  createdAt: faker.date.past().toISOString(),
-  updatedAt: faker.date.recent().toISOString(),
-}));
+const mockClasses = Array.from({ length: 15 }).map(() => {
+  const course = faker.helpers.arrayElement(mockCourses); // Chọn ngẫu nhiên một khóa học
+  return {
+    id: faker.string.uuid(),
+    courseId: course.id, // Liên kết với courseId
+    teacherId: faker.helpers.arrayElement(mockTeachers).userId,
+    className: course.coursename, // className được lấy từ major của khóa học
+    capacity: faker.number.int({ min: 10, max: 30 }), // Sức chứa lớp từ 10 - 30 học viên
+    startDate: faker.date.future().toISOString(),
+    endDate: faker.date.future().toISOString(),
+    createdAt: faker.date.past().toISOString(),
+    updatedAt: faker.date.recent().toISOString(),
+  };
+});
 
 
-const mockSchedules = Array.from({ length: 30 }).map(() => ({
+const mockSchedules = Array.from({ length: 15 }).map(() => ({
   id: faker.string.uuid(),
   classId: faker.helpers.arrayElement(mockClasses).id,
   sessionDate: faker.date.future().toISOString(),
@@ -159,15 +144,23 @@ const mockExams = Array.from({ length: 10 }).map(() => ({
   updatedAt: faker.date.recent().toISOString(),
 }));
 
-// Export mock data
-export {
-  mockUsers,
-  mockTeachers,
-  mockStudents,
-  mockCourses,
-  mockClasses,
-  mockSchedules,
-  mockClassStudents,
-  mockLessons,
-  mockExams,
+const seedDB = async () => {
+  console.log('🔄 Seeding ...');
+
+  await db.insert(Users).values(mockUsers);
+  await db.insert(Teachers).values(mockTeachers);
+  await db.insert(Students).values(mockStudents);
+  await db.insert(Courses).values(mockCourses);
+  await db.insert(Classes).values(mockClasses);
+  await db.insert(Schedule).values(mockSchedules);
+  await db.insert(ClassStudents).values(mockClassStudents);
+  await db.insert(Lessons).values(mockLessons);
+  await db.insert(Exams).values(mockExams);
+
+
+
+  console.log('✅ Seeding completed!');
+  process.exit(); // Thoát process sau khi hoàn tất
 };
+
+seedDB().catch(console.error);

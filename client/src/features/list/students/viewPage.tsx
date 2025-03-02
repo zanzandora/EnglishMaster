@@ -1,5 +1,4 @@
 import Announcements from '@components/admin/Announcements';
-import PerformanceChart from '@components/admin/charts/PerformanceChart';
 import { useState, useMemo } from 'react';
 import FormModal from '@components/common/FormModal';
 import { role, calendarEvents } from '@mockData/data';
@@ -8,6 +7,11 @@ import { Link, useParams } from 'react-router-dom';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import BigCalendar from '@components/common/calendar/BigCalendar';
+import {
+  mockStudents,
+  mockClassStudents,
+  mockClasses,
+} from '@mockData/mockData';
 
 const locales = {
   'en-US': import('date-fns/locale/en-US'),
@@ -22,9 +26,10 @@ const localizer = dateFnsLocalizer({
 });
 
 const SingleStudentPage = () => {
-  // const { id } = useParams();
+  const { id } = useParams();
   const [view, setView] = useState<View>('week');
   const [selectedClass, setSelectedClass] = useState<string>('all');
+  const student = mockStudents.find((s) => s.id === id);
 
   // Room Resources cho Calendar
   const resourcesRooms = [
@@ -32,6 +37,19 @@ const SingleStudentPage = () => {
     { id: 'room102', title: 'Phòng 102', type: 'room' },
     { id: 'room103', title: 'Phòng 103', type: 'room' },
   ];
+
+  if (!student) {
+    return (
+      <div className='p-4 text-center text-red-500'>Student not found.</div>
+    );
+  }
+
+  // Lấy danh sách lớp học của sinh viên
+  const studentClasses = mockClassStudents
+    .filter((cs) => cs.studentId === student.id)
+    .map((cs) => mockClasses.find((c) => c.id === cs.classId)?.className)
+    .filter(Boolean)
+    .join(', ');
 
   // Chuẩn hóa dữ liệu sự kiện
   const normalizeEvent = (event: any) => {
@@ -67,8 +85,8 @@ const SingleStudentPage = () => {
           <div className='bg-secondary-blueLight py-6 px-4 rounded-md flex-1 flex gap-4'>
             <div className='w-1/3'>
               <img
-                src='https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=1200'
-                alt=''
+                src={student.photo || '/default-avatar.png'}
+                alt={student.fullName}
                 width={144}
                 height={144}
                 className='w-36 h-36 rounded-full object-cover'
@@ -76,49 +94,44 @@ const SingleStudentPage = () => {
             </div>
             <div className='w-2/3 flex flex-col justify-between gap-4'>
               <div className='flex items-center gap-4'>
-                <h1 className='text-xl font-semibold'>Leonard Snyder</h1>
+                <h1 className='text-xl font-semibold'>{student.fullName}</h1>
                 {role === 'admin' && (
                   <FormModal
                     table='student'
                     type='update'
                     data={{
                       id: 1,
-                      username: 'deanguerrero',
-                      email: 'deanguerrero@gmail.com',
-                      password: 'password',
-                      firstName: 'Dean',
-                      lastName: 'Guerrero',
-                      phone: '+1 234 567 89',
-                      address: '1234 Main St, Anytown, USA',
-                      bloodType: 'A+',
-                      dateOfBirth: '2000-01-01',
-                      sex: 'male',
-                      img: 'https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=1200',
+                      email: student.email,
+                      fullName: student.fullName,
+                      phone: student.phone,
+                      address: student.address,
+                      dateOfBirth: student.dateOfBirth,
+                      gender: student.gender,
+                      img: student.photo,
                     }}
                   />
                 )}
               </div>
-              <p className='text-sm text-gray-500'>
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-              </p>
               <div className='flex justify-between gap-2 flex-wrap text-xs font-medium flex-col text-gray-700'>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
+                  <img src='/id_badge.png' alt='' width={14} height={14} />
+                  <span className=' truncate'>Id: {student.id}</span>
+                </div>
+                <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
                   <img src='/date.png' alt='' width={14} height={14} />
-                  <span>Birth: 2/2/2003</span>
+                  <span>Birth: {student.dateOfBirth}</span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2 '>
                   <img src='/mail.png' alt='' width={14} height={14} />
-                  <span className=' truncate'>
-                    Email: maiminhtu130803@gmail.com
-                  </span>
+                  <span className=' truncate'>Email: {student.email}</span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
                   <img src='/phone.png' alt='' width={14} height={14} />
-                  <span>Phone: 0123456789</span>
+                  <span>Phone: {student.phone}</span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
-                  <img src='/lesson_class.png' alt='' width={14} height={14} />
-                  <span>Classes: BB, TO1, TO2</span>
+                  <img src='/gender.png' alt='' width={14} height={14} />
+                  <span>Gender: {student.gender}</span>
                 </div>
               </div>
             </div>
@@ -135,38 +148,11 @@ const SingleStudentPage = () => {
                 className='w-6 h-6'
               />
               <div className=''>
-                <h1 className='text-xl font-semibold'>90%</h1>
-                <span className='text-sm text-gray-400'>Attendance</span>
-              </div>
-            </div>
-            {/* CARD */}
-            <div className='bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]'>
-              <img
-                src='/singleBranch.png'
-                alt=''
-                width={24}
-                height={24}
-                className='w-6 h-6'
-              />
-              <div className=''>
                 <h1 className='text-xl font-semibold'>2</h1>
-                <span className='text-sm text-gray-400'>Branches</span>
+                <span className='text-sm text-gray-400'>Absent</span>
               </div>
             </div>
-            {/* CARD */}
-            <div className='bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]'>
-              <img
-                src='/singleLesson.png'
-                alt=''
-                width={24}
-                height={24}
-                className='w-6 h-6'
-              />
-              <div className=''>
-                <h1 className='text-xl font-semibold'>6</h1>
-                <span className='text-sm text-gray-400'>Lessons</span>
-              </div>
-            </div>
+
             {/* CARD */}
             <div className='bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]'>
               <img
@@ -177,8 +163,25 @@ const SingleStudentPage = () => {
                 className='w-6 h-6'
               />
               <div className=''>
-                <h1 className='text-xl font-semibold'>6</h1>
+                <h1 className='text-xl font-semibold'>ENG-B1</h1>
                 <span className='text-sm text-gray-400'>Classes</span>
+              </div>
+            </div>
+
+            {/* CARD */}
+            <div className='bg-white p-4 rounded-md flex gap-4 w-full flex-1 md:w-[48%] xl:w-[45%] 2xl:w-[48%]'>
+              <img
+                src='/singlecourse.png'
+                alt=''
+                width={24}
+                height={24}
+                className='w-6 h-6'
+              />
+              <div className=''>
+                <h1 className='text-xl font-semibold'>
+                  English Beginner Level 1
+                </h1>
+                <span className='text-sm text-gray-400'>Course</span>
               </div>
             </div>
           </div>

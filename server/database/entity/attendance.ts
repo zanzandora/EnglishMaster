@@ -1,11 +1,16 @@
-import { boolean, date, int, mysqlTable } from 'drizzle-orm/mysql-core'
+import { boolean, date, mysqlTable, varchar } from 'drizzle-orm/mysql-core'
 import { Classes } from './class'
 import { Students } from './student'
+import {Schedule} from './schedule';
+import {Teachers} from './teacher';
+import { sql } from 'drizzle-orm/sql'
 
 export const Attendances = mysqlTable('attendances', {
-  id: int().autoincrement().primaryKey(),
-  classID: int().references(() => Classes.id).notNull(),
-  studentID: int().references(() => Students.id),
+  id: varchar('id', { length: 36 }).primaryKey().default(sql`UUID()`),
+  classId: varchar('id', { length: 36 }).references(() => Classes.id, { onDelete: "cascade" }).notNull(),
+  studentId: varchar('id', { length: 36 }).references(() => Students.id, { onDelete: "cascade" }).notNull(),
+  scheduleId: varchar('id', { length: 36 }).references(() => Schedule.id, { onDelete: "cascade" }).notNull(),
+  teacherId: varchar('teacherId', { length: 36 }).references(() => Teachers.userId, { onDelete: "cascade" }).notNull(),
   date: date().default(new Date()),
   status: boolean().default(false),
   createdAt: date().default(new Date()),

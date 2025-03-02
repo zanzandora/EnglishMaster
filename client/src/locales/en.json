@@ -14,7 +14,7 @@
     "fullName": "Full Name",
     "email": "Email",
     "address": "Address",
-    "age": "Age",
+    "birth": "Birth",
     "gender": {
       "label": "Gender",
       "select": "Select Gender",
@@ -97,7 +97,7 @@
       "header": {
         "info": "Info",
         "studentId": "Student ID",
-        "experience": "Experience",
+        "classes": "Classes",
         "phone": "Phone",
         "address": "Address",
         "actions": "Actions"

@@ -26,7 +26,9 @@
       "@mockData/*": ["mockData/*"],
       "@list/*": ["features/list/*"],
       "@interfaces/*": ["interfaces/*"],
-      "@interfaces": ["interfaces"]
+      "@interfaces": ["interfaces"],
+      "@services/*": ["services/*"],
+      "@utils/*": ["utils/*"]
     }
   },
   "include": ["client"]

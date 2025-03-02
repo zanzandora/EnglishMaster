@@ -170,15 +170,14 @@ const Login = () => {
                         <div className='flex flex-col'>
                           <label
                             className='block text-md mb-0.5 ml-2'
-                            htmlFor='age'
+                            htmlFor='dateOfBirth'
                           >
-                            {t('register.age')}
+                            {t('register.birth')}
                           </label>
                           <input
                             className='px-4 w-full border-2 py-2 rounded-md text-sm outline-none'
-                            type='text'
-                            name='age'
-                            placeholder={t('register.age')}
+                            type='date'
+                            name='dateOfBirth'
                             onInvalid={showInvalidate}
                             onInput={hideInvalidate}
                             required

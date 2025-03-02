@@ -1,10 +1,11 @@
 import { useForm } from 'react-hook-form';
-import { z } from 'zod'; // !valadiaton schema
+import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import InputField from '../InputField';
 import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 
-//* Định nghĩa schema bằng cách sử dụng z.object() để mô tả cấu trúc dữ liệu và điều kiện hợp lệ.
+// Tạo schema bằng Zod
 const TeacherSchema = z.object({
   username: z
     .string()
@@ -12,14 +13,15 @@ const TeacherSchema = z.object({
     .max(20, 'Username must be at most 20 characters'),
   email: z.string().email('Invalid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
-  fullName: z.string().min(1, 'Full name is required'),
+  fullName: z.string().min(1, 'Name is required'),
   phone: z.string().min(1, 'Phone is required'),
   address: z.string().min(1, 'Address is required'),
-  birthday: z.string().min(1, 'Birthday is required'),
-  sex: z.enum(['male', 'female'], { message: 'Sex is required!' }),
+  photo: z.string().min(1, 'Photo is required'),
+  dateOfBirth: z.string().min(1, 'Birthday is required'),
+  gender: z.enum(['male', 'female'], { message: 'Sex is required!' }),
 });
 
-// *Tạo TypeScript type từ schema Zod, giúp đồng bộ schema và type
+// Tạo TypeScript type từ schema Zod
 type TeacherFormData = z.infer<typeof TeacherSchema>;
 
 const TeacherForm = ({
@@ -35,19 +37,17 @@ const TeacherForm = ({
     handleSubmit,
     formState: { errors },
   } = useForm<TeacherFormData>({
-    // *Khi submit form, Zod sẽ tự động kiểm tra dữ liệu dựa trên teacherSchema.
     resolver: zodResolver(TeacherSchema),
     defaultValues: data || {
-      // *defaultValues: Đặt giá trị mặc định cho các input trên form.
       username: '',
       email: '',
       password: '',
       fullName: '',
       phone: '',
       address: '',
-      bloodType: '',
-      birthday: '',
-      sex: '',
+      photo: '',
+      dateOfBirth: '',
+      gender: '',
     },
   });
 
@@ -55,13 +55,13 @@ const TeacherForm = ({
     console.log('Submitted Data:', formData);
     alert(type === 'create' ? 'Teacher Created!' : 'Teacher Updated!');
   };
-
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   return (
     <form className='flex flex-col gap-8' onSubmit={handleSubmit(onSubmit)}>
       <h1 className='text-xl font-semibold'>
         {type === 'create'
-          ? t('form.teacher.titleAdd')
-          : t('form.teacher.titleEdit')}
+          ? t('form.Teacher.titleAdd')
+          : t('form.Teacher.titleEdit')}
       </h1>
       <span className='text-xs text-gray-400 font-medium'>
         {t('form.sections.authenticationInformation')}
@@ -69,14 +69,14 @@ const TeacherForm = ({
       <div className='flex flex-wrap gap-4'>
         <div className='flex justify-between items-center flex-1 gap-8'>
           <InputField
-            label={t('form.teacher.username')}
+            label='Username'
             name='username'
             register={register}
             error={errors.username}
             className='flex-1 '
           />
           <InputField
-            label={t('form.teacher.password')}
+            label='Password'
             name='password'
             type='password'
             register={register}
@@ -99,7 +99,7 @@ const TeacherForm = ({
         <div className='flex justify-between items-center flex-1 gap-8'>
           <InputField
             label={t('form.teacher.fullName')}
-            name='firstName'
+            name='fullName'
             register={register}
             error={errors.fullName}
             className='flex-1'
@@ -122,21 +122,30 @@ const TeacherForm = ({
         <div className='flex gap-4 items-center justify-start min-w-full'>
           <InputField
             label={t('form.teacher.birthday')}
-            name='birthday'
+            name='dateOfBirth'
             type='date'
             register={register}
-            error={errors.birthday}
+            error={errors.dateOfBirth}
           />
           <InputField
             label={t('form.teacher.sex')}
-            name='sex'
+            name='gender'
             register={register}
-            error={errors.sex}
+            error={errors.gender}
           >
             <option value=''>{t('form.placeholders.select')}</option>
             <option value='male'>{t('form.options.male')}</option>
             <option value='female'>{t('form.options.female')}</option>
           </InputField>
+          <InputField
+            label='Upload photo'
+            type='file'
+            inputProps={{ accept: 'image/*' }}
+            onFileChange={(file) => setSelectedFile(file)} // Cập nhật state
+            name='photo'
+            register={register}
+            className='flex-1'
+          />
         </div>
       </div>
       <button className='bg-blue-400 text-white p-2 rounded-md'>

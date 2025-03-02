@@ -12,6 +12,7 @@ import {
 import FormModal from '@components/common/FormModal';
 import { useTranslation } from 'react-i18next';
 import usePagination from 'hooks/usePagination';
+import useRelationMapper from 'hooks/useRelationMapper';
 
 const columns = (t: any) => [
   {
@@ -23,11 +24,11 @@ const columns = (t: any) => [
     accessor: 'studentId',
     className: 'hidden md:table-cell',
   },
-  // {
-  //   header: t('table.students.header.experience'),
-  //   accessor: 'experience',
-  //   className: 'hidden md:table-cell',
-  // },
+  {
+    header: t('table.students.header.classes'),
+    accessor: 'classes',
+    className: 'hidden md:table-cell',
+  },
   {
     header: t('table.students.header.phone'),
     accessor: 'phone',
@@ -46,20 +47,17 @@ const columns = (t: any) => [
 
 const StudentListPage = () => {
   const { t } = useTranslation();
+  const students = useRelationMapper(mockStudents, {
+    studentId: mockClassStudents, // Liên kết student_code với classStudents
+    classId: mockClasses, // Liên kết classId với classes
+  });
   const { currentData, currentPage, totalPages, setCurrentPage } =
-    usePagination(mockStudents, 10);
-  const classStudentMap = new Map(
-    mockClassStudents.map((cs) => [cs.student_id, cs])
-  );
-  const classMap = new Map(mockClasses.map((c) => [c.id, c]));
+    usePagination(students, 10);
 
   const renderRow = (item: any) => {
-    const classStudent = classStudentMap.get(item.student_code);
-    const classInfo = classStudent ? classMap.get(classStudent.class_id) : null;
-
     return (
       <tr
-        key={item.student_code}
+        key={item.studentId}
         className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
         <td className='flex items-center gap-4 p-4'>
@@ -71,18 +69,19 @@ const StudentListPage = () => {
             className='md:hidden xl:block w-10 h-10 rounded-full object-cover'
           />
           <div className='flex flex-col'>
-            <h3 className='font-semibold'>{item.full_name}</h3>
-            <p className='text-xs text-gray-500'>
-              {classInfo ? classInfo.class_name : 'No class assigned'}
-            </p>
+            <h3 className='font-semibold'>{item.fullName}</h3>
+            <p className='text-xs text-gray-500'>{item.email}</p>
           </div>
         </td>
-        <td className='hidden md:table-cell'>{item.student_code}</td>
+        <td className='hidden md:table-cell'>{item.id}</td>
+        <td className='hidden md:table-cell'>
+          {item.classId ? item.classId.className : 'No class assigned'}
+        </td>
         <td className='hidden md:table-cell'>{item.phone}</td>
         <td className='hidden md:table-cell'>{item.address}</td>
         <td>
           <div className='flex items-center gap-2'>
-            <Link to={`/admin/list/students/${item.student_code}`}>
+            <Link to={`/admin/list/students/${item.id}`}>
               <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgViewIcon'>
                 <img
                   src='/view.png'
@@ -99,6 +98,16 @@ const StudentListPage = () => {
                   table='student'
                   type='update'
                   id={item.student_code}
+                  data={{
+                    id: item.student_code,
+                    email: item.email,
+                    fullName: item.fullName,
+                    phone: item.phone,
+                    address: item.address,
+                    dateOfBirth: item.dateOfBirth,
+                    gender: item.gender,
+                    img: item.photo,
+                  }}
                 />
                 <FormModal
                   table='student'

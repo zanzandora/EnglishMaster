@@ -12,6 +12,7 @@ type InputFieldProps = {
     | React.SelectHTMLAttributes<HTMLSelectElement>;
   className?: string;
   children?: ReactNode;
+  onFileChange?: (files: FileList | null) => void;
 };
 
 const InputField: FC<InputFieldProps> = ({
@@ -24,13 +25,22 @@ const InputField: FC<InputFieldProps> = ({
   inputProps,
   className = '',
   children,
+  onFileChange,
 }: InputFieldProps) => {
   return (
     <div
       className={` relative flex flex-col gap-2 w-full my-1 md:w-1/4 ${className}`}
     >
       <label className='text-xs text-gray-500'>{label}</label>
-      {children ? (
+      {type === 'file' ? (
+        <input
+          type='file'
+          {...inputProps}
+          className='ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full
+          '
+          onChange={(e) => onFileChange && onFileChange(e.target.files?.[0])} // Lấy file
+        />
+      ) : children ? (
         // Nếu có children -> dùng select
         <select
           {...register(name)}
@@ -48,6 +58,7 @@ const InputField: FC<InputFieldProps> = ({
           defaultValue={defaultValue}
         />
       )}
+
       {typeof error === 'object' && error?.message && (
         <span className='absolute left-0 top-full mt-1 text-xs text-red-400'>
           {error.message.toString()}

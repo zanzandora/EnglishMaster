@@ -12,16 +12,31 @@ export const submitForm = async (
   e.preventDefault()
 
   const formData = new FormData(e.currentTarget)
+  const formDataObject = Object.fromEntries(formData);
 
   if (isRegistering && !formData.get('gender')) {
     return setNotice('Choose a gender')
   }
+  console.log('Raw dateOfBirth:', formDataObject.dateOfBirth);
+  if (formDataObject.dateOfBirth) {
+    const dateOfBirth = formDataObject.dateOfBirth as string;
+    const formattedDate = new Date(dateOfBirth).toISOString().split('T')[0];
+    console.log('Formatted dateOfBirth:', formattedDate)
+    if (formattedDate === 'Invalid Date') {
+      return setNotice('Invalid date format');
+    }
+    formDataObject.dateOfBirth = formattedDate;
+  } else {
+    return setNotice('Date of birth is required');
+  }
 
-  const res = await fetch(isRegistering ? '/register' : '/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...Object.fromEntries(formData) }),
-  })
+
+const res = await fetch(isRegistering ? '/register' : '/login', {
+  
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(formDataObject),
+});
 
   const resJson = await res.json()
 

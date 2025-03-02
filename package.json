@@ -8,7 +8,13 @@
     "build": "npm run build:client",
     "build:client": "vite build --outDir dist/client",
     "preview": "cross-env NODE_ENV=production tsx server/server.ts",
-    "database": "npx drizzle-kit push"
+    "database": "npx drizzle-kit push",
+    "database:generate": "npx drizzle-kit generate",
+    "database:migrate": "npx drizzle-kit migrate",
+    "database:push": "npx drizzle-kit push",
+    "database:pull": "npx drizzle-kit pull",
+    "database:reset": "npx drizzle-kit drop && npm run database:migrate",
+    "seed":"npx tsx server/seed.ts"
   },
   "dependencies": {
     "@faker-js/faker": "^9.5.0",

@@ -51,7 +51,7 @@ expressRouter.post('/register', async (req, res) => {
   const password = req.body.password
   const email = req.body.email
   const name = req.body.name
-  const age = req.body.age
+  const dateOfBirth = req.body.dateOfBirth
   const gender = req.body.gender
   const phoneNumber = req.body.phone
   const address = req.body.address
@@ -63,7 +63,7 @@ expressRouter.post('/register', async (req, res) => {
       password: await bcrypt.hash(password, +process.env.SALT_ROUND!),
       email,
       name,
-      age,
+      dateOfBirth,
       gender,
       phoneNumber,
       address,
