@@ -9,7 +9,7 @@ const expressRouter = Router()
 expressRouter.get('/', async (req, res) => {
   const username = req.body.username
 
-  const missingFields: string[] = []
+  let missingFields: string[] = []
   if (!username) missingFields.push('username')
   if (missingFields.length > 0) {
     res.status(400).send(`Missing fields: ${missingFields.join(', ')}`)
@@ -17,7 +17,7 @@ expressRouter.get('/', async (req, res) => {
   }
 
   try {
-    const selectedUsers = await db.select().from(Users).where(eq(Users.username, username))
+    let selectedUsers = await db.select().from(Users).where(eq(Users.username, username))
 
     if (selectedUsers.length === 0) {
       res.status(404).send(`User "${username}" not found`)
@@ -43,7 +43,7 @@ expressRouter.post('/add', async (req, res) => {
   const phoneNumber = req.body.phoneNumber
   const address = req.body.address
 
-  const missingFields: string[] = []
+  let missingFields: string[] = []
   if (!username) missingFields.push('username')
   if (!password) missingFields.push('password')
   if (!email) missingFields.push('email')
@@ -68,7 +68,7 @@ expressRouter.post('/add', async (req, res) => {
       gender,
       phoneNumber,
       address,
-      role: 'teacher',
+      role: 'student',
     })
 
     res.send('User added')
@@ -88,15 +88,15 @@ expressRouter.post('/edit', async (req, res) => {
 
   const email = req.body.email
   const name = req.body.name
-  const dateOfBirth = req.body.dateOfBirth
+  const age = req.body.age
   const gender = req.body.gender
   const phoneNumber = req.body.phoneNumber
   const address = req.body.address
 
-  const set1 = {}
+  let set1 = {}
   if (email) set1['email'] = email
   if (name) set1['name'] = name
-  if (dateOfBirth) set1['age'] = dateOfBirth
+  if (age) set1['age'] = age
   if (gender) set1['gender'] = gender
   if (phoneNumber) set1['phoneNumber'] = phoneNumber
   if (address) set1['address'] = address

@@ -18,7 +18,7 @@ export const submitForm = async (
     return setNotice('Choose a gender')
   }
   console.log('Raw dateOfBirth:', formDataObject.dateOfBirth);
-  if (formDataObject.dateOfBirth) {
+  if (isRegistering && formDataObject.dateOfBirth) {
     const dateOfBirth = formDataObject.dateOfBirth as string;
     const formattedDate = new Date(dateOfBirth).toISOString().split('T')[0];
     console.log('Formatted dateOfBirth:', formattedDate)
@@ -26,7 +26,8 @@ export const submitForm = async (
       return setNotice('Invalid date format');
     }
     formDataObject.dateOfBirth = formattedDate;
-  } else {
+  } 
+  else if (isRegistering && !formDataObject.dateOfBirth) {
     return setNotice('Date of birth is required');
   }
 

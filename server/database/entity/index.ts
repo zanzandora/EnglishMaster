@@ -7,4 +7,5 @@ export { Classes } from './class'
 export { ClassStudents } from './classStudent'
 export { Attendances } from './attendance'
 export { Lessons } from "./lesson"
-export {Exams} from './exam'
+export { Exams } from './exam'
+export { Results } from './result'

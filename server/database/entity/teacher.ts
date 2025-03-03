@@ -3,12 +3,9 @@ import { sql } from 'drizzle-orm/sql';
 import { Users } from './user';
 
 export const Teachers = mysqlTable('teachers', {
-  id: varchar('id', { length: 36 }).primaryKey().default(sql`UUID()`),
-  userId: varchar('userId', { length: 36 })
-    .references(() => Users.id, { onDelete: 'cascade' })
-    .unique()
-    .notNull(),
-  experience: int(),
+  id: int().autoincrement().primaryKey(),
+  userID: int().references(() => Users.id).unique().notNull(),
+  experience: int().notNull(),
   createdAt: date().default(new Date()),
   updatedAt: date().default(new Date()),
 });

@@ -1,17 +1,16 @@
-import { mysqlTable, varchar, text, date, int } from 'drizzle-orm/mysql-core';
-import { Classes } from './class';
-import { Teachers } from './teacher';
-import { sql } from 'drizzle-orm/sql';
+import { mysqlTable, varchar, date, int, mysqlEnum } from 'drizzle-orm/mysql-core'
+import { Classes } from './class'
+import { Teachers } from './teacher'
 
 export const Lessons = mysqlTable('lessons', {
-  id: varchar('id', { length: 36 }).primaryKey().default(sql`UUID()`), // UUID
-  classId: varchar('classId', { length: 36 }).references(() => Classes.id, { onDelete: "cascade" }).notNull(),
-  teacherId: varchar('teacherId', { length: 36 }).references(() => Teachers.userId, { onDelete: "cascade"}).notNull(),
-  title: varchar('title', { length: 255 }).notNull(),
-  description: text('description').notNull(),
-  file_url: text('file_url').notNull(),
-  file_type: varchar('file_type', { length: 10 }).notNull(), // ['pdf', 'docx', 'pptx']
-  file_size: int('file_size').notNull(), // Kích thước file tính theo byte
+  id: int().autoincrement().primaryKey(),
+  classID: int().references(() => Classes.id).notNull(),
+  teacherID: int().references(() => Teachers.id).notNull(),
+  title: varchar({ length: 255 }).notNull(),
+  description: varchar({ length: 255 }).notNull(),
+  file_url: varchar({ length: 255 }).notNull(),
+  file_type: mysqlEnum(['pdf', 'docx', 'pptx']).notNull(),
+  file_size: int().notNull(),
   createdAt: date().default(new Date()),
   updatedAt: date().default(new Date()),
-});
+})
