@@ -1,24 +1,296 @@
 {
-  "login.title": "Login",
-  "login.username": "Username",
-  "login.password": "Password",
-  "login.forgot": "Forgot password?",
-  "login.submit": "Login",
-  "login.error": "Invalid username or password",
-  "login.registerText": "Don't have an account?",
-  "login.register": "Register",
-
-  "register.title": "Register",
-  "register.fullName": "Full Name",
-  "register.email": "Email",
-  "register.address": "Address",
-  "register.age": "Age",
-  "register.gender": "Gender",
-  "register.gender.select": "Select Gender",
-  "register.gender.male": "Male",
-  "register.gender.female": "Female",
-  "register.phoneNumber": "Phone Number",
-  "register.submit": "Register",
-  "register.loginText": "Already have an account?",
-  "register.login": "Login"
+  "login": {
+    "title": "Login",
+    "username": "Username",
+    "password": "Password",
+    "forgot": "Forgot password?",
+    "submit": "Login",
+    "error": "Invalid username or password",
+    "registerText": "Don't have an account?",
+    "register": "Register"
+  },
+  "register": {
+    "title": "Register",
+    "fullName": "Full Name",
+    "email": "Email",
+    "address": "Address",
+    "birth": "Birth",
+    "gender": {
+      "label": "Gender",
+      "select": "Select Gender",
+      "male": "Male",
+      "female": "Female"
+    },
+    "phoneNumber": "Phone Number",
+    "submit": "Register",
+    "loginText": "Already have an account?",
+    "login": "Login"
+  },
+  "menu": {
+    "home": "Home",
+    "teachers": "Teachers",
+    "students": "Students",
+    "courses": "Courses",
+    "classes": "Classes",
+    "lessons": "Lessons",
+    "exams": "Exams",
+    "assignments": "Assignments",
+    "results": "Results",
+    "attendance": "Attendance",
+    "schedule": "Schedule",
+    "report": "Report",
+    "announcements": "Announcements",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "calendar": {
+    "locale": "en-GB",
+    "events": "Events",
+    "today": "Today",
+    "day": "Day",
+    "week": "Week",
+    "month": "Month"
+  },
+  "card": {
+    "label":{
+      "students": "students",
+      "teachers": "teachers",
+      "staffs": "staffs",
+      "revenue": "revenue"
+    }
+  },
+  "chart": {
+    "title": {
+      "students": "students",
+      "studentGrowth": "Monthly Student Growth",
+      "finance":"finance"
+    },
+    "label": {
+      "boys": "boys",
+      "girls": "girls"
+    },
+    "legend": {
+      "growth": "growth",
+      "expense": "expense",
+      "income": "income"
+    }
+  },
+  "announcements":{
+    "title": "announcements"
+  },
+  "table": {
+    "teachers":{
+      "title": "Teachers",
+      "header": {
+        "info": "Info",
+        "teacherId": "Teacher ID",
+        "subjects": "Subjects",
+        "classes": "Classes",
+        "phone": "Phone",
+        "address": "Address",
+        "actions": "Actions"
+      }
+    },
+    "students": {
+      "title": "Students",
+      "header": {
+        "info": "Info",
+        "studentId": "Student ID",
+        "classes": "Classes",
+        "phone": "Phone",
+        "address": "Address",
+        "actions": "Actions"
+      }
+    },
+    "courses": {
+      "title": "Courses",
+      "header": {
+        "courseId": "Course ID",
+        "name": "Course Name",
+        "description": "Description",
+        "credits": "Credits",
+        "teachers": "Teachers",
+        "actions": "Actions"
+      }
+    },
+    "classes": {
+      "title": "Classes",
+      "header": {
+        "name": "Class Name",
+        "classId": "Class ID",
+        "course": "Course",
+        "supervisor": "Supervisor",
+        "schedule": "Schedule",
+        "capacity": "Capacity",
+        "grade": "Grade",
+        "actions": "Actions"
+      }
+    },
+    "exams": {
+      "title": "Exams",
+      "header": {
+        "name": "Exam Name",
+        "examId": "Exam ID",
+        "course": "Course",
+        "class": "Class",
+        "teacher": "Teacher",
+        "date": "Date",
+        "time": "Time",
+        "actions": "Actions"
+      }
+    },
+    "lessons": {
+      "title": "Lessons",
+      "header": {
+        "name": "Lesson Name",
+        "lessonId": "Lesson ID",
+        "course": "Course",
+        "date": "Date",
+        "topic": "Topic",
+        "classes": "Classes",
+        "teachers": "Teachers",
+        "actions": "Actions"
+      }
+    },
+    "results": {
+      "title": "Results",
+      "header": {
+        "name": "Result Name",
+        "resultId": "Result ID",
+        "student": "Student",
+        "teacher": "Teacher",
+        "class": "Class",
+        "date": "Date",
+        "score": "Score",
+        "actions": "Actions"
+      }
+    },
+    "announcements": {
+      "title": "Announcements",
+      "header": {
+        "announcementId": "Announcement ID",
+        "title": "Title",
+        "content": "Content",
+        "class": "Class",
+        "date": "Date",
+        "actions": "Actions"
+      }
+    },
+    "attendances": {
+      "title": "Attendance",
+      "header": {
+        "name": "Sutdent Name",
+        "inCharge":"Teacher Name",
+        "attendanceId": "ID",
+        "total": "Total/week",
+        "attendancePercentage": "Attendance % ",
+        "date": "Date"
+      }
+    },
+    "reports": {
+      "learning": {
+        "label": "Learning",
+        "id": "Student ID",
+        "name": "Student Name",
+        "progress": "Progress",
+        "score": "Score"
+      },
+      "teacher": {
+        "label": "Teacher",
+        "id": "Teacher ID",
+        "name": "Teacher Name",
+        "rating": "Rating"
+      },
+      "course": {
+        "label": "Course",
+        "id": "Course ID",
+        "name": "Course Name",
+        "completion": "Completion",
+        "students": "Students"
+      },
+      "finance": {
+        "label": "Finance",
+        "id": "Finance ID",
+        "category": "Category",
+        "amount": "Amount",
+        "date": "Date"
+      }
+    }
+  },
+  "filters": {
+    "teachers": {
+      "all": "All Teaachers"
+    },
+    "students": {
+      "all": "All Students"
+    },
+    "classes": {
+      "all": "All Classes"
+    }
+  },
+  "form": {
+    "actions": {
+      "message": "All data will be lost. Are you sure you want to delete",
+      "delete": "Delete",
+      "update": "Update",
+      "create": "Create"
+    },
+    "table": {
+      "teacher": "teacher",
+      "student": "student",
+      "course": "course",
+      "class": "class",
+      "lesson": "lesson",
+      "exam": "exam",
+      "assignment": "assignment",
+      "result": "result",
+      "attendance": "attendance",
+      "event": "event",
+      "announcement": "announcement"
+    },
+    "sections": {
+      "personalInformation": "Personal Information",
+      "authenticationInformation": "Authentication Information"
+    },
+    "placeholders": {
+      "select": "Select"
+    },
+    "options": {
+      "male": "Male",
+      "female": "Female"
+    },
+    "student": {
+      "titleAdd":"Create a new Student",
+      "titleEdit":"Student Updated",
+      "username": "Username",
+      "password": "Password",
+      "email": "Email",
+      "fullName": "Full Name",
+      "phone": "Phone",
+      "address": "Address",
+      "birthday": "Birthday",
+      "sex": "Sex"
+    },
+    "teacher": {
+      "titleAdd":"Create a new Teacher",
+      "titleEdit":"Teacher Updated",
+      "username": "Username",
+      "password": "Password",
+      "email": "Email",
+      "fullName": "Full Name",
+      "phone": "Phone",
+      "address": "Address",
+      "birthday": "Birthday",
+      "sex": "Sex"
+    },
+    "event": {
+      "titleAdd":"Create a new Schedule",
+      "titleEdit":"Schedule Updated",
+      "name": "Name",
+      "description": "Description",
+      "startDate": "Start Date",
+      "endDate": "End Date"
+    }
+  }
 }

@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { attendanceData as rawAttendanceData } from '@mockData/data';
-import DatePicker from 'react-datepicker';
+import DatePicker, { registerLocale } from 'react-datepicker';
+import { useTranslation } from 'react-i18next';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import SearchBoldIcon from '@components/svg/SearchBoldIcon';
@@ -11,6 +12,11 @@ import {
   isSameMonth,
   getDaysInMonth,
 } from 'date-fns';
+import { enGB } from 'date-fns/locale/en-GB';
+import { vi } from 'date-fns/locale/vi';
+
+registerLocale('en-GB', enGB);
+registerLocale('vi', vi);
 
 // Định nghĩa kiểu dữ liệu của từng học sinh
 type Student = {
@@ -22,25 +28,29 @@ type Student = {
 };
 
 // Tách cấu hình columns
-const columns = (currentWeekDays: Date[]) => [
+const columns = (currentWeekDays: Date[], t: any) => [
   {
-    header: 'Student Name',
+    header: t('table.attendances.header.name'),
     accessor: 'name',
   },
-  { header: 'Total', accessor: 'total', className: 'text-center min-w-10' },
+  {
+    header: t('table.attendances.header.total'),
+    accessor: 'total',
+  },
   ...currentWeekDays.map((date) => ({
     header: format(date, 'dd/MM'),
     accessor: format(date, 'dd/MM/yyyy'),
     className: 'text-center',
   })),
   {
-    header: 'Attendance %',
+    header: t('table.attendances.header.attendancePercentage'),
     accessor: 'attendancePercentage',
     className: 'text-center min-w-10',
   },
 ];
 
 const AttendancePage = () => {
+  const { t } = useTranslation();
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [currentWeek, setCurrentWeek] = useState<number>(1);
   const [attendances, setAttendances] = useState<Student[]>(() =>
@@ -132,7 +142,7 @@ const AttendancePage = () => {
         className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
         <td className='p-4'>{student.name}</td>
-        <td className='text-center'>{student.total}</td>
+        <td className='p-4'>{student.total}</td>
         {currentWeekDays.map((date) => {
           const formattedDate = format(date, 'dd/MM/yyyy');
           const attended = student.attendance[formattedDate] || false;
@@ -172,14 +182,16 @@ const AttendancePage = () => {
   return (
     <div className='p-4 mt-0 bg-white m-4 rounded-lg flex-1'>
       <div className='flex items-center justify-between'>
-        <h1 className='hidden md:block text-lg font-semibold'>Attendance</h1>
+        <h1 className='hidden md:block text-lg font-semibold'>
+          {t('table.attendances.title')}
+        </h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
           <select
             className='border rounded-md p-2'
             value={selectedTeacher}
             onChange={(e) => setSelectedTeacher(e.target.value)}
           >
-            <option value='All'>All Teachers</option>
+            <option value='All'>{t('filters.teachers.all')}</option>
             <option value='Teacher A'>Teacher A</option>
             <option value='Teacher B'>Teacher B</option>
           </select>
@@ -188,7 +200,7 @@ const AttendancePage = () => {
             value={selectedClass}
             onChange={(e) => setSelectedClass(e.target.value)}
           >
-            <option value='All'>All Classes</option>
+            <option value='All'>{t('filters.classes.all')}</option>
             <option value='Class 1'>Class 1</option>
             <option value='Class 2'>Class 2</option>
           </select>
@@ -196,7 +208,7 @@ const AttendancePage = () => {
             showIcon
             toggleCalendarOnIconClick
             icon={<SearchBoldIcon />}
-            locale='en-GB'
+            locale={t('calendar.locale')}
             selected={selectedDate}
             onChange={(date) => {
               setSelectedDate(date);
@@ -212,7 +224,7 @@ const AttendancePage = () => {
       </div>
       <div className='overflow-x-auto'>
         <Table
-          columns={columns(currentWeekDays)}
+          columns={columns(currentWeekDays, t)}
           data={tableData}
           renderRow={renderRow}
         />

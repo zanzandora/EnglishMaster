@@ -38,14 +38,16 @@ expressRouter.get('/', async (req, res) => {
 expressRouter.post('/add', async (req, res) => {
   const classID = req.body.classID
   const studentID = req.body.studentID
-  const date = req.body.date
   const status = req.body.status
+  const scheduleID = req.body.scheduleID
+  const checkInTime = req.body.checkInTime
 
   let missingFields: string[] = []
   if (!classID) missingFields.push('classID')
   if (!studentID) missingFields.push('studentID')
-  if (!date) missingFields.push('date')
+  if (!scheduleID) missingFields.push('scheduleID')
   if (!status) missingFields.push('status')
+  if (!checkInTime) missingFields.push('checkInTime')
 
   if (missingFields.length > 0) {
     res.status(400).send(`Missing fields: ${missingFields.join(', ')}`)
@@ -56,7 +58,8 @@ expressRouter.post('/add', async (req, res) => {
     await db.insert(Attendances).values({
       classID,
       studentID,
-      date,
+      scheduleID,
+      checkInTime,
       status,
     })
 

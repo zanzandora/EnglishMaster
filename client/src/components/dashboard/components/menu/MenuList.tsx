@@ -1,14 +1,5 @@
 import MenuItem from './MenuItem';
-
-interface MenuListProps {
-  items: {
-    icon: string;
-    label: string;
-    href: string;
-    visible: string[];
-  }[];
-  role: string;
-}
+import { MenuListProps } from '@interfaces';
 
 const MenuList = ({ items, role }: MenuListProps) => {
   return (

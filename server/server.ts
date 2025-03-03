@@ -38,6 +38,9 @@ app.use('/user', authenticateToken, (await import('./routes/database/user')).rou
 app.use('/course', authenticateToken, (await import('./routes/database/course')).router)
 app.use('/attendance', authenticateToken, (await import('./routes/database/attendance')).router)
 app.use('/class', authenticateToken, (await import('./routes/database/class')).router)
+app.use('/exam', authenticateToken, (await import('./routes/database/exam')).router)
+app.use('/lesson', authenticateToken, (await import('./routes/database/lesson')).router)
+app.use('/result', authenticateToken, (await import('./routes/database/result')).router)
 
 app.use('*all', async (req, res, next) => {
   if (req.originalUrl.startsWith('/login')) return next()

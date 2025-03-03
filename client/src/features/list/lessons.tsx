@@ -3,7 +3,7 @@ import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
 import { role, lessonsData } from '@mockData/data';
 import FormModal from '@components/common/FormModal';
-
+import { useTranslation } from 'react-i18next';
 type Lesson = {
   id: number;
   subject: string;
@@ -11,27 +11,28 @@ type Lesson = {
   teacher: string;
 };
 
-const columns = [
+const columns = (t: any) => [
   {
-    header: 'Course Name',
+    header: t('table.lessons.header.name'),
     accessor: 'name',
   },
   {
-    header: 'Class',
+    header: t('table.lessons.header.classes'),
     accessor: 'class',
   },
   {
-    header: 'Teacher',
+    header: t('table.lessons.header.teachers'),
     accessor: 'teacher',
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Actions',
+    header: t('table.lessons.header.actions'),
     accessor: 'action',
   },
 ];
 
 const LessonListPage = () => {
+  const { t } = useTranslation();
   const renderRow = (item: unknown) => {
     const lesson = item as Lesson;
     return (
@@ -60,7 +61,9 @@ const LessonListPage = () => {
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0'>
       {/* TOP */}
       <div className='flex items-center justify-between'>
-        <h1 className='hidden md:block text-lg font-semibold'>Lessons</h1>
+        <h1 className='hidden md:block text-lg font-semibold'>
+          {t('table.lessons.title')}
+        </h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
           <TableSearch />
           <div className='flex items-center gap-4 self-end'>
@@ -75,7 +78,7 @@ const LessonListPage = () => {
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={lessonsData} />
+      <Table columns={columns(t)} renderRow={renderRow} data={lessonsData} />
       {/* PAGINATION */}
       <Pagination />
     </div>

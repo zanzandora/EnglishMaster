@@ -5,7 +5,10 @@ import StudentGrowthChart from '@components/admin/charts/StudentGrowthChart';
 import FinanceChart from '@components/admin/charts/FinanceChart';
 import EventCalendar from '@components/admin/EventCalendar';
 import Announcements from '@components/admin/Announcements';
+import { useTranslation } from 'react-i18next';
+
 const Admin: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <>
       <div className='p-4 flex gap-4 flex-col md:flex-row'>
@@ -13,9 +16,9 @@ const Admin: React.FC = () => {
         <div className='w-full lg:w-2/3 flex flex-col gap-8'>
           {/* USER CARDS */}
           <div className='flex gap-4 justify-between flex-wrap'>
-            <UserCard type='student' />
-            <UserCard type='teacher' />
-            <UserCard type='staft' />
+            <UserCard type={t('card.label.students')} />
+            <UserCard type={t('card.label.teachers')} />
+            <UserCard type={t('card.label.staffs')} />
             <RevenueCard revenue={123456} />
           </div>
           {/* MIDDLE CHARTS */}

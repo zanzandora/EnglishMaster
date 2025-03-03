@@ -38,7 +38,7 @@ expressRouter.post('/add', async (req, res) => {
   const password = req.body.password
   const email = req.body.email
   const name = req.body.name
-  const age = req.body.age
+  const dateOfBirth = req.body.dateOfBirth
   const gender = req.body.gender
   const phoneNumber = req.body.phoneNumber
   const address = req.body.address
@@ -48,7 +48,7 @@ expressRouter.post('/add', async (req, res) => {
   if (!password) missingFields.push('password')
   if (!email) missingFields.push('email')
   if (!name) missingFields.push('name')
-  if (!age) missingFields.push('age')
+  if (!dateOfBirth) missingFields.push('dateOfBirth')
   if (!gender) missingFields.push('gender')
   if (!phoneNumber) missingFields.push('phoneNumber')
   if (!address) missingFields.push('address')
@@ -64,7 +64,7 @@ expressRouter.post('/add', async (req, res) => {
       password,
       email,
       name,
-      age,
+      dateOfBirth,
       gender,
       phoneNumber,
       address,

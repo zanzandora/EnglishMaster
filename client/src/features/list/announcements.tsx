@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
@@ -11,27 +12,28 @@ type Announcement = {
   date: string;
 };
 
-const columns = [
+const columns = (t: any) => [
   {
-    header: 'Title',
+    header: t('table.announcements.header.title'),
     accessor: 'title',
   },
   {
-    header: 'Class',
+    header: t('table.announcements.header.class'),
     accessor: 'class',
   },
   {
-    header: 'Date',
+    header: t('table.announcements.header.date'),
     accessor: 'date',
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Actions',
+    header: t('table.announcements.header.actions'),
     accessor: 'action',
   },
 ];
 
 const AnnouncementListPage = () => {
+  const { t } = useTranslation();
   const renderRow = (item: unknown) => {
     const announcement = item as Announcement;
     return (
@@ -76,7 +78,9 @@ const AnnouncementListPage = () => {
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0'>
       {/* TOP */}
       <div className='flex items-center justify-between'>
-        <h1 className='hidden md:block text-lg font-semibold'>Annoucements</h1>
+        <h1 className='hidden md:block text-lg font-semibold'>
+          {t('table.announcements.title')}
+        </h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
           <TableSearch />
           <div className='flex items-center gap-4 self-end'>
@@ -94,7 +98,11 @@ const AnnouncementListPage = () => {
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={announcementsData} />
+      <Table
+        columns={columns(t)}
+        renderRow={renderRow}
+        data={announcementsData}
+      />
       {/* PAGINATION */}
       <Pagination />
     </div>

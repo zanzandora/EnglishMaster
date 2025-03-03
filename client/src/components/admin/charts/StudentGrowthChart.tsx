@@ -8,6 +8,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import { useTranslation } from 'react-i18next';
 
 const data = [
   {
@@ -61,10 +62,13 @@ const data = [
 ];
 
 const StudentGrowthChart = () => {
+  const { t } = useTranslation();
   return (
     <div className='bg-white rounded-lg p-4 h-full'>
       <div className='flex justify-between items-center'>
-        <h1 className='text-lg font-semibold'>Monthly Student Growth</h1>
+        <h1 className='text-lg font-semibold capitalize'>
+          {t('chart.title.studentGrowth')}
+        </h1>
       </div>
       <ResponsiveContainer width='100%' height='90%'>
         <BarChart width={500} height={300} data={data} barSize={20}>
@@ -78,11 +82,13 @@ const StudentGrowthChart = () => {
           <YAxis axisLine={false} tick={{ fill: '#d1d5db' }} tickLine={false} />
           <Tooltip
             contentStyle={{ borderRadius: '10px', borderColor: 'lightgray' }}
+            formatter={(value, name) => [value, t(`chart.legend.${name}`)]}
           />
           <Legend
             align='left'
             verticalAlign='top'
             wrapperStyle={{ paddingTop: '20px', paddingBottom: '40px' }}
+            formatter={() => t('chart.legend.growth')}
           />
           <Bar
             dataKey='growth'

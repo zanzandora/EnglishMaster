@@ -2,87 +2,72 @@ import FormModal from '@components/common/FormModal';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import { role, teachersData } from '@mockData/data';
+import { role, mockTeachers, mockUsers } from '@mockData/mockData';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import usePagination from 'hooks/usePagination';
 
-type Teacher = {
-  id: number;
-  teacherId: string;
-  name: string;
-  email?: string;
-  photo: string;
-  phone: string;
-  subjects: string[];
-  classes: string[];
-  address: string;
-};
-
-const columns = [
+const columns = (t: any) => [
   {
-    header: 'Info',
+    header: t('table.teachers.header.info'),
     accessor: 'info',
   },
   {
-    header: 'Teacher ID',
+    header: t('table.teachers.header.teacherId'),
     accessor: 'teacherId',
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Subjects',
-    accessor: 'subjects',
-    className: 'hidden md:table-cell',
-  },
-  {
-    header: 'Classes',
-    accessor: 'classes',
-    className: 'hidden md:table-cell',
-  },
-  {
-    header: 'Phone',
+    header: t('table.teachers.header.phone'),
     accessor: 'phone',
     className: 'hidden lg:table-cell',
   },
   {
-    header: 'Address',
+    header: t('table.teachers.header.address'),
     accessor: 'address',
     className: 'hidden lg:table-cell',
   },
   {
-    header: 'Actions',
+    header: t('table.teachers.header.actions'),
     accessor: 'action',
   },
 ];
 
 const TeacherListPage = () => {
-  const renderRow = (item: unknown) => {
-    const teacher = item as Teacher;
+  const { t } = useTranslation();
+  const { currentData, currentPage, totalPages, setCurrentPage } =
+    usePagination(mockTeachers, 10);
+
+  const userMap = new Map(mockUsers.map((u) => [u.id, u]));
+
+  const renderRow = (item: any) => {
+    const getTeacherEmail =
+      userMap.get(item.user_id)?.email || 'Dont have email';
     return (
       <>
         <tr
-          key={teacher.id}
+          key={item.teacher_code}
           className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
         >
-          <td className='flex teachers-center gap-4 p-4'>
+          <td className='flex item-center gap-4 p-4'>
             <img
-              src={teacher.photo}
+              src={item.photo}
               alt=''
               width={40}
               height={40}
               className='md:hidden xl:block w-10 h-10 rounded-full object-cover'
             />
             <div className='flex flex-col'>
-              <h3 className='font-semibold'>{teacher.name}</h3>
-              <p className='text-xs text-gray-500'>{teacher?.email}</p>
+              <h3 className='font-semibold'>{item.full_name}</h3>
+              <p className='text-xs text-gray-500'>{getTeacherEmail}</p>
             </div>
           </td>
-          <td className='hidden md:table-cell'>{teacher.teacherId}</td>
-          <td className='hidden md:table-cell'>{teacher.subjects.join(',')}</td>
-          <td className='hidden md:table-cell'>{teacher.classes.join(',')}</td>
-          <td className='hidden md:table-cell'>{teacher.phone}</td>
-          <td className='hidden md:table-cell'>{teacher.address}</td>
+          <td className='hidden md:table-cell'>{item.userId}</td>
+          <td className='hidden md:table-cell'>{item.phone}</td>
+          <td className='hidden md:table-cell'>{item.address}</td>
           <td>
             <div className='flex teachers-center gap-2'>
-              <Link to={`/admin/list/teachers/${teacher.id}`}>
+              <Link to={`/admin/list/teachers/${item.teacher_code}`}>
                 <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgViewIcon'>
                   <img
                     src='/view.png'
@@ -95,8 +80,16 @@ const TeacherListPage = () => {
               </Link>
               {role === 'admin' && (
                 <>
-                  <FormModal table='teacher' type='update' id={teacher.id} />
-                  <FormModal table='teacher' type='delete' id={teacher.id} />
+                  <FormModal
+                    table='teacher'
+                    type='update'
+                    id={item.teacher_code}
+                  />
+                  <FormModal
+                    table='teacher'
+                    type='delete'
+                    id={item.teacher_code}
+                  />
                 </>
               )}
             </div>
@@ -109,8 +102,10 @@ const TeacherListPage = () => {
   return (
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0'>
       {/* TOP */}
-      <div className='flex teachers-center justify-between'>
-        <h1 className='hidden md:block text-lg font-semibold'>Teachers</h1>
+      <div className='flex item-center justify-between'>
+        <h1 className='hidden md:block text-lg font-semibold'>
+          {t('table.teachers.title')}
+        </h1>
         <div className='flex flex-col md:flex-row teachers-center gap-4 w-full md:w-auto'>
           <TableSearch />
           <div className='flex teachers-center gap-4 self-end'>
@@ -125,9 +120,13 @@ const TeacherListPage = () => {
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={teachersData} />
+      <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
       {/* PAGINATION */}
-      <Pagination />
+      <Pagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };

@@ -1,23 +1,24 @@
-import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
-import { blueTextBottom, submitForm } from './login/functions'
-import { hideInvalidate, showInvalidate } from './login/validation'
-import LanguagePopover from '@components/dashboard/components/navBar/LanguagePopover'
+import { blueTextBottom, submitForm } from './login/functions';
+import { hideInvalidate, showInvalidate } from './login/validation';
+import LanguagePopover from '@components/dashboard/components/navBar/LanguagePopover';
 
 const Login = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const [isRegistering, setIsRegistering] = useState(false)
+  const [isRegistering, setIsRegistering] = useState(false);
 
-  const [notice, setNotice] = useState('')
+  const [notice, setNotice] = useState('');
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (document.cookie.includes('token=')) navigate('/admin', { replace: true })
-  }, [])
+    if (document.cookie.includes('token='))
+      navigate('/admin', { replace: true });
+  }, [navigate]);
 
   return (
     <>
@@ -50,9 +51,7 @@ const Login = () => {
                 <div className='-mt-5'>
                   <span className='mx-auto select-none mb-2 '>
                     <h1 className='text-2xl font-bold '>
-                      {isRegistering
-                        ? t('register.title')
-                        : t('login.title')}
+                      {isRegistering ? t('register.title') : t('login.title')}
                     </h1>
                   </span>
                 </div>
@@ -171,15 +170,14 @@ const Login = () => {
                         <div className='flex flex-col'>
                           <label
                             className='block text-md mb-0.5 ml-2'
-                            htmlFor='age'
+                            htmlFor='dateOfBirth'
                           >
-                            {t('register.age')}
+                            {t('register.birth')}
                           </label>
                           <input
                             className='px-4 w-full border-2 py-2 rounded-md text-sm outline-none'
-                            type='text'
-                            name='age'
-                            placeholder={t('register.age')}
+                            type='date'
+                            name='dateOfBirth'
                             onInvalid={showInvalidate}
                             onInput={hideInvalidate}
                             required
@@ -192,7 +190,7 @@ const Login = () => {
                             className='block text-md mb-0.5 ml-2'
                             htmlFor='gender'
                           >
-                            {t('register.gender')}
+                            {t('register.gender.label')}
                           </label>
                           <select
                             name='gender'
@@ -203,8 +201,12 @@ const Login = () => {
                             <option value='select' disabled>
                               {t('register.gender.select')}
                             </option>
-                            <option value='male'>{t('register.gender.male')}</option>
-                            <option value='female'>{t('register.gender.female')}</option>
+                            <option value='male'>
+                              {t('register.gender.male')}
+                            </option>
+                            <option value='female'>
+                              {t('register.gender.female')}
+                            </option>
                           </select>
                         </div>
 
@@ -260,7 +262,7 @@ const Login = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

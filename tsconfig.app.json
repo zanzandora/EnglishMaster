@@ -3,11 +3,7 @@
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "ESNext",
     "useDefineForClassFields": true,
-    "lib": [
-      "ESNext",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
     /* Bundler mode */
@@ -26,24 +22,14 @@
     /* Define Alias */
     "baseUrl": "./client/src",
     "paths": {
-      "@components/*": [
-        "components/*"
-      ],
-      "@mockData/*": [
-        "mockData/*"
-      ],
-      "@list/*": [
-        "features/list/*"
-      ],
-      "@interfaces/*": [
-        "interfaces/*"
-      ],
-      "@interfaces": [
-        "interfaces"
-      ]
+      "@components/*": ["components/*"],
+      "@mockData/*": ["mockData/*"],
+      "@list/*": ["features/list/*"],
+      "@interfaces/*": ["interfaces/*"],
+      "@interfaces": ["interfaces"],
+      "@services/*": ["services/*"],
+      "@utils/*": ["utils/*"]
     }
   },
-  "include": [
-    "client"
-  ]
+  "include": ["client"]
 }

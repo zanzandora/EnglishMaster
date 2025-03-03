@@ -50,6 +50,9 @@
 .rbc-time-slot:not(.rbc-today .rbc-time-slot){
   background-color: #eff4f7;
 }
+.rbc-selected-cell {
+  background-color: rgb(240,253,250) !important;
+}
 
 /* CALENDAR WRAPPER  */
 .calendar-wrapper{

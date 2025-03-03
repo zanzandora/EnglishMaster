@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import DatePicker from 'react-datepicker';
+import { useTranslation } from 'react-i18next';
 import Table from '@components/common/table/Table';
 import Pagination from '@components/common/Pagination';
 
 type ReportData = {
   learning: { id: number; name: string; progress: string; score: string }[];
-  teacher: { id: number; name: string; rating: string; sessions: number }[];
+  teacher: { id: number; name: string; rating: string }[];
   course: {
     id: number;
     name: string;
@@ -24,8 +25,8 @@ const data: ReportData = {
     { id: 5, name: 'Trần Thị B', progress: '60%', score: '70/100' },
   ],
   teacher: [
-    { id: 1, name: 'GV. Lê Văn C', rating: '4.8', sessions: 20 },
-    { id: 2, name: 'GV. Phạm Văn D', rating: '4.5', sessions: 18 },
+    { id: 1, name: 'GV. Lê Văn C', rating: '4.8' },
+    { id: 2, name: 'GV. Phạm Văn D', rating: '4.5 ' },
   ],
   course: [
     { id: 1, name: 'Tiếng Anh Cơ Bản', completion: '75%', students: 30 },
@@ -38,11 +39,12 @@ const data: ReportData = {
 };
 
 const ReportPage = () => {
+  const { t } = useTranslation();
   const [selectedReport, setSelectedReport] =
     useState<keyof ReportData>('learning');
 
   const columns = Object.keys(data[selectedReport][0] || {}).map((key) => ({
-    header: key.charAt(0).toUpperCase() + key.slice(1),
+    header: t(`table.reports.${selectedReport}.${key}`),
     accessor: key,
     className: 'p-2 border-b',
   }));
@@ -91,7 +93,7 @@ const ReportPage = () => {
             }`}
             onClick={() => setSelectedReport(report.key as keyof ReportData)}
           >
-            {report.label}
+            {t(`table.reports.${report.key}.label`)}
           </button>
         ))}
       </div>
@@ -107,6 +109,7 @@ const ReportPage = () => {
           />
         </div>
         <DatePicker
+          locale={t('calendar.locale')}
           selected={startDate}
           onChange={(date) => setStartDate(date || new Date())}
           selectsStart
@@ -116,6 +119,7 @@ const ReportPage = () => {
           portalId='root'
         />
         <DatePicker
+          locale={t('calendar.locale')}
           selected={endDate}
           onChange={(date) => setEndDate(date || new Date())}
           selectsEnd

@@ -3,82 +3,85 @@ import { Link } from 'react-router-dom';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import { role, studentsData } from '@mockData/data';
+import {
+  role,
+  mockStudents,
+  mockClassStudents,
+  mockClasses,
+} from '@mockData/mockData';
 import FormModal from '@components/common/FormModal';
+import { useTranslation } from 'react-i18next';
+import usePagination from 'hooks/usePagination';
+import useRelationMapper from 'hooks/useRelationMapper';
 
-type Student = {
-  id: number;
-  studentId: string;
-  name: string;
-  email?: string;
-  photo: string;
-  phone?: string;
-  experience: number;
-  class: string;
-  address: string;
-};
-
-const columns = [
+const columns = (t: any) => [
   {
-    header: 'Info',
+    header: t('table.students.header.info'),
     accessor: 'info',
   },
   {
-    header: 'Student ID',
+    header: t('table.students.header.studentId'),
     accessor: 'studentId',
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Experience',
-    accessor: 'experience',
+    header: t('table.students.header.classes'),
+    accessor: 'classes',
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Phone',
+    header: t('table.students.header.phone'),
     accessor: 'phone',
     className: 'hidden lg:table-cell',
   },
   {
-    header: 'Address',
+    header: t('table.students.header.address'),
     accessor: 'address',
     className: 'hidden lg:table-cell',
   },
   {
-    header: 'Actions',
+    header: t('table.students.header.actions'),
     accessor: 'action',
   },
 ];
 
 const StudentListPage = () => {
-  const renderRow = (item: unknown) => {
-    const student = item as Student;
+  const { t } = useTranslation();
+  const students = useRelationMapper(mockStudents, {
+    studentId: mockClassStudents, // Liên kết student_code với classStudents
+    classId: mockClasses, // Liên kết classId với classes
+  });
+  const { currentData, currentPage, totalPages, setCurrentPage } =
+    usePagination(students, 10);
+
+  const renderRow = (item: any) => {
     return (
       <tr
-        key={student.id}
+        key={item.studentId}
         className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
         <td className='flex items-center gap-4 p-4'>
           <img
-            src={student.photo}
+            src={item.photo}
             alt=''
             width={40}
             height={40}
             className='md:hidden xl:block w-10 h-10 rounded-full object-cover'
           />
           <div className='flex flex-col'>
-            <h3 className='font-semibold'>{student.name}</h3>
-            <p className='text-xs text-gray-500'>{student.class}</p>
+            <h3 className='font-semibold'>{item.fullName}</h3>
+            <p className='text-xs text-gray-500'>{item.email}</p>
           </div>
         </td>
-        <td className='hidden md:table-cell'>{student.studentId}</td>
+        <td className='hidden md:table-cell'>{item.id}</td>
         <td className='hidden md:table-cell'>
-          {student.experience !== undefined ? student.experience : 'N/A'}
+          {item.classId ? item.classId.className : 'No class assigned'}
         </td>
-        <td className='hidden md:table-cell'>{student.phone}</td>
-        <td className='hidden md:table-cell'>{student.address}</td>
+        <td className='hidden md:table-cell'>{item.phone}</td>
+        <td className='hidden md:table-cell'>{item.address}</td>
         <td>
           <div className='flex items-center gap-2'>
-            <Link to={`/admin/list/students/${student.id}`}>
+            <Link to={`/admin/list/students/${item.id}`}>
               <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgViewIcon'>
                 <img
                   src='/view.png'
@@ -91,8 +94,26 @@ const StudentListPage = () => {
             </Link>
             {role === 'admin' && (
               <>
-                <FormModal table='student' type='update' id={student.id} />
-                <FormModal table='student' type='delete' id={student.id} />
+                <FormModal
+                  table='student'
+                  type='update'
+                  id={item.student_code}
+                  data={{
+                    id: item.student_code,
+                    email: item.email,
+                    fullName: item.fullName,
+                    phone: item.phone,
+                    address: item.address,
+                    dateOfBirth: item.dateOfBirth,
+                    gender: item.gender,
+                    img: item.photo,
+                  }}
+                />
+                <FormModal
+                  table='student'
+                  type='delete'
+                  id={item.student_code}
+                />
               </>
             )}
           </div>
@@ -105,7 +126,9 @@ const StudentListPage = () => {
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0'>
       {/* TOP */}
       <div className='flex items-center justify-between'>
-        <h1 className='hidden md:block text-lg font-semibold'>Students</h1>
+        <h1 className='hidden md:block text-lg font-semibold'>
+          {t('table.students.title')}
+        </h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
           <TableSearch />
           <div className='flex items-center gap-4 self-end'>
@@ -120,9 +143,13 @@ const StudentListPage = () => {
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={studentsData} />
+      <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
       {/* PAGINATION */}
-      <Pagination />
+      <Pagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };

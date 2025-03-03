@@ -8,6 +8,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import { useTranslation } from 'react-i18next';
 
 const data = [
   {
@@ -73,10 +74,13 @@ const data = [
 ];
 
 const FinanceChart = () => {
+  const { t } = useTranslation();
   return (
     <div className='bg-white rounded-xl w-full h-full p-4'>
       <div className='flex justify-between items-center'>
-        <h1 className='text-lg font-semibold'>Finance</h1>
+        <h1 className='text-lg font-semibold capitalize'>
+          {t('chart.title.finance')}
+        </h1>
       </div>
       <ResponsiveContainer width='100%' height='90%'>
         <LineChart
@@ -104,7 +108,9 @@ const FinanceChart = () => {
             tickLine={false}
             tickMargin={20}
           />
-          <Tooltip />
+          <Tooltip
+            formatter={(value, name) => [value, t(`chart.legend.${name}`)]}
+          />
           <Legend
             align='center'
             verticalAlign='top'
@@ -113,6 +119,7 @@ const FinanceChart = () => {
               paddingBottom: '30px',
               fontWeight: 'bold',
             }}
+            formatter={(value) => t(`chart.legend.${value}`)}
           />
           <Line
             type='monotone'

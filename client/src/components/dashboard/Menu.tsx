@@ -1,4 +1,5 @@
 import MenuList from './components/menu/MenuList';
+import { useTranslation } from 'react-i18next';
 
 const basePath = {
   admin: '/admin',
@@ -6,92 +7,94 @@ const basePath = {
   student: '/student',
 };
 const role = 'admin';
-const menuItems = [
+const getMenuItems = (t: any) => [
   {
     items: [
       {
         icon: '/home.png',
-        label: 'Home',
+        label: t('menu.home'),
         href: `${basePath[role]}`,
         visible: ['admin', 'teacher', 'student', 'parent'],
       },
       {
         icon: '/teacher.png',
-        label: 'Teachers',
+        label: t('menu.teachers'),
         href: `${basePath[role]}/list/teachers`,
         visible: ['admin', 'teacher'],
       },
       {
         icon: '/student.png',
-        label: 'Students',
+        label: t('menu.students'),
         href: `${basePath[role]}/list/students`,
         visible: ['admin', 'teacher'],
       },
       {
         icon: '/subject.png',
-        label: 'Courses',
+        label: t('menu.courses'),
         href: `${basePath[role]}/list/subjects`,
         visible: ['admin'],
       },
       {
         icon: '/class.png',
-        label: 'Classes',
+        label: t('menu.classes'),
         href: `${basePath[role]}/list/classes`,
         visible: ['admin', 'teacher'],
       },
       {
         icon: '/lesson.png',
-        label: 'Lessons',
+        label: t('menu.lessons'),
         href: `${basePath[role]}/list/lessons`,
         visible: ['admin', 'teacher'],
       },
       {
         icon: '/exam.png',
-        label: 'Exams',
+        label: t('menu.exams'),
         href: `${basePath[role]}/list/exams`,
         visible: ['admin', 'teacher', 'student', 'parent'],
       },
-      {
-        icon: '/assignment.png',
-        label: 'Assignments',
-        href: `${basePath[role]}/list/assignments`,
-        visible: ['admin', 'teacher', 'student', 'parent'],
-      },
+      // {
+      //   icon: '/assignment.png',
+      //   label: t('menu.assignments'),
+      //   href: `${basePath[role]}/list/assignments`,
+      //   visible: ['admin', 'teacher', 'student', 'parent'],
+      // },
       {
         icon: '/result.png',
-        label: 'Results',
+        label: t('menu.results'),
         href: `${basePath[role]}/list/results`,
         visible: ['admin', 'teacher', 'student', 'parent'],
       },
       {
         icon: '/attendance.png',
-        label: 'Attendance',
+        label: t('menu.attendance'),
         href: `${basePath[role]}/list/attendance`,
         visible: ['admin', 'teacher', 'student', 'parent'],
       },
       {
         icon: '/calendar.png',
-        label: 'Schedule',
+        label: t('menu.schedule'),
         href: `${basePath[role]}/list/schedule`,
         visible: ['admin', 'teacher', 'student', 'parent'],
       },
       {
         icon: '/report.png',
-        label: 'Report',
+        label: t('menu.report'),
         href: `${basePath[role]}/list/reports`,
         visible: ['admin', 'teacher', 'student', 'parent'],
       },
-      {
-        icon: '/announcement.png',
-        label: 'Announcements',
-        href: `${basePath[role]}/list/announcements`,
-        visible: ['admin', 'teacher', 'student', 'parent'],
-      },
+      // {
+      //   icon: '/announcement.png',
+      //   label: t('menu.announcements'),
+      //   href: `${basePath[role]}/list/announcements`,
+      //   visible: ['admin', 'teacher', 'student', 'parent'],
+      // },
     ],
   },
 ];
 
 const Menu = () => {
+  const { t } = useTranslation();
+  const menuItems = getMenuItems(t);
   return (
     <div className='mt-4 text-sm '>
       {menuItems.map((menu, index) => (

@@ -46,11 +46,10 @@ expressRouter.post('/add', async (req, res) => {
   const password = req.body.password
   const email = req.body.email
   const name = req.body.name
-  const age = req.body.age
+  const dateOfBirth = req.body.dateOfBirth
   const gender = req.body.gender
   const phoneNumber = req.body.phoneNumber
   const address = req.body.address
-  const specialization = req.body.specialization
   const experience = req.body.experience
 
   let missingFields: string[] = []
@@ -58,11 +57,10 @@ expressRouter.post('/add', async (req, res) => {
   if (!password) missingFields.push('password')
   if (!email) missingFields.push('email')
   if (!name) missingFields.push('name')
-  if (!age) missingFields.push('age')
+  if (!dateOfBirth) missingFields.push('dateOfBirth')
   if (!gender) missingFields.push('gender')
   if (!phoneNumber) missingFields.push('phoneNumber')
   if (!address) missingFields.push('address')
-  if (!specialization) missingFields.push('specialization')
   if (!experience) missingFields.push('experience')
 
   if (missingFields.length > 0) {
@@ -76,14 +74,14 @@ expressRouter.post('/add', async (req, res) => {
       password,
       email,
       name,
-      age,
+      dateOfBirth,
       gender,
       phoneNumber,
       address,
       role: 'teacher',
     })
 
-    await db.insert(Teachers).values({ userID: insertedUser[0].insertId, specialization, experience })
+    await db.insert(Teachers).values({ userID: insertedUser[0].insertId, experience })
 
     res.send('Teacher added')
   }

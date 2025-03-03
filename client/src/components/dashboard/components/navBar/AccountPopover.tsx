@@ -1,15 +1,18 @@
-import { useState, useRef, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const AccountPopover = () => {
-  const [open, setOpen] = useState(false)
-  const navigate = useNavigate()
-  const popoverRef = useRef(null)
+  const { t } = useTranslation();
+
+  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+  const popoverRef = useRef(null);
 
   const handleLogout = async () => {
-    await fetch('/logout', { method: 'POST' })
-    navigate(0)
-  }
+    await fetch('/logout', { method: 'POST' });
+    navigate(0);
+  };
 
   // *Đóng popover khi click ra ngoài
   useEffect(() => {
@@ -18,14 +21,14 @@ const AccountPopover = () => {
         popoverRef.current &&
         !(popoverRef.current as HTMLElement).contains(event.target as Node)
       ) {
-        setOpen(false)
+        setOpen(false);
       }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
+    };
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [popoverRef])
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [popoverRef]);
 
   return (
     <div className='relative' ref={popoverRef}>
@@ -52,7 +55,7 @@ const AccountPopover = () => {
                 onClick={() => navigate('/profile')}
                 className='w-full text-left px-4 py-2 text-sm hover:bg-gray-100'
               >
-                Profile
+                {t('menu.profile')}
               </button>
             </li>
             <li>
@@ -60,7 +63,7 @@ const AccountPopover = () => {
                 onClick={() => navigate('/settings')}
                 className='w-full text-left px-4 py-2 text-sm hover:bg-gray-100'
               >
-                Settings
+                {t('menu.settings')}
               </button>
             </li>
             <li>
@@ -68,14 +71,14 @@ const AccountPopover = () => {
                 onClick={handleLogout}
                 className='w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50'
               >
-                Logout
+                {t('menu.logout')}
               </button>
             </li>
           </ul>
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default AccountPopover
+export default AccountPopover;

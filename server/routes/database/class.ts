@@ -36,18 +36,16 @@ expressRouter.get('/', async (req, res) => {
 })
 
 expressRouter.post('/add', async (req, res) => {
+  const name = req.body.name
+  const description = req.body.description
   const teacherID = req.body.teacherID
   const courseID = req.body.courseID
-  const startDate = req.body.startDate
-  const endDate = req.body.endDate
-  const schedule = req.body.schedule
 
   let missingFields: string[] = []
+  if (!name) missingFields.push('name')
+  if (!description) missingFields.push('description')
   if (!teacherID) missingFields.push('teacherID')
   if (!courseID) missingFields.push('courseID')
-  if (!startDate) missingFields.push('startDate')
-  if (!endDate) missingFields.push('endDate')
-  if (!schedule) missingFields.push('schedule')
 
   if (missingFields.length > 0) {
     res.status(400).send(`Missing fields: ${missingFields.join(', ')}`)
@@ -56,11 +54,10 @@ expressRouter.post('/add', async (req, res) => {
 
   try {
     await db.insert(Classes).values({
+      name,
+      description,
       teacherID,
       courseID,
-      startDate,
-      endDate,
-      schedule,
     })
 
     res.send('Class added')

@@ -1,10 +1,5 @@
 import { Link } from 'react-router-dom';
-
-interface MenuItemProps {
-  icon: string;
-  label: string;
-  href: string;
-}
+import { MenuItemProps } from '@interfaces';
 
 const MenuItem = ({ icon, label, href }: MenuItemProps) => {
   return (
