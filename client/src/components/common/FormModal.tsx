@@ -7,6 +7,8 @@ const StudentForm = lazy(() => import('./forms/StudentForm'));
 const CourseForm = lazy(() => import('./forms/CourseForm'));
 const ClassForm = lazy(() => import('./forms/ClassForm'));
 const LessonForm = lazy(() => import('./forms/LessonForm'));
+const ExamForm = lazy(() => import('./forms/ExamForm'));
+const ResultForm = lazy(() => import('./forms/ResultForm'));
 const EventForm = lazy(() => import('./forms/EventForm'));
 const ShiftForm = lazy(() => import('./forms/ShiftForm'));
 
@@ -22,6 +24,8 @@ const forms: {
   course: (type, data) => <CourseForm type={type} data={data} />,
   class: (type, data) => <ClassForm type={type} data={data} />,
   lesson: (type, data) => <LessonForm type={type} data={data} />,
+  exam: (type, data) => <ExamForm type={type} data={data} />,
+  result: (type, data) => <ResultForm type={type} data={data} />,
   event: (type, data) => <EventForm type={type} data={data} />,
   shift: (type, data, handleSubmit) => (
     <ShiftForm type={type} data={data} handleSubmit={handleSubmit} />

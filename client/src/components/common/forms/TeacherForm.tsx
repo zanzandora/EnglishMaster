@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import InputField from '../InputField';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
+import FileUploadModal from '../FileUploadModal';
 
 // Tạo schema bằng Zod
 const TeacherSchema = z.object({
@@ -19,6 +20,10 @@ const TeacherSchema = z.object({
   photo: z.string().min(1, 'Photo is required'),
   dateOfBirth: z.string().min(1, 'Birthday is required'),
   gender: z.enum(['male', 'female'], { message: 'Sex is required!' }),
+
+  qualification: z.string().min(1, 'Qualification is required'),
+  specialization: z.string().min(1, 'Specialization is required'),
+  experience: z.number().min(1, 'Experience is required'),
 });
 
 // Tạo TypeScript type từ schema Zod
@@ -48,8 +53,13 @@ const TeacherForm = ({
       photo: '',
       dateOfBirth: '',
       gender: '',
+      qualification: '',
+      specialization: '',
+      experience: 0,
     },
   });
+
+  const [activeTab, setActiveTab] = useState('personalInformation');
 
   const onSubmit = (formData: TeacherFormData) => {
     console.log('Submitted Data:', formData);
@@ -60,8 +70,8 @@ const TeacherForm = ({
     <form className='flex flex-col gap-8' onSubmit={handleSubmit(onSubmit)}>
       <h1 className='text-xl font-semibold'>
         {type === 'create'
-          ? t('form.Teacher.titleAdd')
-          : t('form.Teacher.titleEdit')}
+          ? t('form.teacher.titleAdd')
+          : t('form.teacher.titleEdit')}
       </h1>
       <span className='text-xs text-gray-400 font-medium'>
         {t('form.sections.authenticationInformation')}
@@ -92,61 +102,110 @@ const TeacherForm = ({
           className='min-w-full'
         />
       </div>
-      <span className='text-xs text-gray-400 font-medium'>
-        {t('form.sections.personalInformation')}
-      </span>
-      <div className='flex justify-between flex-wrap gap-4'>
-        <div className='flex justify-between items-center flex-1 gap-8'>
-          <InputField
-            label={t('form.teacher.fullName')}
-            name='fullName'
-            register={register}
-            error={errors.fullName}
-            className='flex-1'
-          />
-          <InputField
-            label={t('form.teacher.phone')}
-            name='phone'
-            register={register}
-            error={errors.phone}
-            className='flex-1'
-          />
-        </div>
-        <InputField
-          label={t('form.teacher.address')}
-          name='address'
-          register={register}
-          error={errors.address}
-          className='min-w-full'
-        />
-        <div className='flex gap-4 items-center justify-start min-w-full'>
-          <InputField
-            label={t('form.teacher.birthday')}
-            name='dateOfBirth'
-            type='date'
-            register={register}
-            error={errors.dateOfBirth}
-          />
-          <InputField
-            label={t('form.teacher.sex')}
-            name='gender'
-            register={register}
-            error={errors.gender}
+      <div className='flex gap-4 items-center justify-start space-x-4'>
+        <span className='text-xs text-gray-400 font-medium'>
+          <button
+            type='button'
+            className={` ${
+              activeTab === 'personalInformation'
+                ? 'border-b-2 border-blue-500'
+                : ''
+            }`}
+            onClick={() => setActiveTab('personalInformation')}
           >
-            <option value=''>{t('form.placeholders.select')}</option>
-            <option value='male'>{t('form.options.male')}</option>
-            <option value='female'>{t('form.options.female')}</option>
-          </InputField>
-          <InputField
-            label='Upload photo'
-            type='file'
-            inputProps={{ accept: 'image/*' }}
-            onFileChange={(file) => setSelectedFile(file)} // Cập nhật state
-            name='photo'
-            register={register}
-            className='flex-1'
-          />
-        </div>
+            {t('form.sections.personalInformation')}
+          </button>
+        </span>
+        <span className='text-xs text-gray-400 font-medium'>
+          <button
+            type='button'
+            className={` ${
+              activeTab === 'professionalInformation'
+                ? 'border-b-2 border-blue-500'
+                : ''
+            }`}
+            onClick={() => setActiveTab('professionalInformation')}
+          >
+            Professional Information
+          </button>
+        </span>
+      </div>
+      <div className='flex justify-between flex-wrap gap-4'>
+        {activeTab === 'personalInformation' && (
+          <>
+            <div className='flex justify-between items-center flex-1 gap-8'>
+              <InputField
+                label={t('form.teacher.fullName')}
+                name='fullName'
+                register={register}
+                error={errors.fullName}
+                className='flex-1'
+              />
+              <InputField
+                label={t('form.teacher.phone')}
+                name='phone'
+                register={register}
+                error={errors.phone}
+                className='flex-1'
+              />
+            </div>
+            <InputField
+              label={t('form.teacher.address')}
+              name='address'
+              register={register}
+              error={errors.address}
+              className='min-w-full'
+            />
+            <div className='flex gap-4 items-center justify-start min-w-full'>
+              <InputField
+                label={t('form.teacher.birthday')}
+                name='dateOfBirth'
+                type='date'
+                register={register}
+                error={errors.dateOfBirth}
+              />
+              <InputField
+                label={t('form.teacher.sex')}
+                name='gender'
+                register={register}
+                error={errors.gender}
+              >
+                <option value=''>{t('form.placeholders.select')}</option>
+                <option value='male'>{t('form.options.male')}</option>
+                <option value='female'>{t('form.options.female')}</option>
+              </InputField>
+              <div className='mt-5'>
+                <FileUploadModal />
+              </div>
+            </div>
+          </>
+        )}
+
+        {activeTab === 'professionalInformation' && (
+          <>
+            <InputField
+              label={t('form.teacher.qualification')}
+              name='qualification'
+              register={register}
+              error={errors.qualification}
+              className='min-w-full'
+            />
+            <InputField
+              label={t('form.teacher.specialization')}
+              name='specialization'
+              register={register}
+              error={errors.specialization}
+              className='min-w-full'
+            />
+            <InputField
+              label={t('form.teacher.experience')}
+              type='number'
+              name='experience'
+              register={register}
+              error={errors.experience}
+            />
+          </>
+        )}
       </div>
       <button className='bg-blue-400 text-white p-2 rounded-md'>
         {type === 'create'

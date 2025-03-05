@@ -724,7 +724,7 @@ export const resultsData = [
     teacher: 'Nguyễn Nhật Ánh',
     student: 'Nguyễn Văn A',
     date: '2025-01-01',
-    type: 'Kiểmexam', // Hoặc 'Bài thi'
+    type: 'exam', // Hoặc 'Bài thi'
     score: 90,
   },
   {

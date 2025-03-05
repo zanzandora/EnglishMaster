@@ -2,19 +2,17 @@ import { Link } from 'react-router-dom';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import { resultsData } from '@mockData/data';
+import {
+  role,
+  mockScores,
+  mockExams,
+  mockStudents,
+  mockClasses,
+} from '@mockData/mockData';
 import { useTranslation } from 'react-i18next';
-
-type Result = {
-  id: number;
-  subject: string;
-  class: string;
-  teacher: string;
-  student: string;
-  type: 'exam' | 'assignment';
-  date: string;
-  score: number;
-};
+import FormModal from '@components/common/FormModal';
+import useRelationMapper from 'hooks/useRelationMapper';
+import usePagination from 'hooks/usePagination';
 
 const columns = (t: any) => [
   {
@@ -30,11 +28,11 @@ const columns = (t: any) => [
     accessor: 'score',
     className: 'hidden md:table-cell',
   },
-  {
-    header: t('table.results.header.teacher'),
-    accessor: 'teacher',
-    className: 'hidden md:table-cell',
-  },
+  // {
+  //   header: t('table.results.header.teacher'),
+  //   accessor: 'teacher',
+  //   className: 'hidden md:table-cell',
+  // },
   {
     header: t('table.results.header.class'),
     accessor: 'class',
@@ -46,6 +44,11 @@ const columns = (t: any) => [
     className: 'hidden md:table-cell',
   },
   {
+    header: t('table.results.header.status'),
+    accessor: 'status',
+    className: 'hidden md:table-cell',
+  },
+  {
     header: t('table.results.header.actions'),
     accessor: 'action',
   },
@@ -53,43 +56,46 @@ const columns = (t: any) => [
 
 const ResultListPage = () => {
   const { t } = useTranslation();
-  const renderRow = (item: unknown) => {
-    const result = item as Result;
+
+  const results = useRelationMapper(mockScores, {
+    examId: mockExams,
+    studentId: mockStudents,
+  });
+  const classes = useRelationMapper(mockExams, {
+    classId: mockClasses,
+  });
+
+  const { currentData, currentPage, totalPages, setCurrentPage } =
+    usePagination(results, 10);
+
+  const renderRow = (item: any) => {
     return (
       <tr
-        key={result.id}
+        key={item.id}
         className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
-        <td className='flex items-center gap-4 p-4'>{result.subject}</td>
-        <td>{result.student}</td>
-        <td className='hidden md:table-cell'>{result.score}</td>
-        <td className='hidden md:table-cell'>{result.teacher}</td>
-        <td className='hidden md:table-cell'>{result.class}</td>
-        <td className='hidden md:table-cell'>{result.date}</td>
+        <td className='flex items-center gap-4 p-4 w-[200px]'>
+          {item.examID ? item.examId.title : ' No exam was found'}
+        </td>
+        <td>
+          {item.studentId ? item.studentId.fullName : 'No Student was found'}
+        </td>
+        <td className='hidden md:table-cell'>{item.score}/10</td>
+        <td className='hidden md:table-cell'>
+          {item.classId ? item.classId.className : 'No class assigned'}
+        </td>
+        <td className='hidden md:table-cell'>
+          {item.examID ? item.examId.exam_date : 'No date was found'}
+        </td>
+        <td className='hidden md:table-cell'>{item.status}</td>
         <td>
           <div className='flex items-center gap-2'>
-            <Link to={`/list/teachers/${result.id}`}>
-              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgEditIcon'>
-                <img
-                  src='/update.png'
-                  alt=''
-                  width={16}
-                  height={16}
-                  className='w-8/12'
-                />
-              </button>
-            </Link>
-            <Link to={`/list/teachers/${result.id}`}>
-              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgDeleteIcon'>
-                <img
-                  src='/delete.png'
-                  alt=''
-                  width={16}
-                  height={16}
-                  className='w-8/12'
-                />
-              </button>
-            </Link>
+            {role === 'admin' && (
+              <>
+                <FormModal table='result' type='update' data={item} />
+                <FormModal table='result' type='delete' id={item.id} />
+              </>
+            )}
           </div>
         </td>
       </tr>
@@ -112,17 +118,18 @@ const ResultListPage = () => {
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/sort.png' alt='' width={14} height={14} />
             </button>
-            {/* {role === 'admin' && <FormModal table='class' type='create' />} */}
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
-              <img src='/create.png' alt='' width={14} height={14} />
-            </button>
+            {role === 'admin' && <FormModal table='result' type='create' />}
           </div>
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns(t)} renderRow={renderRow} data={resultsData} />
+      <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
       {/* PAGINATION */}
-      <Pagination />
+      <Pagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };

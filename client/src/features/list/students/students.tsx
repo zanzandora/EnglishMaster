@@ -47,10 +47,11 @@ const columns = (t: any) => [
 
 const StudentListPage = () => {
   const { t } = useTranslation();
-  const students = useRelationMapper(mockStudents, {
-    studentId: mockClassStudents, // Liên kết student_code với classStudents
-    classId: mockClasses, // Liên kết classId với classes
+  const students = useRelationMapper(mockClassStudents, {
+    classId: mockClasses,
+    studentId: mockStudents,
   });
+
   const { currentData, currentPage, totalPages, setCurrentPage } =
     usePagination(students, 10);
 
@@ -62,26 +63,26 @@ const StudentListPage = () => {
       >
         <td className='flex items-center gap-4 p-4'>
           <img
-            src={item.photo}
+            src={item.studentId.photo}
             alt=''
             width={40}
             height={40}
             className='md:hidden xl:block w-10 h-10 rounded-full object-cover'
           />
           <div className='flex flex-col'>
-            <h3 className='font-semibold'>{item.fullName}</h3>
-            <p className='text-xs text-gray-500'>{item.email}</p>
+            <h3 className='font-semibold'>{item.studentId.fullName}</h3>
+            <p className='text-xs text-gray-500'>{item.studentId.email}</p>
           </div>
         </td>
-        <td className='hidden md:table-cell'>{item.id}</td>
+        <td className='hidden md:table-cell'>{item.studentId.id}</td>
         <td className='hidden md:table-cell'>
           {item.classId ? item.classId.className : 'No class assigned'}
         </td>
-        <td className='hidden md:table-cell'>{item.phone}</td>
-        <td className='hidden md:table-cell'>{item.address}</td>
+        <td className='hidden md:table-cell'>{item.studentId.phone}</td>
+        <td className='hidden md:table-cell'>{item.studentId.address}</td>
         <td>
           <div className='flex items-center gap-2'>
-            <Link to={`/admin/list/students/${item.id}`}>
+            <Link to={`/admin/list/students/${item.studentId.id}`}>
               <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgViewIcon'>
                 <img
                   src='/view.png'

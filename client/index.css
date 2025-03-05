@@ -85,6 +85,13 @@
 
 }
 
+.line-clamp-custom {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Số dòng muốn hiển thị */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 
 
 

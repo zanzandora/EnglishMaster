@@ -116,7 +116,7 @@ const StudentForm = ({
           <InputField
             label='Upload photo'
             type='file'
-            inputProps={{ accept: 'image/*' }}
+            inputProps={{ accept: 'image/*', multiple: true }} // Thêm required
             onFileChange={(file) => setSelectedFile(file)} // Cập nhật state
             name='photo'
             register={register}

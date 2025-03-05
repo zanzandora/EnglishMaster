@@ -6,6 +6,7 @@ import { role, mockTeachers, mockUsers } from '@mockData/mockData';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import usePagination from 'hooks/usePagination';
+import useRelationMapper from 'hooks/useRelationMapper';
 
 const columns = (t: any) => [
   {
@@ -35,14 +36,13 @@ const columns = (t: any) => [
 
 const TeacherListPage = () => {
   const { t } = useTranslation();
+  const teachers = useRelationMapper(mockTeachers, {
+    userId: mockUsers, // Ánh xạ thêm studentId nếu cần
+  });
   const { currentData, currentPage, totalPages, setCurrentPage } =
-    usePagination(mockTeachers, 10);
-
-  const userMap = new Map(mockUsers.map((u) => [u.id, u]));
+    usePagination(teachers, 10);
 
   const renderRow = (item: any) => {
-    const getTeacherEmail =
-      userMap.get(item.user_id)?.email || 'Dont have email';
     return (
       <>
         <tr
@@ -58,12 +58,12 @@ const TeacherListPage = () => {
               className='md:hidden xl:block w-10 h-10 rounded-full object-cover'
             />
             <div className='flex flex-col'>
-              <h3 className='font-semibold'>{item.full_name}</h3>
-              <p className='text-xs text-gray-500'>{getTeacherEmail}</p>
+              <h3 className='font-semibold'>{item.name}</h3>
+              <p className='text-xs text-gray-500'>{item.email}</p>
             </div>
           </td>
           <td className='hidden md:table-cell'>{item.userId}</td>
-          <td className='hidden md:table-cell'>{item.phone}</td>
+          <td className='hidden md:table-cell'>{item.phoneNumber}</td>
           <td className='hidden md:table-cell'>{item.address}</td>
           <td>
             <div className='flex teachers-center gap-2'>

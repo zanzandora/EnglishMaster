@@ -117,10 +117,7 @@ const SingleStudentPage = () => {
                   <img src='/id_badge.png' alt='' width={14} height={14} />
                   <span className=' truncate'>Id: {student.id}</span>
                 </div>
-                <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
-                  <img src='/date.png' alt='' width={14} height={14} />
-                  <span>Birth: {student.dateOfBirth}</span>
-                </div>
+
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2 '>
                   <img src='/mail.png' alt='' width={14} height={14} />
                   <span className=' truncate'>Email: {student.email}</span>
@@ -128,6 +125,14 @@ const SingleStudentPage = () => {
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
                   <img src='/phone.png' alt='' width={14} height={14} />
                   <span>Phone: {student.phone}</span>
+                </div>
+                <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2 '>
+                  <img src='/address.png' alt='' width={14} height={14} />
+                  <span className=' truncate'>Address: {student.address}</span>
+                </div>
+                <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
+                  <img src='/date.png' alt='' width={14} height={14} />
+                  <span>Birth: {student.dateOfBirth}</span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
                   <img src='/gender.png' alt='' width={14} height={14} />

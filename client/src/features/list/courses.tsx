@@ -2,23 +2,30 @@ import FormModal from '@components/common/FormModal';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import { role, CoursesData } from '@mockData/data';
+import { role, mockCourses, mockTeachers, mockUsers } from '@mockData/mockData';
+import usePagination from 'hooks/usePagination';
+import useRelationMapper from 'hooks/useRelationMapper';
 import { useTranslation } from 'react-i18next';
-
-type Subject = {
-  id: number;
-  name: string;
-  teachers: string[];
-};
 
 const columns = (t: any) => [
   {
     header: t('table.courses.header.name'),
     accessor: 'name',
   },
+
+  {
+    header: t('table.courses.header.duration'),
+    accessor: 'duration',
+    className: 'hidden md:table-cell',
+  },
   {
     header: t('table.courses.header.teachers'),
     accessor: 'teachers',
+    className: 'hidden md:table-cell',
+  },
+  {
+    header: t('table.courses.header.fee'),
+    accessor: 'fee',
     className: 'hidden md:table-cell',
   },
   {
@@ -29,21 +36,40 @@ const columns = (t: any) => [
 
 const SubjectListPage = () => {
   const { t } = useTranslation();
-  const renderRow = (item: unknown) => {
-    const subject = item as Subject;
+  const courses = useRelationMapper(mockCourses, {
+    teacherID: mockTeachers,
+  });
+  const teachers = useRelationMapper(mockTeachers, {
+    userID: mockUsers,
+  });
+  const { currentData, currentPage, totalPages, setCurrentPage } =
+    usePagination(courses, 10);
+
+  const renderRow = (item: any) => {
     return (
       <tr
-        key={subject.id}
-        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight'
+        key={item.id}
+        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
-        <td className='flex items-center gap-4 p-4'>{subject.name}</td>
-        <td className='hidden md:table-cell'>{subject.teachers.join(',')}</td>
+        <td className='flex items-center gap-4 p-4'>
+          <div className='flex flex-col'>
+            <h3 className='font-semibold '>{item.coursename}</h3>
+            <p className='text-xs text-gray-500 ml-2 line-clamp-custom w-[200px]'>
+              {item.description}
+            </p>
+          </div>
+        </td>
+        <td className='hidden md:table-cell '>{item.duration} month</td>
+        <td className='hidden md:table-cell'>
+          {item.userID ? item.userID.name : 'No teacher assigned'}
+        </td>
+        <td className='hidden md:table-cell'>{item.fee}</td>
         <td>
           <div className='flex items-center gap-2'>
             {role === 'admin' && (
               <>
-                <FormModal table='course' type='update' data={subject} />
-                <FormModal table='course' type='delete' id={subject.id} />
+                <FormModal table='course' type='update' data={item} />
+                <FormModal table='course' type='delete' id={item.id} />
               </>
             )}
           </div>
@@ -73,9 +99,13 @@ const SubjectListPage = () => {
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns(t)} renderRow={renderRow} data={CoursesData} />
+      <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
       {/* PAGINATION */}
-      <Pagination />
+      <Pagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };

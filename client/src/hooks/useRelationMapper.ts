@@ -14,19 +14,29 @@ const useRelationMapper = (data: any[], relations: { [key: string]: any[] }): an
       return data;
     }
 
-    const relationMaps: RelationMap = new Map(
+    // Tạo Map cho từng bảng quan hệ
+    const relationMaps: RelationMap = Object.fromEntries(
       Object.entries(relations).map(([key, values]) => [
         key,
-        new Map(values.map((item) => [item[key], item])),
+        new Map(values.map((item) => [item.id, item])), // Sử dụng `id` làm khóa chính
       ])
     );
 
     try {
       return data.map((item) => {
-        return Object.keys(relations).reduce((acc, key) => {
-          acc[key] = relationMaps.get(key)?.get(item[key]) || null;
-          return acc;
-        }, { ...item });
+        const newItem = { ...item };
+
+        // Ánh xạ classId
+        if (item.classId && relationMaps.classId) {
+          newItem.classId = relationMaps.classId.get(item.classId) || null;
+        }
+
+        // Ánh xạ studentId (nếu cần)
+        if (item.studentId && relationMaps.studentId) {
+          newItem.studentId = relationMaps.studentId.get(item.studentId) || null;
+        }
+
+        return newItem;
       });
     } catch (error) {
       console.error('Error mapping relations:', error);

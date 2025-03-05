@@ -1,22 +1,30 @@
-import { Link } from 'react-router-dom';
+import FormModal from '@components/common/FormModal';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import { examsData } from '@mockData/data';
+import {
+  role,
+  mockExams,
+  mockClasses,
+  mockCourses,
+  mockTeachers,
+} from '@mockData/mockData';
+import usePagination from 'hooks/usePagination';
+import useRelationMapper from 'hooks/useRelationMapper';
 import { useTranslation } from 'react-i18next';
-
-type Exam = {
-  id: number;
-  subject: string;
-  class: string;
-  teacher: string;
-  date: string;
-};
 
 const columns = (t: any) => [
   {
     header: t('table.exams.header.name'),
     accessor: 'name',
+  },
+  {
+    header: t('table.exams.header.file'),
+    accessor: 'file',
+  },
+  {
+    header: t('table.exams.header.course'),
+    accessor: 'course',
   },
   {
     header: t('table.exams.header.class'),
@@ -40,41 +48,44 @@ const columns = (t: any) => [
 
 const ExamListPage = () => {
   const { t } = useTranslation();
-  const renderRow = (item: unknown) => {
-    const exam = item as Exam;
+
+  const exams = useRelationMapper(mockExams, {
+    classId: mockClasses,
+    courseID: mockCourses,
+    uploaderID: mockTeachers,
+  });
+
+  const { currentData, currentPage, totalPages, setCurrentPage } =
+    usePagination(exams, 10);
+
+  const renderRow = (item: any) => {
     return (
       <tr
-        key={exam.id}
+        key={item.id}
         className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
-        <td className='flex items-center gap-4 p-4'>{exam.subject}</td>
-        <td>{exam.class}</td>
-        <td className='hidden md:table-cell'>{exam.teacher}</td>
-        <td className='hidden md:table-cell'>{exam.date}</td>
+        <td className='flex items-center gap-4 p-4  w-[200px]'>{item.title}</td>
+        <td className='hidden md:table-cell'>
+          <p className='truncate w-[200px]'>{item.exam_file_url}</p>
+        </td>
+        <td className='hidden md:table-cell'>
+          {item.courseID ? item.courseID.id : 'No course assigned'}
+        </td>
+        <td className='hidden md:table-cell'>
+          {item.classID ? item.classID.className : 'No class assigned'}
+        </td>
+        <td className='hidden md:table-cell'>
+          {item.uploaderID ? item.uploaderID.id : 'No teacher assigned'}
+        </td>
+        <td className='hidden md:table-cell'>{item.exam_date}</td>
         <td>
           <div className='flex items-center gap-2'>
-            <Link to={`/list/teachers/${exam.id}`}>
-              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgEditIcon'>
-                <img
-                  src='/update.png'
-                  alt=''
-                  width={16}
-                  height={16}
-                  className='w-8/12'
-                />
-              </button>
-            </Link>
-            <Link to={`/list/teachers/${exam.id}`}>
-              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgDeleteIcon'>
-                <img
-                  src='/delete.png'
-                  alt=''
-                  width={16}
-                  height={16}
-                  className='w-8/12'
-                />
-              </button>
-            </Link>
+            {role === 'admin' && (
+              <>
+                <FormModal table='exam' type='update' data={item} />
+                <FormModal table='exam' type='delete' id={item.id} />
+              </>
+            )}
           </div>
         </td>
       </tr>
@@ -97,16 +108,18 @@ const ExamListPage = () => {
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/sort.png' alt='' width={14} height={14} />
             </button>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
-              <img src='/sort.png' alt='' width={14} height={14} />
-            </button>
+            {role === 'admin' && <FormModal table='exam' type='create' />}
           </div>
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns(t)} renderRow={renderRow} data={examsData} />
+      <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
       {/* PAGINATION */}
-      <Pagination />
+      <Pagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };

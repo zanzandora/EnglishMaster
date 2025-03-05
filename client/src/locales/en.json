@@ -109,7 +109,8 @@
         "courseId": "Course ID",
         "name": "Course Name",
         "description": "Description",
-        "credits": "Credits",
+        "duration": "Duration",
+        "fee": "Fee",
         "teachers": "Teachers",
         "actions": "Actions"
       }
@@ -119,8 +120,9 @@
       "header": {
         "name": "Class Name",
         "classId": "Class ID",
+        "teacher": "Teacher in charge",
+        "students": "Total students",
         "course": "Course",
-        "supervisor": "Supervisor",
         "schedule": "Schedule",
         "capacity": "Capacity",
         "grade": "Grade",
@@ -136,6 +138,7 @@
         "class": "Class",
         "teacher": "Teacher",
         "date": "Date",
+        "file": "Source",
         "time": "Time",
         "actions": "Actions"
       }
@@ -156,13 +159,14 @@
     "results": {
       "title": "Results",
       "header": {
-        "name": "Result Name",
+        "name": "Exam Name",
         "resultId": "Result ID",
         "student": "Student",
         "teacher": "Teacher",
         "class": "Class",
         "date": "Date",
         "score": "Score",
+        "status": "Status",
         "actions": "Actions"
       }
     },

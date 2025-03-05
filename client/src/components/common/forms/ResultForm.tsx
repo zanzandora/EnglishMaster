@@ -7,21 +7,21 @@ import { useState } from 'react';
 import FileUploadModal from '../FileUploadModal';
 
 //* Định nghĩa schema bằng cách sử dụng z.object() để mô tả cấu trúc dữ liệu và điều kiện hợp lệ.
-const LessonSchema = z.object({
+const ResultSchema = z.object({
   title: z
     .string()
     .min(3, 'Title must be at least 3 characters')
     .max(10, 'Title must be at most 10 characters'),
-  description: z.string().min(10, 'Description must be at least 10 characters'),
   class: z.string().min(1, 'Class is required'),
   teacher: z.string().min(1, 'Teacher is required'),
   course: z.string().min(1, 'Course is required'),
+  Result_date: z.string().min(1, 'Result date is required'),
 });
 
 // *Tạo TypeScript type từ schema Zod, giúp đồng bộ schema và type
-type LessonFormData = z.infer<typeof LessonSchema>;
+type ResultFormData = z.infer<typeof ResultSchema>;
 
-const LessonForm = ({
+const ResultForm = ({
   type,
   data,
 }: {
@@ -33,22 +33,22 @@ const LessonForm = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LessonFormData>({
-    // *Khi submit form, Zod sẽ tự động kiểm tra dữ liệu dựa trên LessonSchema.
-    resolver: zodResolver(LessonSchema),
+  } = useForm<ResultFormData>({
+    // *Khi submit form, Zod sẽ tự động kiểm tra dữ liệu dựa trên ResultSchema.
+    resolver: zodResolver(ResultSchema),
     defaultValues: data || {
       // *defaultValues: Đặt giá trị mặc định cho các input trên form.
       title: '',
-      description: '',
+      Result_date: '',
       class: '',
       teacher: '',
       course: '',
     },
   });
 
-  const onSubmit = (formData: LessonFormData) => {
+  const onSubmit = (formData: ResultFormData) => {
     console.log('Submitted Data:', formData);
-    alert(type === 'create' ? 'Lesson Created!' : 'Lesson Updated!');
+    alert(type === 'create' ? 'Result Created!' : 'Result Updated!');
   };
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -63,11 +63,11 @@ const LessonForm = ({
   return (
     <form className='flex flex-col gap-8' onSubmit={handleSubmit(onSubmit)}>
       <h1 className='text-xl font-semibold'>
-        {type === 'create' ? 'Create a new Lesson' : 'Update Lesson'}
+        {type === 'create' ? 'Create a new Result' : 'Update Result'}
       </h1>
       <div className='flex justify-between flex-wrap gap-4'>
         <InputField
-          label='Title'
+          label='Result name'
           name='title'
           register={register}
           error={errors.title}
@@ -104,17 +104,15 @@ const LessonForm = ({
           <option value='female'>Course B</option>
         </InputField>
         <InputField
-          label='Description'
-          name='description'
-          type='textarea'
+          label='Result date'
+          name='ResultDate'
+          type='date'
           register={register}
-          error={errors.description}
-          inputProps={{ rows: 5, placeholder: 'Nhập ghi chú...' }}
-          className='min-w-full'
+          error={errors.Result_date}
         />
         {type === 'create' && (
           <InputField
-            label='Upload file'
+            label='Upload source'
             type='file'
             inputProps={{ multiple: true }}
             onFileChange={(file) => setSelectedFile(file)} // Cập nhật state
@@ -131,4 +129,4 @@ const LessonForm = ({
   );
 };
 
-export default LessonForm;
+export default ResultForm;

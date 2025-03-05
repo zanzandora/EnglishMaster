@@ -1,20 +1,27 @@
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import { role, lessonsData } from '@mockData/data';
+import {
+  role,
+  mockLessons,
+  mockClasses,
+  mockTeachers,
+  mockUsers,
+  mockCourses,
+} from '@mockData/mockData';
 import FormModal from '@components/common/FormModal';
 import { useTranslation } from 'react-i18next';
-type Lesson = {
-  id: number;
-  subject: string;
-  class: string;
-  teacher: string;
-};
+import usePagination from 'hooks/usePagination';
+import useRelationMapper from 'hooks/useRelationMapper';
 
 const columns = (t: any) => [
   {
     header: t('table.lessons.header.name'),
     accessor: 'name',
+  },
+  {
+    header: t('table.lessons.header.course'),
+    accessor: 'course',
   },
   {
     header: t('table.lessons.header.classes'),
@@ -33,22 +40,44 @@ const columns = (t: any) => [
 
 const LessonListPage = () => {
   const { t } = useTranslation();
-  const renderRow = (item: unknown) => {
-    const lesson = item as Lesson;
+
+  const lessons = useRelationMapper(mockLessons, {
+    classID: mockClasses,
+    teacherID: mockTeachers,
+    courseID: mockCourses,
+  });
+
+  const { currentData, currentPage, totalPages, setCurrentPage } =
+    usePagination(lessons, 10);
+  const renderRow = (item: any) => {
     return (
       <tr
-        key={lesson.id}
+        key={item.id}
         className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
-        <td className='flex items-center gap-4 p-4'>{lesson.subject}</td>
-        <td>{lesson.class}</td>
-        <td className='hidden md:table-cell'>{lesson.teacher}</td>
+        <td className='flex items-center gap-4 p-4'>
+          <div className='flex flex-col'>
+            <h3 className='font-semibold'>{item.title}</h3>
+            <p className='text-xs text-gray-500 w-[200px] line-clamp-custom'>
+              {item.description}
+            </p>
+          </div>
+        </td>
+        <td className='hidden md:table-cell'>
+          {item.courseID ? item.courseID.coursename : 'No course assigned'}
+        </td>
+        <td className='hidden md:table-cell'>
+          {item.classID ? item.classID.className : 'No class assigned'}
+        </td>
+        <td className='hidden md:table-cell'>
+          {item.teacherID ? item.teacherID.name : 'No teacher assigned'}
+        </td>
         <td>
           <div className='flex items-center gap-2'>
             {role === 'admin' && (
               <>
-                <FormModal table='lesson' type='update' data={lesson} />
-                <FormModal table='lesson' type='delete' id={lesson.id} />
+                <FormModal table='lesson' type='update' data={item} />
+                <FormModal table='lesson' type='delete' id={item.id} />
               </>
             )}
           </div>
@@ -78,9 +107,13 @@ const LessonListPage = () => {
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns(t)} renderRow={renderRow} data={lessonsData} />
+      <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
       {/* PAGINATION */}
-      <Pagination />
+      <Pagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };

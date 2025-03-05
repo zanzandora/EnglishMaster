@@ -7,9 +7,9 @@ type InputFieldProps = {
   name: string;
   defaultValue?: string;
   error?: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | string;
-  inputProps?:
-    | React.InputHTMLAttributes<HTMLInputElement>
-    | React.SelectHTMLAttributes<HTMLSelectElement>;
+  inputProps?: React.InputHTMLAttributes<HTMLInputElement> &
+    React.SelectHTMLAttributes<HTMLSelectElement> &
+    React.TextareaHTMLAttributes<HTMLTextAreaElement>;
   className?: string;
   children?: ReactNode;
   onFileChange?: (files: FileList | null) => void;
@@ -27,37 +27,57 @@ const InputField: FC<InputFieldProps> = ({
   children,
   onFileChange,
 }: InputFieldProps) => {
+  const InputComponents: Record<string, JSX.Element> = {
+    file: (
+      <input
+        type='file'
+        {...inputProps}
+        className='ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full'
+        onChange={(e) => onFileChange && onFileChange(e.target.files)}
+      />
+    ),
+    textarea: (
+      <textarea
+        {...register(name)}
+        {...(inputProps as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
+        className='ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full resize-none'
+        defaultValue={defaultValue}
+      />
+    ),
+    select: (
+      <select
+        {...register(name)}
+        {...(inputProps as React.SelectHTMLAttributes<HTMLSelectElement>)}
+        className='ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full'
+      >
+        {children}
+      </select>
+    ),
+    default: (
+      <input
+        type={type}
+        {...register(name)}
+        {...(inputProps as React.InputHTMLAttributes<HTMLInputElement>)}
+        className='ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full'
+        defaultValue={defaultValue}
+      />
+    ),
+  };
+
   return (
     <div
-      className={` relative flex flex-col gap-2 w-full my-1 md:w-1/4 ${className}`}
+      className={`relative flex flex-col gap-2 w-full my-1 md:w-1/4 ${className}`}
     >
-      <label className='text-xs text-gray-500'>{label}</label>
-      {type === 'file' ? (
-        <input
-          type='file'
-          {...inputProps}
-          className='ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full
-          '
-          onChange={(e) => onFileChange && onFileChange(e.target.files?.[0])} // Lấy file
-        />
-      ) : children ? (
-        // Nếu có children -> dùng select
-        <select
-          {...register(name)}
-          {...inputProps}
-          className='ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full'
-        >
-          {children}
-        </select>
-      ) : (
-        <input
-          type={type}
-          {...register(name)}
-          className='ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full'
-          {...inputProps}
-          defaultValue={defaultValue}
-        />
-      )}
+      <label className='text-xs text-gray-500'>{label ? label : ''}</label>
+
+      {/* Render input tương ứng dựa trên type */}
+      {type === 'file'
+        ? InputComponents.file
+        : type === 'textarea'
+        ? InputComponents.textarea
+        : children
+        ? InputComponents.select
+        : InputComponents.default}
 
       {typeof error === 'object' && error?.message && (
         <span className='absolute left-0 top-full mt-1 text-xs text-red-400'>

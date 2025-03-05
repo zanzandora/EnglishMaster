@@ -2,22 +2,15 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod'; // !valadiaton schema
 import { zodResolver } from '@hookform/resolvers/zod';
 import InputField from '../InputField';
+import { useTranslation } from 'react-i18next';
 
 //* Định nghĩa schema bằng cách sử dụng z.object() để mô tả cấu trúc dữ liệu và điều kiện hợp lệ.
 const CourseSchema = z.object({
-  username: z
-    .string()
-    .min(3, 'Username must be at least 3 characters')
-    .max(20, 'Username must be at most 20 characters'),
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-  phone: z.string().min(1, 'Phone is required'),
-  address: z.string().min(1, 'Address is required'),
-  bloodType: z.string().min(1, 'Blood Type is required'),
-  birthday: z.string().min(1, 'Birthday is required'),
-  sex: z.enum(['male', 'female'], { message: 'Sex is required!' }),
+  courseName: z.string().min(3, 'Course name must be at least 3 characters'),
+  description: z.string().min(10, 'Description must be at least 10 characters'),
+  duration: z.coerce.number().int().positive('Duration is required'),
+  fee: z.coerce.number().int().positive('Fee is required'),
+  teacher: z.string().min(1, 'Teacher is required'),
 });
 
 // *Tạo TypeScript type từ schema Zod, giúp đồng bộ schema và type
@@ -30,6 +23,7 @@ const CourseForm = ({
   type: 'create' | 'update';
   data?: any;
 }) => {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -39,16 +33,11 @@ const CourseForm = ({
     resolver: zodResolver(CourseSchema),
     defaultValues: data || {
       // *defaultValues: Đặt giá trị mặc định cho các input trên form.
-      username: '',
-      email: '',
-      password: '',
-      firstName: '',
-      lastName: '',
-      phone: '',
-      address: '',
-      bloodType: '',
-      birthday: '',
-      sex: '',
+      courseName: '',
+      description: '',
+      duration: 0,
+      fee: 0,
+      teacher: '',
     },
   });
 
@@ -62,90 +51,48 @@ const CourseForm = ({
       <h1 className='text-xl font-semibold'>
         {type === 'create' ? 'Create a new Course' : 'Update Course'}
       </h1>
-      <span className='text-xs text-gray-400 font-medium'>
-        Authentication Information
-      </span>
+
       <div className='flex justify-between flex-wrap gap-4'>
-        <div className='flex justify-between items-center flex-1 gap-8'>
-          <InputField
-            label='Username'
-            name='username'
-            register={register}
-            error={errors.username}
-            className='flex-1 '
-          />
-          <InputField
-            label='Password'
-            name='password'
-            type='password'
-            register={register}
-            error={errors.password}
-            className='flex-1'
-          />
-        </div>
         <InputField
-          label='Email'
-          name='email'
+          label='Course Name'
+          name='courseName'
           register={register}
-          error={errors.email}
+          error={errors.courseName}
           className='min-w-full'
         />
-      </div>
-      <span className='text-xs text-gray-400 font-medium'>
-        Personal Information
-      </span>
-      <div className='flex justify-between flex-wrap gap-4'>
         <InputField
-          label='First Name'
-          name='firstName'
+          label='Teacher in charge'
+          name='teahcerInCharge'
           register={register}
-          error={errors.firstName}
+          error={errors.teacher}
+        >
+          <option value=''>{t('form.placeholders.select')}</option>
+          <option value='TeacherA'>Teacher A</option>
+          <option value='female'>Teacher B</option>
+        </InputField>
+        <InputField
+          label='Fee'
+          name='fee'
+          register={register}
+          error={errors.fee}
+        />
+
+        <InputField
+          label='Duration'
+          type='number'
+          name='duration'
+          register={register}
+          error={errors.duration}
         />
         <InputField
-          label='Last Name'
-          name='lastName'
+          label='Description'
+          type='textarea'
+          name='description'
           register={register}
-          error={errors.lastName}
+          error={errors.description}
+          inputProps={{ placeholder: 'Nhập ghi chú...', rows: 5 }}
+          className='min-w-full'
         />
-        <InputField
-          label='Phone'
-          name='phone'
-          register={register}
-          error={errors.phone}
-        />
-        <InputField
-          label='Address'
-          name='address'
-          register={register}
-          error={errors.address}
-        />
-        <InputField
-          label='Blood Type'
-          name='bloodType'
-          register={register}
-          error={errors.bloodType}
-        />
-        <InputField
-          label='Birthday'
-          name='birthday'
-          type='date'
-          register={register}
-          error={errors.birthday}
-        />
-        <div className='flex flex-col gap-2 w-full md:w-1/4'>
-          <label className='text-xs text-gray-500'>Sex</label>
-          <select
-            className='ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full'
-            {...register('sex')}
-          >
-            <option value=''>Select</option>
-            <option value='male'>Male</option>
-            <option value='female'>Female</option>
-          </select>
-          {errors.sex && (
-            <p className='text-xs text-red-400'>{errors.sex.message}</p>
-          )}
-        </div>
       </div>
       <button className='bg-blue-400 text-white p-2 rounded-md'>
         {type === 'create' ? 'Create' : 'Update'}
