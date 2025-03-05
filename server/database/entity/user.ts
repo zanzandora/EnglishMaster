@@ -10,8 +10,8 @@ export const Users = mysqlTable('users', {
   gender: mysqlEnum(['male', 'female']).notNull(),
   phoneNumber: varchar({ length: 255 }).notNull(),
   address: varchar({ length: 255 }).notNull(),
-  avatar: varchar({ length: 255 }),
-  role: mysqlEnum(['teacher', 'admin', 'student']).default('student'),
+  photo: varchar({ length: 255 }),
+  role: mysqlEnum(['teacher', 'admin']).default('admin'),
   createdAt: date().default(new Date()),
   updatedAt: date().default(new Date()),
 })

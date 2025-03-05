@@ -68,7 +68,7 @@ expressRouter.post('/add', async (req, res) => {
       gender,
       phoneNumber,
       address,
-      role: 'student',
+      role: 'admin',
     })
 
     res.send('User added')

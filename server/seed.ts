@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker'
-import { db } from './database/driver' // Import your Drizzle database instance
+import { db } from './database/driver'
 import {
   Users,
   Teachers,
@@ -61,7 +61,7 @@ const users = Array.from({ length: 20 }, () => ({
   phoneNumber: faker.phone.number(),
   address: faker.location.streetAddress(),
   photo: faker.image.avatar(),
-  role: faker.helpers.arrayElement(['teacher', 'admin', 'student']),
+  role: faker.helpers.arrayElement(['teacher', 'admin']),
   createdAt: new Date(),
   updatedAt: new Date(),
 }))
@@ -69,23 +69,26 @@ const userIDs = await db.insert(Users).values(users).$returningId()
 
 // Separate users into teachers and students
 const teachers = userIDs.filter((_, i) => users[i].role === 'teacher')
-const students = userIDs.filter((_, i) => users[i].role === 'student')
 
 // Seed Teachers
 const teacherEntries = teachers.map(({ id }) => ({
   userID: id,
   experience: faker.number.int({ min: 1, max: 20 }),
+  specialization: faker.person.jobType(),
   createdAt: new Date(),
   updatedAt: new Date(),
 }))
 const teacherIDs = await db.insert(Teachers).values(teacherEntries).$returningId()
 
 // Seed Students
-const studentEntries = students.map(({ id }) => ({
-  userID: id,
+const studentEntries = Array({ length: 20 }).map((_, i) => ({
+  name: faker.person.fullName(),
+  phoneNumber: faker.phone.number(),
+  email: faker.internet.email(),
   dateOfBirth: faker.date.birthdate(),
-  createdAt: new Date(),
-  updatedAt: new Date(),
+  gender: faker.helpers.arrayElement(['male', 'female']),
+  address: faker.location.streetAddress(),
+  photo: faker.image.avatar(),
 }))
 const studentIDs = await db.insert(Students).values(studentEntries).$returningId()
 
@@ -107,6 +110,9 @@ const classes = courseIDs.map((courseID) => ({
   courseID: courseID.id,
   name: faker.lorem.words(10),
   description: faker.lorem.paragraph(),
+  capacity: faker.number.int({ min: 20, max: 60, multipleOf: 5 }),
+  startTime: new Date(),
+  endTime: new Date(),
   createdAt: new Date(),
   updatedAt: new Date(),
 }))
@@ -131,7 +137,7 @@ const schedules = classIDs.map((classID) => ({
   createdAt: new Date(),
   updatedAt: new Date(),
 }))
-await db.insert(Schedule).values(schedules).$returningId()
+const scheduleIDs = await db.insert(Schedule).values(schedules).$returningId()
 
 // Seed Lessons
 const lessons = classIDs.map((classID) => ({
@@ -167,6 +173,8 @@ const attendances = classIDs.flatMap((classID) =>
   studentIDs.map((studentID) => ({
     classID: classID.id,
     studentID: studentID.id,
+    scheduleID: faker.helpers.arrayElement(scheduleIDs).id,
+    teacherID: faker.helpers.arrayElement(teacherIDs).id,
     date: faker.date.recent(),
     status: faker.datatype.boolean(),
     createdAt: new Date(),
