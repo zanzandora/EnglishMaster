@@ -6,6 +6,17 @@ import { db } from '../../database/driver'
 
 const expressRouter = Router()
 
+expressRouter.get('/list', async (req, res) => {
+  try {
+    let allAttendances = await db.select().from(Attendances)
+
+    res.send(allAttendances)
+  }
+  catch (err) {
+    res.status(500).send(err.toString())
+  }
+})
+
 expressRouter.get('/', async (req, res) => {
   const classID = req.body.classID
   const studentID = req.body.studentID
@@ -40,12 +51,14 @@ expressRouter.post('/add', async (req, res) => {
   const studentID = req.body.studentID
   const status = req.body.status
   const scheduleID = req.body.scheduleID
+  const teacherID = req.body.teacherID
   const checkInTime = req.body.checkInTime
 
   let missingFields: string[] = []
   if (!classID) missingFields.push('classID')
   if (!studentID) missingFields.push('studentID')
   if (!scheduleID) missingFields.push('scheduleID')
+  if (!teacherID) missingFields.push('teacherID')
   if (!status) missingFields.push('status')
   if (!checkInTime) missingFields.push('checkInTime')
 
@@ -59,6 +72,7 @@ expressRouter.post('/add', async (req, res) => {
       classID,
       studentID,
       scheduleID,
+      teacherID,
       checkInTime,
       status,
     })
@@ -81,14 +95,18 @@ expressRouter.post('/edit', async (req, res) => {
 
   const classID = req.body.classID
   const studentID = req.body.studentID
-  const date = req.body.date
   const status = req.body.status
+  const scheduleID = req.body.scheduleID
+  const teacherID = req.body.teacherID
+  const checkInTime = req.body.checkInTime
 
   let set1 = {}
   if (classID) set1['classID'] = classID
   if (studentID) set1['studentID'] = studentID
-  if (date) set1['date'] = date
   if (status) set1['status'] = status
+  if (scheduleID) set1['scheduleID'] = scheduleID
+  if (teacherID) set1['teacherID'] = teacherID
+  if (checkInTime) set1['checkInTime'] = checkInTime
 
   try {
     if (Object.keys(set1).length > 0) await db.update(Attendances).set(set1).where(eq(Attendances.id, id))

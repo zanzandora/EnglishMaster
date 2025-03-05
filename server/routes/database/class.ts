@@ -6,6 +6,17 @@ import { db } from '../../database/driver'
 
 const expressRouter = Router()
 
+expressRouter.get('/list', async (req, res) => {
+  try {
+    let allClasses = await db.select().from(Classes)
+
+    res.send(allClasses)
+  }
+  catch (err) {
+    res.status(500).send(err.toString())
+  }
+})
+
 expressRouter.get('/', async (req, res) => {
   const courseID = req.body.courseID
   const teacherID = req.body.teacherID
@@ -36,16 +47,20 @@ expressRouter.get('/', async (req, res) => {
 })
 
 expressRouter.post('/add', async (req, res) => {
-  const name = req.body.name
-  const description = req.body.description
-  const teacherID = req.body.teacherID
-  const courseID = req.body.courseID
+  let courseID = req.body.courseID
+  let teacherID = req.body.teacherID
+  let name = req.body.name
+  let capacity = req.body.capacity
+  let startTime = req.body.startTime
+  let endTime = req.body.endTime
 
   let missingFields: string[] = []
-  if (!name) missingFields.push('name')
-  if (!description) missingFields.push('description')
-  if (!teacherID) missingFields.push('teacherID')
-  if (!courseID) missingFields.push('courseID')
+  if (courseID) missingFields.push('courseID')
+  if (teacherID) missingFields.push('teacherID')
+  if (name) missingFields.push('name')
+  if (capacity) missingFields.push('capacity')
+  if (startTime) missingFields.push('startTime')
+  if (endTime) missingFields.push('endTime')
 
   if (missingFields.length > 0) {
     res.status(400).send(`Missing fields: ${missingFields.join(', ')}`)
@@ -54,10 +69,12 @@ expressRouter.post('/add', async (req, res) => {
 
   try {
     await db.insert(Classes).values({
-      name,
-      description,
-      teacherID,
       courseID,
+      teacherID,
+      name,
+      capacity,
+      startTime,
+      endTime
     })
 
     res.send('Class added')
@@ -76,18 +93,20 @@ expressRouter.post('/edit', async (req, res) => {
     return
   }
 
-  const teacherID = req.body.teacherID
   const courseID = req.body.courseID
-  const startDate = req.body.startDate
-  const endDate = req.body.endDate
-  const schedule = req.body.schedule
+  const teacherID = req.body.teacherID
+  const name = req.body.name
+  const capacity = req.body.capacity
+  const startTime = req.body.startTime
+  const endTime = req.body.endTime
 
   let set1 = {}
-  if (teacherID) set1['teacherID'] = teacherID
   if (courseID) set1['courseID'] = courseID
-  if (startDate) set1['startDate'] = startDate
-  if (endDate) set1['endDate'] = endDate
-  if (schedule) set1['schedule'] = schedule
+  if (teacherID) set1['teacherID'] = teacherID
+  if (name) set1['name'] = name
+  if (capacity) set1['capacity'] = capacity
+  if (startTime) set1['startTime'] = startTime
+  if (endTime) set1['endTime'] = endTime
 
   try {
     if (Object.keys(set1).length > 0) await db.update(Classes).set(set1).where(eq(Classes.id, id))

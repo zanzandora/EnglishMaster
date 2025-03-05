@@ -6,6 +6,17 @@ import { db } from '../../database/driver'
 
 const expressRouter = Router()
 
+expressRouter.get('/list', async (req, res) => {
+  try {
+    let allAttendances = await db.select().from(Teachers)
+
+    res.send(allAttendances)
+  }
+  catch (err) {
+    res.status(500).send(err.toString())
+  }
+})
+
 expressRouter.get('/', async (req, res) => {
   const username = req.body.username
 
@@ -51,6 +62,7 @@ expressRouter.post('/add', async (req, res) => {
   const phoneNumber = req.body.phoneNumber
   const address = req.body.address
   const experience = req.body.experience
+  const specialization = req.body.specialization
 
   let missingFields: string[] = []
   if (!username) missingFields.push('username')
@@ -62,6 +74,7 @@ expressRouter.post('/add', async (req, res) => {
   if (!phoneNumber) missingFields.push('phoneNumber')
   if (!address) missingFields.push('address')
   if (!experience) missingFields.push('experience')
+  if (!specialization) missingFields.push('specialization')
 
   if (missingFields.length > 0) {
     res.status(400).send(`Missing fields: ${missingFields.join(', ')}`)
@@ -81,7 +94,7 @@ expressRouter.post('/add', async (req, res) => {
       role: 'teacher',
     })
 
-    await db.insert(Teachers).values({ userID: insertedUser[0].insertId, experience })
+    await db.insert(Teachers).values({ userID: insertedUser[0].insertId, experience, specialization })
 
     res.send('Teacher added')
   }

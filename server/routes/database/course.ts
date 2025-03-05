@@ -6,20 +6,29 @@ import { db } from '../../database/driver'
 
 const expressRouter = Router()
 
+expressRouter.get('/list', async (req, res) => {
+  try {
+    let allCourses = await db.select().from(Courses)
+
+    res.send(allCourses)
+  }
+  catch (err) {
+    res.status(500).send(err.toString())
+  }
+})
+
 expressRouter.get('/', async (req, res) => {
   const name = req.body.name
-  const teacherID = req.body.teacherID
 
   let missingFields: string[] = []
   if (!name) missingFields.push('name')
-  if (!teacherID) missingFields.push('teacherID')
   if (missingFields.length > 0) {
     res.status(400).send(`Missing fields: ${missingFields.join(', ')}`)
     return
   }
 
   try {
-    let selectedCourses = await db.select().from(Courses).where(and(eq(Courses.name, name), eq(Courses.teacherID, teacherID)))
+    let selectedCourses = await db.select().from(Courses).where(and(eq(Courses.name, name)))
 
     if (selectedCourses.length === 0) {
       res.status(404).send(`Course "${name}" not found`)
@@ -40,14 +49,12 @@ expressRouter.post('/add', async (req, res) => {
   const description = req.body.description
   const duration = req.body.duration
   const fee = req.body.fee
-  const teacherID = req.body.teacherID
 
   let missingFields: string[] = []
   if (!name) missingFields.push('name')
   if (!description) missingFields.push('description')
   if (!duration) missingFields.push('duration')
   if (!fee) missingFields.push('fee')
-  if (!teacherID) missingFields.push('teacherID')
 
   if (missingFields.length > 0) {
     res.status(400).send(`Missing fields: ${missingFields.join(', ')}`)
@@ -60,7 +67,6 @@ expressRouter.post('/add', async (req, res) => {
       description,
       duration,
       fee,
-      teacherID,
     })
 
     res.send('Course added')
@@ -83,14 +89,12 @@ expressRouter.post('/edit', async (req, res) => {
   const description = req.body.description
   const duration = req.body.duration
   const fee = req.body.fee
-  const teacherID = req.body.teacherID
 
   let set1 = {}
   if (name) set1['name'] = name
   if (description) set1['description'] = description
   if (duration) set1['duration'] = duration
   if (fee) set1['fee'] = fee
-  if (teacherID) set1['teacherID'] = teacherID
 
   try {
     if (Object.keys(set1).length > 0) await db.update(Courses).set(set1).where(eq(Courses.id, id))

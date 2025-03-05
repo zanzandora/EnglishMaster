@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import multer from 'multer'
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
-import { and, eq } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 
 import { Exams } from '../../database/entity'
 import { db } from '../../database/driver'
@@ -18,6 +18,17 @@ const s3 = new S3Client({
 })
 
 const expressRouter = Router()
+
+expressRouter.get('/list', async (req, res) => {
+  try {
+    let allExams = await db.select().from(Exams)
+
+    res.send(allExams)
+  }
+  catch (err) {
+    res.status(500).send(err.toString())
+  }
+})
 
 expressRouter.get('/', async (req, res) => {
   const id = req.body.id
