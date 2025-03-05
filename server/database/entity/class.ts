@@ -1,6 +1,7 @@
 import { date, int, mysqlTable, varchar } from 'drizzle-orm/mysql-core'
 import { Teachers } from './teacher'
 import { Courses } from './course'
+import { sql } from 'drizzle-orm'
 
 export const Classes = mysqlTable('classes', {
   id: int().autoincrement().primaryKey(),
