@@ -9,3 +9,4 @@ export { Attendances } from './attendance'
 export { Lessons } from "./lesson"
 export { Exams } from './exam'
 export { Results } from './result'
+export { CourseTeachers } from './courseTeachers'

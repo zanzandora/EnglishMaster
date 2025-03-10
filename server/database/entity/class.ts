@@ -4,7 +4,7 @@ import { Courses } from './course'
 
 export const Classes = mysqlTable('classes', {
   id: int().autoincrement().primaryKey(),
-  courseID: int().references(() => Courses.id).notNull(),
+  courseID: int().references(() => Courses.id, {onDelete: 'cascade'}).notNull(),
   teacherID: int().references(() => Teachers.id).notNull(),
   name: varchar({ length: 255 }).notNull(),
   capacity: int().notNull(),

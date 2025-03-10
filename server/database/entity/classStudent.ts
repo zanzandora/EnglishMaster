@@ -4,6 +4,6 @@ import { Classes } from './class'
 
 export const ClassStudents = mysqlTable('class_students', {
   studentID: int().primaryKey().references(() => Students.id).notNull(),
-  classID: int().references(() => Classes.id).notNull(),
+  classID: int().references(() => Classes.id, { onDelete: 'cascade' }).notNull(),
   createdAt: date().default(new Date()),
 })

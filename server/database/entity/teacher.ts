@@ -3,7 +3,7 @@ import { Users } from './user'
 
 export const Teachers = mysqlTable('teachers', {
   id: int().autoincrement().primaryKey(),
-  userID: int().references(() => Users.id).unique().notNull(),
+  userID: int().references(() => Users.id, {onDelete: 'cascade', onUpdate:'cascade'}).unique().notNull(),
   experience: int().notNull(),
   specialization: varchar({ length: 255 }).notNull(),
   createdAt: date().default(new Date()),

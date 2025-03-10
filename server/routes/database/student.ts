@@ -1,26 +1,43 @@
 import { Router } from 'express'
 import { eq } from 'drizzle-orm'
 
-import { Students } from '../../database/entity'
+import { Students, Classes, ClassStudents, Courses  } from '../../database/entity'
 import { db } from '../../database/driver'
 
 const expressRouter = Router()
 
 expressRouter.get('/list', async (req, res) => {
   try {
-    let allStudents = await db.select().from(Students)
-
-    res.send(allStudents)
+    const allStudents = await db
+    .select({
+      id: Students.id,
+      name: Students.name,
+      email: Students.email,
+      phoneNumber: Students.phoneNumber,
+      address: Students.address,
+      photo: Students.photo,
+      dateOfBirth: Students.dateOfBirth,
+      gender: Students.gender,
+      className: Classes.name,
+      courseName: Courses.name
+    })
+    .from(Students)
+    .leftJoin(ClassStudents, eq(ClassStudents.studentID, Students.id))
+    .leftJoin(Classes, eq(ClassStudents.classID, Classes.id))
+    .leftJoin(Courses, eq(Classes.courseID, Courses.id));
+    
+    res.json(allStudents)
   }
   catch (err) {
     res.status(500).send(err.toString())
   }
 })
 
-expressRouter.get('/', async (req, res) => {
-  const id = req.body.id
-
-  let missingFields: string[] = []
+expressRouter.get('/:id', async (req, res) => {
+  const id = req.params.id
+  
+  
+  const missingFields: string[] = []
   if (!id) missingFields.push('id')
   if (missingFields.length > 0) {
     res.status(400).send(`Missing fields: ${missingFields.join(', ')}`)
@@ -28,7 +45,25 @@ expressRouter.get('/', async (req, res) => {
   }
 
   try {
-    let selectedStudent = await db.select().from(Students).where((eq(Students.id, id)))
+    const selectedStudent = await db
+      .select({
+        id: Students.id,
+        name: Students.name,
+        email: Students.email,
+        phoneNumber: Students.phoneNumber,
+        address: Students.address,
+        photo: Students.photo,
+        dateOfBirth: Students.dateOfBirth,
+        gender: Students.gender,
+        className: Classes.name,
+        courseName: Courses.name
+
+      })
+      .from(Students)
+      .leftJoin(ClassStudents, eq(ClassStudents.studentID, Students.id))
+      .leftJoin(Classes, eq(ClassStudents.classID, Classes.id))
+      .leftJoin(Courses, eq(Classes.courseID, Courses.id))
+      .where(eq(Students.id, Number(id)));
 
     if (selectedStudent.length === 0) {
       res.status(404).send(`Student "${id}" not found`)
@@ -53,7 +88,7 @@ expressRouter.post('/add', async (req, res) => {
   const address = req.body.address
   const photo = req.body.photo
 
-  let missingFields: string[] = []
+  const missingFields: string[] = []
   if (!name) missingFields.push('name')
   if (!phoneNumber) missingFields.push('phoneNumber')
   if (!email) missingFields.push('email')
@@ -102,13 +137,14 @@ expressRouter.post('/edit', async (req, res) => {
   const address = req.body.address
   const photo = req.body.photo
 
-  let set = {}
+  const set = {}
   if (email) set['email'] = email
   if (name) set['name'] = name
   if (dateOfBirth) set['dateOfBirth'] = dateOfBirth
   if (gender) set['gender'] = gender
   if (phoneNumber) set['phoneNumber'] = phoneNumber
   if (address) set['address'] = address
+  if (photo) set['photo'] = photo
 
   try {
     if (Object.keys(set).length > 0) await db.update(Students).set(set).where(eq(Students.id, id))
@@ -120,8 +156,8 @@ expressRouter.post('/edit', async (req, res) => {
   }
 })
 
-expressRouter.post('/delete', async (req, res) => {
-  const id = req.body.id
+expressRouter.delete('/delete/:id', async (req, res) => {
+  const id = req.params.id
 
   if (!id) {
     res.status(400).send('ID is required')
@@ -129,7 +165,7 @@ expressRouter.post('/delete', async (req, res) => {
   }
 
   try {
-    await db.delete(Students).where(eq(Students.id, id))
+    await db.delete(Students).where(eq(Students.id, Number(id)))
 
     res.send('Student deleted')
   }

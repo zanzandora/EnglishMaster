@@ -6,7 +6,7 @@ export const Schedule = mysqlTable(
   'schedule',
   {
     id: int().autoincrement().primaryKey(),
-    classID: int().references(() => Classes.id).notNull(),
+    classID: int().references(() => Classes.id, { onDelete: 'cascade' }).notNull(),
     sessionDate: date().default(new Date()),
     startTime: time().notNull(),
     endTime: time().notNull(),

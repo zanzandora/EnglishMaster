@@ -9,7 +9,7 @@ export const Results = mysqlTable(
   {
     id: int().autoincrement().primaryKey(),
     examID: int().references(() => Exams.id).notNull(),
-    studentID: int().references(() => Students.id).notNull(),
+    studentID: int().references(() => Students.id, {onDelete:'cascade'}).notNull(),
     score: int().notNull(),
     status: mysqlEnum(['passed', 'failed']).notNull(),
     createdAt: date().default(new Date()),

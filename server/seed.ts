@@ -1,4 +1,4 @@
-import { faker } from '@faker-js/faker'
+import { fakerVI as faker } from '@faker-js/faker'
 import { db } from './database/driver'
 import {
   Users,
@@ -11,8 +11,32 @@ import {
   Lessons,
   Exams,
   Attendances,
+  CourseTeachers
 } from './database/entity'
 
+const mockClasses=[
+  'ENG-B1 ',
+  'ENG-B2 ',
+  'ENG-I1 ',
+  'ENG-I2 ',
+  'ENG-A1 ',
+  'ENG-A2',
+  'KIDS-1 ',
+  'KIDS-2 ',
+  'TEENS-1',
+  'TEENS-2 ',
+  'ADLT-1 ',
+  'ADLT-2 ',
+  'IELTS-5',
+  'IELTS-6',
+  'TOEIC-4',
+  'TOEIC-600',
+  'SPK-1 ',
+  'WRT-1 ',
+  'BIZ-1 ',
+  'TRVL-1',
+  'TRVL-2',
+]
 const majors = [
   'ENG-B1 English Beginner Level 1',
   'ENG-B2 English Beginner Level 2',
@@ -81,7 +105,7 @@ const teacherEntries = teachers.map(({ id }) => ({
 const teacherIDs = await db.insert(Teachers).values(teacherEntries).$returningId()
 
 // Seed Students
-const studentEntries = Array({ length: 20 }).map((_, i) => ({
+const studentEntries = Array.from({ length: 20 }).map((_, i) => ({
   name: faker.person.fullName(),
   phoneNumber: faker.phone.number(),
   email: faker.internet.email(),
@@ -105,18 +129,18 @@ const courses = majors.map((course) => ({
 const courseIDs = await db.insert(Courses).values(courses).$returningId()
 
 // Seed Classes
-const classes = courseIDs.map((courseID) => ({
+const classes = Array.from({ length: 20 }, () => ({
   teacherID: faker.helpers.arrayElement(teacherIDs.map(({ id }) => id)),
-  courseID: courseID.id,
-  name: faker.lorem.words(10),
+  courseID: faker.helpers.arrayElement(courseIDs.map(({ id }) => id)),
+  name: faker.helpers.arrayElement(mockClasses),
   description: faker.lorem.paragraph(),
   capacity: faker.number.int({ min: 20, max: 60, multipleOf: 5 }),
   startTime: new Date(),
   endTime: new Date(),
   createdAt: new Date(),
   updatedAt: new Date(),
-}))
-const classIDs = await db.insert(Classes).values(classes).$returningId()
+}));
+const classIDs = await db.insert(Classes).values(classes).$returningId();
 
 // Seed ClassStudents
 const classStudents = studentIDs.map(studentID => ({
@@ -125,6 +149,17 @@ const classStudents = studentIDs.map(studentID => ({
   createdAt: new Date(),
 }))
 await db.insert(ClassStudents).values(classStudents).$returningId()
+
+// Seed Course_Teachers
+const courseTeachers = courseIDs.flatMap(({ id: courseID }) => {
+  const assignedTeachers = faker.helpers.arrayElements(teacherIDs, faker.number.int({ min: 1, max: 3 }))
+  return assignedTeachers.map(({ id: teacherID }) => ({
+    courseID,
+    teacherID,
+    createdAt: new Date(),
+  }))
+})
+await db.insert(CourseTeachers).values(courseTeachers)
 
 // Seed Schedule
 let time = generateTimeRange()
