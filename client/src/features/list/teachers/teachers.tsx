@@ -2,11 +2,12 @@ import FormModal from '@components/common/FormModal';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import { role, mockTeachers, mockUsers } from '@mockData/mockData';
+import { role } from '@mockData/mockData';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import usePagination from 'hooks/usePagination';
-import useRelationMapper from 'hooks/useRelationMapper';
+import { useState } from 'react';
+import useFetchTeachers from 'hooks/useFetchTeachers';
 
 const columns = (t: any) => [
   {
@@ -16,6 +17,11 @@ const columns = (t: any) => [
   {
     header: t('table.teachers.header.teacherId'),
     accessor: 'teacherId',
+    className: 'hidden md:table-cell',
+  },
+  {
+    header: 'User Name',
+    accessor: 'userName',
     className: 'hidden md:table-cell',
   },
   {
@@ -36,17 +42,23 @@ const columns = (t: any) => [
 
 const TeacherListPage = () => {
   const { t } = useTranslation();
-  const teachers = useRelationMapper(mockTeachers, {
-    userId: mockUsers, // Ánh xạ thêm studentId nếu cần
-  });
+  const [reloadTrigger, setReloadTrigger] = useState(0); // Triggers a re-render when data is updated
+  const { teachers, loading, error } = useFetchTeachers(reloadTrigger);
+
+  const handleSuccess = () => {
+    setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa
+  };
   const { currentData, currentPage, totalPages, setCurrentPage } =
     usePagination(teachers, 10);
+
+  if (loading) return <p>Đang tải dữ liệu...</p>;
+  if (error) return <p>Lỗi: {error}</p>;
 
   const renderRow = (item: any) => {
     return (
       <>
         <tr
-          key={item.teacher_code}
+          key={item.id}
           className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
         >
           <td className='flex item-center gap-4 p-4'>
@@ -62,12 +74,13 @@ const TeacherListPage = () => {
               <p className='text-xs text-gray-500'>{item.email}</p>
             </div>
           </td>
-          <td className='hidden md:table-cell'>{item.userId}</td>
+          <td className='hidden md:table-cell'>{item.userID}</td>
+          <td className='hidden md:table-cell'>{item.userName}</td>
           <td className='hidden md:table-cell'>{item.phoneNumber}</td>
-          <td className='hidden md:table-cell'>{item.address}</td>
+          <td className='hidden lg:table-cell'>{item.address}</td>
           <td>
             <div className='flex teachers-center gap-2'>
-              <Link to={`/admin/list/teachers/${item.teacher_code}`}>
+              <Link to={`/admin/list/teachers/${item.userID}`}>
                 <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgViewIcon'>
                   <img
                     src='/view.png'
@@ -83,12 +96,14 @@ const TeacherListPage = () => {
                   <FormModal
                     table='teacher'
                     type='update'
-                    id={item.teacher_code}
+                    data={item}
+                    onSuccess={handleSuccess}
                   />
                   <FormModal
                     table='teacher'
                     type='delete'
-                    id={item.teacher_code}
+                    id={item.userID}
+                    onSuccess={handleSuccess}
                   />
                 </>
               )}
@@ -115,7 +130,13 @@ const TeacherListPage = () => {
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/sort.png' alt='' width={14} height={14} />
             </button>
-            {role === 'admin' && <FormModal table='teacher' type='create' />}
+            {role === 'admin' && (
+              <FormModal
+                table='teacher'
+                type='create'
+                onSuccess={handleSuccess}
+              />
+            )}
           </div>
         </div>
       </div>

@@ -3,40 +3,71 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import InputField from '../InputField';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { formatDate } from '@utils/dateUtils';
+import { toast } from 'react-toastify';
 
-// Tạo schema bằng Zod
-const StudentSchema = z.object({
+const DEFAULT_AVATAR = '/avatar.png';
+
+// Create a more flexible schema to accommodate both create and update
+const baseStudentSchema = {
   email: z.string().email('Invalid email address'),
-  fullName: z.string().min(1, 'Name is required'),
-  phone: z.string().min(1, 'Phone is required'),
+  name: z.string().min(1, 'Name is required'),
+  phoneNumber: z.string().min(1, 'Phone is required'),
   address: z.string().min(1, 'Address is required'),
-  photo: z.string().min(1, 'Photo is required'),
   dateOfBirth: z.string().min(1, 'Birthday is required'),
   gender: z.enum(['male', 'female'], { message: 'Sex is required!' }),
+  photo: z.any().optional(), // Add photo field to schema
+};
+
+// Create schema - doesn't require ID
+const CreateStudentSchema = z.object(baseStudentSchema);
+
+// Update schema - requires ID
+const UpdateStudentSchema = z.object({
+  ...baseStudentSchema,
+  id: z.number(),
 });
 
 // Tạo TypeScript type từ schema Zod
-type StudentFormData = z.infer<typeof StudentSchema>;
+type CreateStudentFormData = z.infer<typeof CreateStudentSchema>;
+type UpdateStudentFormData = z.infer<typeof UpdateStudentSchema>;
 
 const StudentForm = ({
   type,
   data,
+  onSuccess = () => {},
+  setOpen,
 }: {
   type: 'create' | 'update';
   data?: any;
+  onSuccess?: () => void;
+  setOpen?: (open: boolean) => void;
 }) => {
   const { t } = useTranslation();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [existingPhotoPath, setExistingPhotoPath] = useState<string>('');
+
+  // Choose the appropriate schema based on form type
+  const schema = type === 'create' ? CreateStudentSchema : UpdateStudentSchema;
+
+  // Set existing photo path if in edit mode
+  useEffect(() => {
+    if (type === 'update' && data?.photo) {
+      setExistingPhotoPath(data.photo);
+    }
+  }, [type, data]);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<StudentFormData>({
-    resolver: zodResolver(StudentSchema),
+  } = useForm({
+    resolver: zodResolver(schema),
     defaultValues: data || {
       email: '',
-      fullName: '',
-      phone: '',
+      name: '',
+      phoneNumber: '',
       address: '',
       photo: '',
       dateOfBirth: '',
@@ -44,11 +75,88 @@ const StudentForm = ({
     },
   });
 
-  const onSubmit = (formData: StudentFormData) => {
-    console.log('Submitted Data:', formData);
-    alert(type === 'create' ? 'Student Created!' : 'Student Updated!');
+  const submitStudent = async (formattedData: any) => {
+    const url = type === 'create' ? '/student/add' : '/student/edit';
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formattedData),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText);
+      }
+
+      toast.success(
+        type === 'create'
+          ? 'Thêm học viên thành công!'
+          : 'Cập nhật học viên thành công!'
+      );
+
+      if (onSuccess) {
+        onSuccess(); // Cập nhật danh sách sinh viên ngay sau khi thêm/sửa
+      }
+
+      if (setOpen) {
+        setOpen(false); // Đóng form sau khi thêm/sửa thành công
+      }
+    } catch (error: any) {
+      toast.error('❌ ' + error.message);
+    }
   };
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const onSubmit = async (
+    formData: CreateStudentFormData | UpdateStudentFormData
+  ) => {
+    if (Object.keys(errors).length > 0) {
+      console.error('Có lỗi validation:', errors);
+      return;
+    }
+
+    try {
+      // console.log('Form data before processing:', formData);
+
+      // Handle photo file if selected
+      let photoPath = existingPhotoPath || DEFAULT_AVATAR;
+
+      if (selectedFile instanceof File) {
+        // New file is selected, use the new file
+        photoPath = URL.createObjectURL(selectedFile);
+      } else if (type === 'update' && existingPhotoPath) {
+        // No new file selected in edit mode, keep existing photo
+        photoPath = existingPhotoPath;
+        console.log('Keeping existing photo:', photoPath);
+      }
+
+      const formattedData = {
+        ...formData,
+        photo: photoPath,
+        dateOfBirth: formData.dateOfBirth
+          ? formatDate(formData.dateOfBirth, 'yyyy-MM-dd')
+          : '',
+      };
+
+      if (type === 'update' && data?.id) {
+        formattedData.id = data.id;
+      }
+
+      // console.log('Formatted data being submitted:', formattedData);
+      await submitStudent(formattedData);
+    } catch (error: any) {
+      toast.error('Error processing form' + error.message);
+    }
+  };
+
+  const handleFileChange = (file: any) => {
+    setSelectedFile(file);
+    console.log('File selected:', file);
+  };
+
   return (
     <form className='flex flex-col gap-8' onSubmit={handleSubmit(onSubmit)}>
       <h1 className='text-xl font-semibold'>
@@ -75,16 +183,16 @@ const StudentForm = ({
         <div className='flex justify-between items-center flex-1 gap-8'>
           <InputField
             label={t('form.teacher.fullName')}
-            name='fullName'
+            name='name'
             register={register}
-            error={errors.fullName}
+            error={errors.name}
             className='flex-1'
           />
           <InputField
             label={t('form.teacher.phone')}
-            name='phone'
+            name='phoneNumber'
             register={register}
-            error={errors.phone}
+            error={errors.phoneNumber}
             className='flex-1'
           />
         </div>
@@ -116,15 +224,15 @@ const StudentForm = ({
           <InputField
             label='Upload photo'
             type='file'
-            inputProps={{ accept: 'image/*', multiple: true }} // Thêm required
-            onFileChange={(file) => setSelectedFile(file)} // Cập nhật state
+            inputProps={{ accept: 'image/*' }}
+            onFileChange={handleFileChange}
             name='photo'
             register={register}
             className='flex-1'
           />
         </div>
       </div>
-      <button className='bg-blue-400 text-white p-2 rounded-md'>
+      <button type='submit' className='bg-blue-400 text-white p-2 rounded-md'>
         {type === 'create'
           ? t('form.actions.create')
           : t('form.actions.update')}

@@ -1,16 +1,14 @@
 import Announcements from '@components/admin/Announcements';
-import PerformanceChart from '@components/admin/charts/PerformanceChart';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import FormModal from '@components/common/FormModal';
 import { role, calendarEvents } from '@mockData/data';
 import { View, dateFnsLocalizer } from 'react-big-calendar';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import BigCalendar from '@components/common/calendar/BigCalendar';
 import 'react-tooltip/dist/react-tooltip.css';
 import { Tooltip } from 'react-tooltip';
-
 const locales = {
   'en-US': import('date-fns/locale/en-US'),
 };
@@ -24,9 +22,12 @@ const localizer = dateFnsLocalizer({
 });
 
 const SingleTeacherPage = () => {
-  // const { id } = useParams();
+  const { id } = useParams();
   const [view, setView] = useState<View>('week');
   const [selectedClass, setSelectedClass] = useState<string>('all');
+
+  const [teacher, setTeacehr] = useState<Student | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // Room Resources cho Calendar
   const resourcesRooms = [
@@ -59,6 +60,30 @@ const SingleTeacherPage = () => {
     );
   }, [selectedClass, normalizedEvents]);
 
+  useEffect(() => {
+    const fetchStudent = async () => {
+      try {
+        const res = await fetch(`/teacher/${id}`);
+
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.error || 'Lỗi không xác định');
+
+        setTeacehr(data);
+      } catch (error) {
+        console.error('Lỗi khi fetch teacher:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudent();
+  }, [id]);
+
+  if (loading) return <p>Đang tải...</p>;
+
+  if (!teacher) return <p>Không tìm thấy sinh viên</p>;
+
   return (
     <div className='flex-1 p-4 flex flex-col gap-4 xl:flex-row'>
       {/* LEFT */}
@@ -75,7 +100,7 @@ const SingleTeacherPage = () => {
             </Link> */}
             <div className='w-1/3'>
               <img
-                src={'/avatar.png'}
+                src={teacher.photo || '/avatar.png'}
                 alt='Avatar'
                 width={144}
                 height={144}
@@ -84,24 +109,23 @@ const SingleTeacherPage = () => {
             </div>
             <div className='w-2/3 flex flex-col justify-between gap-4'>
               <div className='flex items-center gap-4'>
-                <h1 className='text-xl font-semibold'>Leonard Snyder</h1>
+                <h1 className='text-xl font-semibold'>{teacher.name}</h1>
                 {role === 'admin' && (
                   <FormModal
                     table='teacher'
                     type='update'
                     data={{
-                      id: 1,
-                      username: 'deanguerrero',
-                      email: 'deanguerrero@gmail.com',
-                      password: 'password',
-                      firstName: 'Dean',
-                      lastName: 'Guerrero',
-                      phone: '+1 234 567 89',
-                      address: '1234 Main St, Anytown, USA',
-                      bloodType: 'A+',
-                      dateOfBirth: '2000-01-01',
-                      sex: 'male',
-                      img: 'https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=1200',
+                      id: teacher.id,
+                      username: teacher.username,
+                      email: teacher.email,
+                      fullName: teacher.name,
+                      phone: teacher.phoneNumber,
+                      address: teacher.address,
+                      dateOfBirth: teacher.dateOfBirth,
+                      gender: teacher.gender,
+                      img: teacher.photo,
+                      experience: teacher.experience,
+                      specialization: teacher.specialization,
                     }}
                   />
                 )}
@@ -110,67 +134,56 @@ const SingleTeacherPage = () => {
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
                   <img src='/date.png' alt='' width={14} height={14} />
                   Id:
-                  <span className=' truncate'>
-                    0a746990-6cf2-45e6-973c-d59dc33e240f
-                  </span>
+                  <span className=' truncate'>{teacher.userID}</span>
+                </div>
+                <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
+                  <img src='/date.png' alt='' width={14} height={14} />
+                  User Name:
+                  <span className=' truncate'>{teacher.username}</span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2 '>
                   <img src='/mail.png' alt='' width={14} height={14} />
                   Email:
                   <span className=' truncate hover:underline cursor-pointer'>
-                    maiminhtu130803@gmail.com
+                    {teacher.email}
                   </span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
                   <img src='/phone.png' alt='' width={14} height={14} />
                   Phone:
-                  <span> 0123456789</span>
+                  <span> {teacher.phoneNumber}</span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2 '>
                   <img src='/address.png' alt='' width={14} height={14} />
                   Address:
-                  <span className=' truncate '>Hai Phong</span>
+                  <span className=' truncate '>{teacher.address}</span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
                   <img src='/date.png' alt='' width={14} height={14} />
                   Birth:
-                  <span>2/2/2003</span>
+                  <span>{teacher.dateOfBirth.split('T')[0]}</span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2 '>
                   <img src='/mail.png' alt='' width={14} height={14} />
                   Gender:
-                  <span className=' truncate '>Male</span>
+                  <span className=' truncate '>{teacher.gender}</span>
                 </div>
 
                 <div className='w-full mt-3 md:w-1/3 lg:w-full flex items-center gap-2 '>
                   <img src='/certificate.png' alt='' width={14} height={14} />
-                  Qualification:
-                  <span className=' truncate '>TEFL-I, TEFL-II</span>
+                  Experience:
+                  <span className=' truncate '>{teacher.experience}</span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2 '>
                   <img src='/star.png' alt='' width={14} height={14} />
                   Specialization:
-                  <span className=' truncate '>Toeic</span>
+                  <span className=' truncate '>{teacher.specialization}</span>
                 </div>
               </div>
             </div>
           </div>
           {/* SMALL CARDS */}
           <div className='flex-1 flex gap-4 justify-between flex-wrap flex-rơw'>
-            {/* CARD */}
-            <div className='bg-white  p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]'>
-              <img
-                src='/specialization.png'
-                alt=''
-                width={24}
-                height={24}
-                className='w-6 h-6'
-              />
-              <div className=''>
-                <h1 className='text-xl font-semibold'>2 years </h1>
-                <span className='text-sm text-gray-400'>Experience</span>
-              </div>
-            </div>
             {/* CARD */}
             <div
               data-tooltip-id={`event-tooltip-2`}
@@ -184,7 +197,10 @@ const SingleTeacherPage = () => {
                 className='w-6 h-6'
               />
               <div className=''>
-                <h1 className='text-xl font-semibold'>2 </h1>
+                <h1 className='text-xl font-semibold'>
+                  {' '}
+                  {teacher.totalCourses}
+                </h1>
                 <span className='text-sm text-gray-400'>Course</span>
               </div>
             </div>
@@ -199,7 +215,7 @@ const SingleTeacherPage = () => {
                 className='w-6 h-6'
               />
               <div className=''>
-                <h1 className='text-xl font-semibold'>8 </h1>
+                <h1 className='text-xl font-semibold'>8</h1>
                 <span className='text-sm text-gray-400'>Classes this week</span>
               </div>
             </div>
@@ -217,7 +233,9 @@ const SingleTeacherPage = () => {
                 className='w-6 h-6'
               />
               <div className=''>
-                <h1 className='text-xl font-semibold'>3</h1>
+                <h1 className='text-xl font-semibold'>
+                  {teacher.totalClasses}
+                </h1>
                 <span className='text-sm text-gray-400'>Classes</span>
               </div>
             </div>
@@ -271,8 +289,15 @@ const SingleTeacherPage = () => {
         className='z-50'
         render={() => (
           <div>
-            <p className='text-xs'>English for Travel</p>
-            <p className='text-xs'>Business English Level 1</p>
+            {teacher.courseNames.length > 0 ? (
+              teacher.courseNames.map((courseName: string, index: number) => (
+                <p key={index} className='text-xs'>
+                  {courseName}
+                </p>
+              ))
+            ) : (
+              <p className='text-xs'>No courses assigned</p>
+            )}
           </div>
         )}
       />
@@ -283,9 +308,15 @@ const SingleTeacherPage = () => {
         className='z-50'
         render={() => (
           <div>
-            <p className='text-xs'>TRVL-2</p>
-            <p className='text-xs'>TOEIC-600</p>
-            <p className='text-xs'>TOEIC-400</p>
+            {teacher.classNames.length > 0 ? (
+              teacher.classNames.map((className: string, index: number) => (
+                <p key={index} className='text-xs'>
+                  {className}
+                </p>
+              ))
+            ) : (
+              <p className='text-xs'>No classes assigned</p>
+            )}
           </div>
         )}
       />

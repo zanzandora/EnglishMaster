@@ -1,5 +1,5 @@
 import Announcements from '@components/admin/Announcements';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import FormModal from '@components/common/FormModal';
 import { role, calendarEvents } from '@mockData/data';
 import { View, dateFnsLocalizer } from 'react-big-calendar';
@@ -7,11 +7,7 @@ import { Link, useParams } from 'react-router-dom';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import BigCalendar from '@components/common/calendar/BigCalendar';
-import {
-  mockStudents,
-  mockClassStudents,
-  mockClasses,
-} from '@mockData/mockData';
+import { Student } from '@interfaces';
 
 const locales = {
   'en-US': import('date-fns/locale/en-US'),
@@ -27,31 +23,12 @@ const localizer = dateFnsLocalizer({
 
 const SingleStudentPage = () => {
   const { id } = useParams();
+  const [student, setStudent] = useState<Student | null>(null);
+  const [loading, setLoading] = useState(true);
+
   const [view, setView] = useState<View>('week');
   const [selectedClass, setSelectedClass] = useState<string>('all');
-  const student = mockStudents.find((s) => s.id === id);
 
-  // Room Resources cho Calendar
-  const resourcesRooms = [
-    { id: 'room101', title: 'Phòng 101', type: 'room' },
-    { id: 'room102', title: 'Phòng 102', type: 'room' },
-    { id: 'room103', title: 'Phòng 103', type: 'room' },
-  ];
-
-  if (!student) {
-    return (
-      <div className='p-4 text-center text-red-500'>Student not found.</div>
-    );
-  }
-
-  // Lấy danh sách lớp học của sinh viên
-  const studentClasses = mockClassStudents
-    .filter((cs) => cs.studentId === student.id)
-    .map((cs) => mockClasses.find((c) => c.id === cs.classId)?.className)
-    .filter(Boolean)
-    .join(', ');
-
-  // Chuẩn hóa dữ liệu sự kiện
   const normalizeEvent = (event: any) => {
     return {
       id: event.id ?? Date.now(),
@@ -74,6 +51,38 @@ const SingleStudentPage = () => {
       (event) => event.data?.class === selectedClass
     );
   }, [selectedClass, normalizedEvents]);
+  // Chuẩn hóa dữ liệu sự kiện
+
+  // Room Resources cho Calendar
+  const resourcesRooms = [
+    { id: 'room101', title: 'Phòng 101', type: 'room' },
+    { id: 'room102', title: 'Phòng 102', type: 'room' },
+    { id: 'room103', title: 'Phòng 103', type: 'room' },
+  ];
+
+  useEffect(() => {
+    const fetchStudent = async () => {
+      try {
+        const res = await fetch(`/student/${id}`);
+
+        // Thử parse JSON
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.error || 'Lỗi không xác định');
+
+        setStudent(data);
+      } catch (error) {
+        console.error('Lỗi khi fetch student:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudent();
+  }, [id]);
+
+  if (loading) return <p>Đang tải...</p>;
+  if (!student) return <p>Không tìm thấy sinh viên</p>;
 
   return (
     <div className='flex-1 p-4 flex flex-col gap-4 xl:flex-row'>
@@ -85,8 +94,7 @@ const SingleStudentPage = () => {
           <div className='bg-secondary-blueLight py-6 px-4 rounded-md flex-1 flex gap-4'>
             <div className='w-1/3'>
               <img
-                src={student.photo || '/default-avatar.png'}
-                alt={student.fullName}
+                src={student.photo ?? '/avarta.png'}
                 width={144}
                 height={144}
                 className='w-36 h-36 rounded-full object-cover'
@@ -94,16 +102,17 @@ const SingleStudentPage = () => {
             </div>
             <div className='w-2/3 flex flex-col justify-between gap-4'>
               <div className='flex items-center gap-4'>
-                <h1 className='text-xl font-semibold'>{student.fullName}</h1>
+                <h1 className='text-xl font-semibold'>{student.name}</h1>
                 {role === 'admin' && (
                   <FormModal
                     table='student'
                     type='update'
+                    id={student.id}
                     data={{
-                      id: 1,
+                      id: student.id,
                       email: student.email,
-                      fullName: student.fullName,
-                      phone: student.phone,
+                      fullName: student.name,
+                      phone: student.phoneNumber,
                       address: student.address,
                       dateOfBirth: student.dateOfBirth,
                       gender: student.gender,
@@ -115,28 +124,34 @@ const SingleStudentPage = () => {
               <div className='flex justify-between gap-2 flex-wrap text-xs font-medium flex-col text-gray-700'>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
                   <img src='/id_badge.png' alt='' width={14} height={14} />
-                  <span className=' truncate'>Id: {student.id}</span>
+                  Id:
+                  <span className=' truncate'>{student.id}</span>
                 </div>
 
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2 '>
                   <img src='/mail.png' alt='' width={14} height={14} />
-                  <span className=' truncate'>Email: {student.email}</span>
+                  Email:
+                  <span className=' truncate'> {student.email}</span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
                   <img src='/phone.png' alt='' width={14} height={14} />
-                  <span>Phone: {student.phone}</span>
+                  Phone:
+                  <span>{student.phoneNumber}</span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2 '>
                   <img src='/address.png' alt='' width={14} height={14} />
-                  <span className=' truncate'>Address: {student.address}</span>
+                  Address:
+                  <span className=' truncate'>{student.address}</span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
                   <img src='/date.png' alt='' width={14} height={14} />
-                  <span>Birth: {student.dateOfBirth}</span>
+                  Birth:
+                  <span>{student.dateOfBirth.split('T')[0]}</span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
                   <img src='/gender.png' alt='' width={14} height={14} />
-                  <span>Gender: {student.gender}</span>
+                  Gender:
+                  <span>{student.gender}</span>
                 </div>
               </div>
             </div>
@@ -168,7 +183,9 @@ const SingleStudentPage = () => {
                 className='w-6 h-6'
               />
               <div className=''>
-                <h1 className='text-xl font-semibold'>ENG-B1</h1>
+                <h1 className='text-xl font-semibold'>
+                  {student.className || 'No class assigned'}
+                </h1>
                 <span className='text-sm text-gray-400'>Classes</span>
               </div>
             </div>
@@ -184,7 +201,7 @@ const SingleStudentPage = () => {
               />
               <div className=''>
                 <h1 className='text-xl font-semibold'>
-                  English Beginner Level 1
+                  {student.courseName || 'No course assigned'}
                 </h1>
                 <span className='text-sm text-gray-400'>Course</span>
               </div>

@@ -3,11 +3,14 @@ import { format } from 'date-fns';
 /**
  * Định dạng ngày thành YYYY-MM-DD
  */
-export const formatDate = (date: Date | string, dateFormat = 'yyyy-MM-dd'): string => {
-  if (!date) return 'N/A';
-  
-  const parsedDate = typeof date === 'string' ? new Date(date) : date;
-  return format(parsedDate, dateFormat);
+export const formatDate = (date: Date | string | number | null | undefined, dateFormat = "yyyy-MM-dd"): string => {
+  if (!date || date === "null" || date === "undefined") return "N/A";
+
+  const parsedDate = typeof date === "number" 
+    ? new Date(date) // Xử lý timestamp
+    : new Date(date);
+
+  return isNaN(parsedDate.getTime()) ? "N/A" : format(parsedDate, dateFormat);
 };
 
 /**

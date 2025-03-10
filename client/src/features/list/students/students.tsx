@@ -3,16 +3,12 @@ import { Link } from 'react-router-dom';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import {
-  role,
-  mockStudents,
-  mockClassStudents,
-  mockClasses,
-} from '@mockData/mockData';
+import { role } from '@mockData/mockData';
 import FormModal from '@components/common/FormModal';
 import { useTranslation } from 'react-i18next';
 import usePagination from 'hooks/usePagination';
-import useRelationMapper from 'hooks/useRelationMapper';
+import { useEffect, useState } from 'react';
+import { formatDate } from '@utils/dateUtils';
 
 const columns = (t: any) => [
   {
@@ -47,42 +43,74 @@ const columns = (t: any) => [
 
 const StudentListPage = () => {
   const { t } = useTranslation();
-  const students = useRelationMapper(mockClassStudents, {
-    classId: mockClasses,
-    studentId: mockStudents,
-  });
+
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [reloadTrigger, setReloadTrigger] = useState(0);
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const response = await fetch('/student/list');
+        if (!response.ok) throw new Error('Lỗi khi tải dữ liệu');
+
+        const data = await response.json();
+
+        setStudents(
+          data.map((c: any) => ({
+            ...c,
+            dateOfBirth: formatDate(c.dateOfBirth, 'yyyy-MM-dd'),
+          }))
+        ); // Cập nhật state với dữ liệu đã xử lý
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudents();
+  }, [reloadTrigger]);
+
+  const handleSuccess = () => {
+    setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa
+  };
 
   const { currentData, currentPage, totalPages, setCurrentPage } =
     usePagination(students, 10);
 
+  if (loading) return <p>Đang tải dữ liệu...</p>;
+  if (error) return <p>Lỗi: {error}</p>;
+
   const renderRow = (item: any) => {
     return (
       <tr
-        key={item.studentId}
+        key={item.id}
         className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
         <td className='flex items-center gap-4 p-4'>
           <img
-            src={item.studentId.photo}
+            src={item.photo}
             alt=''
             width={40}
             height={40}
             className='md:hidden xl:block w-10 h-10 rounded-full object-cover'
           />
           <div className='flex flex-col'>
-            <h3 className='font-semibold'>{item.studentId.fullName}</h3>
-            <p className='text-xs text-gray-500'>{item.studentId.email}</p>
+            <h3 className='font-semibold'>{item.name}</h3>
+            <p className='text-xs text-gray-500'>{item.email}</p>
           </div>
         </td>
-        <td className='hidden md:table-cell'>{item.studentId.id}</td>
+        <td className='hidden md:table-cell'>{item.id}</td>
         <td className='hidden md:table-cell'>
-          {item.classId ? item.classId.className : 'No class assigned'}
+          {item.className || 'No class assigned'}
         </td>
-        <td className='hidden md:table-cell'>{item.studentId.phone}</td>
-        <td className='hidden md:table-cell'>{item.studentId.address}</td>
+        <td className='hidden md:table-cell'>{item.phoneNumber}</td>
+        <td className='hidden md:table-cell'>{item.address}</td>
         <td>
           <div className='flex items-center gap-2'>
-            <Link to={`/admin/list/students/${item.studentId.id}`}>
+            <Link to={`/admin/list/students/${item.id}`}>
               <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgViewIcon'>
                 <img
                   src='/view.png'
@@ -98,22 +126,14 @@ const StudentListPage = () => {
                 <FormModal
                   table='student'
                   type='update'
-                  id={item.student_code}
-                  data={{
-                    id: item.student_code,
-                    email: item.email,
-                    fullName: item.fullName,
-                    phone: item.phone,
-                    address: item.address,
-                    dateOfBirth: item.dateOfBirth,
-                    gender: item.gender,
-                    img: item.photo,
-                  }}
+                  data={item}
+                  onSuccess={handleSuccess}
                 />
                 <FormModal
                   table='student'
                   type='delete'
-                  id={item.student_code}
+                  id={item.id}
+                  onSuccess={handleSuccess}
                 />
               </>
             )}
@@ -139,7 +159,13 @@ const StudentListPage = () => {
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/sort.png' alt='' width={14} height={14} />
             </button>
-            {role === 'admin' && <FormModal table='student' type='create' />}
+            {role === 'admin' && (
+              <FormModal
+                table='student'
+                type='create'
+                onSuccess={handleSuccess}
+              />
+            )}
           </div>
         </div>
       </div>

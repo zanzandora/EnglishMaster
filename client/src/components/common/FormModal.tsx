@@ -1,5 +1,6 @@
 import { useState, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 
 // Lazy load các form
 const TeacherForm = lazy(() => import('./forms/TeacherForm'));
@@ -16,12 +17,35 @@ const forms: {
   [key: string]: (
     type: 'create' | 'update',
     data?: any,
-    handleSubmit?: (data: any) => void
+    handleSubmit?: (data: any) => void,
+    onSuccess?: () => void,
+    setOpen?: (open: boolean) => void // auto close
   ) => JSX.Element;
 } = {
-  teacher: (type, data) => <TeacherForm type={type} data={data} />,
-  student: (type, data) => <StudentForm type={type} data={data} />,
-  course: (type, data) => <CourseForm type={type} data={data} />,
+  teacher: (type, data, _, onSuccess, setOpen) => (
+    <TeacherForm
+      type={type}
+      data={data}
+      onSuccess={onSuccess}
+      setOpen={setOpen}
+    />
+  ),
+  student: (type, data, _, onSuccess, setOpen) => (
+    <StudentForm
+      type={type}
+      data={data}
+      onSuccess={onSuccess}
+      setOpen={setOpen}
+    />
+  ),
+  course: (type, data, _, onSuccess, setOpen) => (
+    <CourseForm
+      type={type}
+      data={data}
+      onSuccess={onSuccess}
+      setOpen={setOpen}
+    />
+  ),
   class: (type, data) => <ClassForm type={type} data={data} />,
   lesson: (type, data) => <LessonForm type={type} data={data} />,
   exam: (type, data) => <ExamForm type={type} data={data} />,
@@ -37,7 +61,10 @@ const FormModal = ({
   type,
   data,
   id,
+  userID,
   onShiftChange,
+  onSuccess,
+  onError,
 }: {
   table:
     | 'teacher'
@@ -55,7 +82,10 @@ const FormModal = ({
   type: 'create' | 'update' | 'delete';
   data?: any;
   id?: number;
+  userID?: number;
   onShiftChange?: (shift: { value: string; label: string }) => void;
+  onSuccess?: () => void;
+  onError?: (error: any) => void;
 }) => {
   const { t } = useTranslation();
   const size = type === 'create' ? 'w-8 h-8' : 'w-7 h-7';
@@ -67,25 +97,71 @@ const FormModal = ({
       : 'bg-tables-actions-bgDeleteIcon';
 
   const [open, setOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const handleSubmit = (newShift: { value: string; label: string }) => {
     if (onShiftChange) {
       onShiftChange(newShift); // Gửi shift mới về EventForm
     }
+    if (onSuccess) {
+      onSuccess(); // Gọi lại danh sách sau khi form thành công
+    }
     setOpen(false); // Đóng modal
   };
 
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    const deleteId = userID || id;
+    if (!id) {
+      toast.error('ID không hợp lệ');
+      return;
+    }
+
+    setIsDeleting(true);
+    const endpoint = `/${table}/delete/${deleteId}`;
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText);
+      }
+
+      toast.success(`Xóa ${t(`form.table.${table}`)} thành công`);
+      setOpen(false);
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error: any) {
+      toast.error('Lỗi khi xóa: ' + error.message);
+      if (onError) {
+        onError(error);
+      }
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const Form = () => {
-    return type === 'delete' && id ? (
+    return type === 'delete' && (id || userID) ? (
       <form className='p-4 flex flex-col gap-4'>
         <span className='text-center font-medium'>
           {t('form.actions.message')} {t(`form.table.${table}`)}?
         </span>
-        <button className='bg-primary text-white py-2 px-4 rounded-md border-none w-max self-center'>
-          {t('form.actions.delete')}
+        <button
+          type='button'
+          disabled={isDeleting}
+          onClick={handleDelete}
+          className='bg-primary text-white py-2 px-4 rounded-md border-none w-max self-center'
+        >
+          {isDeleting ? 'Deleting...' : t('form.actions.delete')}
         </button>
       </form>
     ) : type === 'create' || type === 'update' ? (
-      forms[table](type, data, handleSubmit)
+      forms[table](type, data, handleSubmit, onSuccess, setOpen)
     ) : (
       'Form not found!'
     );

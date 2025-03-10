@@ -12,7 +12,7 @@ type InputFieldProps = {
     React.TextareaHTMLAttributes<HTMLTextAreaElement>;
   className?: string;
   children?: ReactNode;
-  onFileChange?: (files: FileList | null) => void;
+  onFileChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 const InputField: FC<InputFieldProps> = ({
@@ -33,7 +33,7 @@ const InputField: FC<InputFieldProps> = ({
         type='file'
         {...inputProps}
         className='ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full'
-        onChange={(e) => onFileChange && onFileChange(e.target.files)}
+        onChange={(e) => onFileChange && e.target.files && onFileChange(e)}
       />
     ),
     textarea: (

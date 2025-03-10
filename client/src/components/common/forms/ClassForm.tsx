@@ -65,22 +65,22 @@ const ClassForm = ({
           className='min-w-full'
         />
         <InputField
-          label='Capacity'
-          name='capacity'
+          label='Capicity'
+          name='capicity'
           type='number'
           register={register}
           error={errors.capacity}
         />
         <InputField
           label='Start Date'
-          name='startDate'
+          name='startTime'
           type='date'
           register={register}
           error={errors.startDate}
         />
         <InputField
           label='End Date'
-          name='endDate'
+          name='endTime'
           type='date'
           register={register}
           error={errors.endDate}

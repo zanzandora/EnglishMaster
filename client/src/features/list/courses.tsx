@@ -5,7 +5,9 @@ import TableSearch from '@components/common/table/TableSearch';
 import { role, mockCourses, mockTeachers, mockUsers } from '@mockData/mockData';
 import usePagination from 'hooks/usePagination';
 import useRelationMapper from 'hooks/useRelationMapper';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 const columns = (t: any) => [
   {
@@ -36,14 +38,39 @@ const columns = (t: any) => [
 
 const SubjectListPage = () => {
   const { t } = useTranslation();
-  const courses = useRelationMapper(mockCourses, {
-    teacherID: mockTeachers,
-  });
-  const teachers = useRelationMapper(mockTeachers, {
-    userID: mockUsers,
-  });
+  const [courses, setCourses] = useState([]);
+  const [reloadTrigger, setReloadTrigger] = useState(0); // Triggers a re-render when data is updated
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await fetch('/course/list');
+        if (!response.ok) throw new Error('Lỗi khi tải dữ liệu');
+
+        const data = await response.json();
+
+        setCourses(data); // Cập nhật state với dữ liệu đã xử lý
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, [reloadTrigger]);
+
+  const handleSuccess = () => {
+    setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa
+  };
+
   const { currentData, currentPage, totalPages, setCurrentPage } =
     usePagination(courses, 10);
+
+  if (loading) return <p>Đang tải dữ liệu...</p>;
+  if (error) return <p>Lỗi: {error}</p>;
 
   const renderRow = (item: any) => {
     return (
@@ -53,7 +80,7 @@ const SubjectListPage = () => {
       >
         <td className='flex items-center gap-4 p-4'>
           <div className='flex flex-col'>
-            <h3 className='font-semibold '>{item.coursename}</h3>
+            <h3 className='font-semibold '>{item.name}</h3>
             <p className='text-xs text-gray-500 ml-2 line-clamp-custom w-[200px]'>
               {item.description}
             </p>
@@ -61,15 +88,40 @@ const SubjectListPage = () => {
         </td>
         <td className='hidden md:table-cell '>{item.duration} month</td>
         <td className='hidden md:table-cell'>
-          {item.userID ? item.userID.name : 'No teacher assigned'}
+          {Array.isArray(item.teachers) && item.teachers.length > 0 ? (
+            <ul className='list-disc pl-4'>
+              {item.teachers.map((teacher: any) => (
+                <li key={teacher.teacherId}>
+                  <Link
+                    to={`/admin/list/teachers/${teacher.userID}`}
+                    className='text-blue-600 hover:underline'
+                  >
+                    {teacher.teacherName}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <span className='text-gray-500'>No teacher assigned</span>
+          )}
         </td>
-        <td className='hidden md:table-cell'>{item.fee}</td>
+        <td className='hidden md:table-cell'>{item.fee}.000Đ</td>
         <td>
           <div className='flex items-center gap-2'>
             {role === 'admin' && (
               <>
-                <FormModal table='course' type='update' data={item} />
-                <FormModal table='course' type='delete' id={item.id} />
+                <FormModal
+                  table='course'
+                  type='update'
+                  data={item}
+                  onSuccess={handleSuccess}
+                />
+                <FormModal
+                  table='course'
+                  type='delete'
+                  id={item.id}
+                  onSuccess={handleSuccess}
+                />
               </>
             )}
           </div>
@@ -94,18 +146,24 @@ const SubjectListPage = () => {
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/sort.png' alt='' width={14} height={14} />
             </button>
-            {role === 'admin' && <FormModal table='course' type='create' />}
+            {role === 'admin' && (
+              <FormModal
+                table='course'
+                type='create'
+                onSuccess={handleSuccess}
+              />
+            )}
           </div>
         </div>
       </div>
-      {/* LIST */}
-      <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
       {/* PAGINATION */}
       <Pagination
         totalPages={totalPages}
         currentPage={currentPage}
         onPageChange={setCurrentPage}
       />
+      {/* LIST */}
+      <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
     </div>
   );
 };

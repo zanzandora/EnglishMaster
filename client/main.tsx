@@ -1,8 +1,10 @@
 import { hydrateRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 
 import './index.css';
 import './src/i18n';
+import 'react-toastify/dist/ReactToastify.css';
 
 import ErrorPage from 'features/error/error';
 import DashboardLayout from '@components/dashboard/DashboardLayout';
@@ -59,5 +61,6 @@ hydrateRoot(
 
       <Route path='*' element={<ErrorPage />} />
     </Routes>
+    <ToastContainer newestOnTop={true} closeOnClick={true} autoClose={3000} />
   </BrowserRouter>
 );

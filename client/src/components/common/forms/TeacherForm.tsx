@@ -3,69 +3,169 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import InputField from '../InputField';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
-import FileUploadModal from '../FileUploadModal';
+import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
+import { formatDate } from '@utils/dateUtils';
+
+const DEFAULT_AVATAR = '/avatar.png';
 
 // Tạo schema bằng Zod
-const TeacherSchema = z.object({
+const baseTeacherSchema = {
   username: z
     .string()
     .min(3, 'Username must be at least 3 characters')
     .max(20, 'Username must be at most 20 characters'),
   email: z.string().email('Invalid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
-  fullName: z.string().min(1, 'Name is required'),
-  phone: z.string().min(1, 'Phone is required'),
+  name: z.string().min(1, 'Name is required'),
+  phoneNumber: z.string().min(1, 'Phone is required'),
   address: z.string().min(1, 'Address is required'),
-  photo: z.string().min(1, 'Photo is required'),
+  photo: z.any().optional(),
   dateOfBirth: z.string().min(1, 'Birthday is required'),
   gender: z.enum(['male', 'female'], { message: 'Sex is required!' }),
 
-  qualification: z.string().min(1, 'Qualification is required'),
   specialization: z.string().min(1, 'Specialization is required'),
-  experience: z.number().min(1, 'Experience is required'),
-});
+  experience: z.coerce.number().min(1, 'Experience is required'),
+};
 
 // Tạo TypeScript type từ schema Zod
-type TeacherFormData = z.infer<typeof TeacherSchema>;
+const CreateTeacherSchema = z.object(baseTeacherSchema);
+
+const UpdateTeacherSchema = z.object({
+  ...baseTeacherSchema,
+  userID: z.number(),
+});
+
+type CreateTeacherFormData = z.infer<typeof CreateTeacherSchema>;
+type UpdateTeacherFormData = z.infer<typeof UpdateTeacherSchema>;
 
 const TeacherForm = ({
   type,
   data,
+  onSuccess = () => {},
+  setOpen,
 }: {
   type: 'create' | 'update';
   data?: any;
+  onSuccess?: () => void;
+  setOpen?: (open: boolean) => void;
 }) => {
   const { t } = useTranslation();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [activeTab, setActiveTab] = useState('personalInformation');
+  const [existingPhotoPath, setExistingPhotoPath] = useState<string>('');
+  const [photoPath, setPhotoPath] = useState<string>('');
+
+  const schema = type === 'create' ? CreateTeacherSchema : UpdateTeacherSchema;
+
+  // Set existing photo path if in edit mode
+  useEffect(() => {
+    if (type === 'update' && data?.photo) {
+      setExistingPhotoPath(data.photo);
+    }
+  }, [type, data]);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<TeacherFormData>({
-    resolver: zodResolver(TeacherSchema),
+  } = useForm({
+    resolver: zodResolver(schema),
     defaultValues: data || {
       username: '',
       email: '',
       password: '',
-      fullName: '',
-      phone: '',
+      name: '',
+      phoneNumber: '',
       address: '',
       photo: '',
       dateOfBirth: '',
       gender: '',
-      qualification: '',
       specialization: '',
       experience: 0,
     },
   });
 
-  const [activeTab, setActiveTab] = useState('personalInformation');
+  const submitTeacher = async (formattedData: any) => {
+    const url = type === 'create' ? '/teacher/add' : '/teacher/edit';
 
-  const onSubmit = (formData: TeacherFormData) => {
-    console.log('Submitted Data:', formData);
-    alert(type === 'create' ? 'Teacher Created!' : 'Teacher Updated!');
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formattedData),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText);
+      }
+
+      toast.success(
+        type === 'create'
+          ? 'Thêm giáo viên thành công!'
+          : 'Cập nhật giáo viên thành công!'
+      );
+
+      if (onSuccess) {
+        onSuccess();
+      }
+
+      if (setOpen) {
+        setOpen(false);
+      }
+    } catch (error: any) {
+      toast.error('❌ ' + error.message);
+    }
   };
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const onSubmit = async (
+    formData: CreateTeacherFormData | UpdateTeacherFormData
+  ) => {
+    if (Object.keys(errors).length > 0) {
+      console.error('Có lỗi validation:', errors);
+      return;
+    }
+
+    try {
+      const finalPhotoPath = selectedFile
+        ? `/${selectedFile.name}`
+        : existingPhotoPath || DEFAULT_AVATAR; // Sử dụng ảnh hiện tại hoặc ảnh mặc định
+
+      // if (selectedFile instanceof File) {
+      //   finalPhotoPath = URL.createObjectURL(selectedFile);
+      //   console.log('Photo path updated in onSubmit:', finalPhotoPath);
+      // }
+
+      const formattedData = {
+        ...formData,
+        photo: finalPhotoPath,
+        dateOfBirth: formData.dateOfBirth
+          ? formatDate(formData.dateOfBirth, 'yyyy-MM-dd')
+          : '',
+      };
+
+      if (type === 'update' && data?.userID) {
+        formattedData.userID = data.userID;
+      }
+
+      await submitTeacher(formattedData);
+    } catch (error: any) {
+      toast.error('Error processing form' + error.message);
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setPhotoPath(file.name); // Chỉ lấy tên file
+      console.log('✅ File selected:', file.name);
+    }
+  };
+
   return (
     <form className='flex flex-col gap-8' onSubmit={handleSubmit(onSubmit)}>
       <h1 className='text-xl font-semibold'>
@@ -88,7 +188,6 @@ const TeacherForm = ({
           <InputField
             label='Password'
             name='password'
-            type='password'
             register={register}
             error={errors.password}
             className='flex-1'
@@ -136,16 +235,16 @@ const TeacherForm = ({
             <div className='flex justify-between items-center flex-1 gap-8'>
               <InputField
                 label={t('form.teacher.fullName')}
-                name='fullName'
+                name='name'
                 register={register}
-                error={errors.fullName}
+                error={errors.name}
                 className='flex-1'
               />
               <InputField
                 label={t('form.teacher.phone')}
-                name='phone'
+                name='phoneNumber'
                 register={register}
-                error={errors.phone}
+                error={errors.phoneNumber}
                 className='flex-1'
               />
             </div>
@@ -174,22 +273,21 @@ const TeacherForm = ({
                 <option value='male'>{t('form.options.male')}</option>
                 <option value='female'>{t('form.options.female')}</option>
               </InputField>
-              <div className='mt-5'>
-                <FileUploadModal />
-              </div>
+              <InputField
+                label='Upload photo'
+                type='file'
+                inputProps={{ accept: 'image/*' }}
+                onFileChange={handleFileChange}
+                name='photo'
+                register={register}
+                className='flex-1'
+              />
             </div>
           </>
         )}
 
         {activeTab === 'professionalInformation' && (
           <>
-            <InputField
-              label={t('form.teacher.qualification')}
-              name='qualification'
-              register={register}
-              error={errors.qualification}
-              className='min-w-full'
-            />
             <InputField
               label={t('form.teacher.specialization')}
               name='specialization'

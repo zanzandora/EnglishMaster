@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 const ShiftForm = ({
   type,
   data,
-  onShiftChange,
+  onShiftChange = () => {},
 }: {
   type: 'create' | 'update';
   data?: { value: string; label: string };
-  onShiftChange: (newShift: { value: string; label: string }) => void;
+  onShiftChange?: (newShift: { value: string; label: string }) => void;
 }) => {
   const { register, handleSubmit, reset } = useForm({
     defaultValues: data || { value: '', label: '' },

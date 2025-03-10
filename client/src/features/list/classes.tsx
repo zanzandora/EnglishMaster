@@ -9,8 +9,9 @@ import {
 } from '@mockData/mockData';
 import FormModal from '@components/common/FormModal';
 import { useTranslation } from 'react-i18next';
-import useRelationMapper from 'hooks/useRelationMapper';
 import usePagination from 'hooks/usePagination';
+import { useState, useEffect } from 'react';
+import { formatDate, formatDateLocale } from '@utils/dateUtils';
 
 const columns = (t: any) => [
   {
@@ -47,13 +48,41 @@ const columns = (t: any) => [
 const ClassListPage = () => {
   const { t } = useTranslation();
 
-  const classes = useRelationMapper(mockClasses, {
-    teacherID: mockTeachers,
-    courseID: mockCourses,
-  });
+  const [classes, setClasses] = useState(mockTeachers);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchTeachers = async () => {
+      try {
+        const response = await fetch('/class/list');
+        if (!response.ok) throw new Error('Lỗi khi tải dữ liệu');
+
+        const data = await response.json();
+
+        setClasses(
+          data.map((c: any) => ({
+            ...c,
+            startTime: formatDate(c.startTime, 'yyyy-MM-dd'),
+            endTime: formatDate(c.endTime, 'yyyy-MM-dd'),
+          }))
+        ); // Cập nhật state với dữ liệu đã xử lý
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTeachers();
+  }, []);
 
   const { currentData, currentPage, totalPages, setCurrentPage } =
     usePagination(classes, 10);
+
+  if (loading) return <p>Đang tải dữ liệu...</p>;
+  if (error) return <p>Lỗi: {error}</p>;
+
   const renderRow = (item: any) => {
     return (
       <tr
@@ -64,18 +93,18 @@ const ClassListPage = () => {
           <div className='flex flex-col'>
             <h3 className='font-semibold'>{item.className}</h3>
             <p className='text-xs text-gray-500'>
-              {item.startDate} - {item.endDate}
+              {item.startTime} - {item.endTime}
             </p>
           </div>
         </td>
-        <td className='hidden md:table-cell'>{item.capacity}</td>
+        <td className='hidden md:table-cell'>{item.capicity}</td>
 
-        <td className='hidden md:table-cell'>{item.capacity}</td>
+        <td className='hidden md:table-cell'>{item.totalStudents}</td>
         <td className='hidden md:table-cell'>
-          {item.courseID ? item.courseID.coursename : 'No course assigned'}
+          {item.courseName || 'No course assigned'}
         </td>
         <td className='hidden md:table-cell'>
-          {item.teacherID ? item.teacherID.name : 'No teacher assigned'}
+          {item.teacherName || 'No teacher assigned'}
         </td>
         <td>
           <div className='flex items-center gap-2'>
