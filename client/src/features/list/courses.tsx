@@ -105,7 +105,12 @@ const SubjectListPage = () => {
             <span className='text-gray-500'>No teacher assigned</span>
           )}
         </td>
-        <td className='hidden md:table-cell'>{item.fee}.000Đ</td>
+        <td className='hidden md:table-cell'>
+          {item.fee.toLocaleString('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+          })}
+        </td>
         <td>
           <div className='flex items-center gap-2'>
             {role === 'admin' && (

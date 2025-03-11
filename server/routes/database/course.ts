@@ -75,7 +75,7 @@ expressRouter.get('/', async (req, res) => {
 
 expressRouter.post('/add', async (req, res) => {
   const { name, description, duration, fee, teachers } = req.body;
-
+  // !console.log('🔴 API Received:', req.body);
   const missingFields: string[] = [];
   if (!name) missingFields.push('name');
   if (!duration) missingFields.push('duration');

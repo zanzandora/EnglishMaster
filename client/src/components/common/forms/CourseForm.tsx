@@ -82,7 +82,7 @@ const CourseForm = ({
 
   const submitCourse = async (formattedData: any) => {
     const url = type === 'create' ? '/course/add' : '/course/edit';
-
+    // console.log('🔴 API Sending:', formattedData);
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -125,13 +125,14 @@ const CourseForm = ({
     }
 
     try {
-      if (type === 'update' && data?.userID) {
+      if (type === 'update' && data?.id) {
         formData.id = data.id;
+        formData.teachers =
+          formData.teachers?.map((t: any) => t.teacherId) || [];
       }
-
+      // console.log('🚀 Raw Form Data:', formData);
       await submitCourse({
         ...formData,
-        teachers: formData.teachers?.map((t: any) => t.teacherId) || [],
       });
     } catch (error: any) {
       toast.error('Error processing form' + error.message);
@@ -158,6 +159,7 @@ const CourseForm = ({
           name='fee'
           register={register}
           error={errors.fee}
+          inputProps={{ pattern: '\\d*', inputMode: 'numeric' }}
         />
 
         <InputField
@@ -173,8 +175,8 @@ const CourseForm = ({
           error={errors.teachers}
           defaultValue={
             data?.teachers?.map((t: any) => ({
-              value: t.teacherId,
-              label: t.teacherName,
+              value: t.teacherId ?? t.value,
+              label: t.teacherName || t.label,
             })) || []
           }
           className='min-w-full'

@@ -27,7 +27,7 @@ const TeacherSelect = ({
   const { teachers, loading } = useFetchTeachers();
 
   // Debug để xem giá trị defaultValue
-  console.log('TeacherSelect defaultValue:', defaultValue);
+  // console.log('TeacherSelect defaultValue:', defaultValue);
 
   // Format các options từ teachers data
   const teacherOptions = teachers.map((teacher: any) => ({
@@ -36,7 +36,7 @@ const TeacherSelect = ({
   }));
 
   // Debug để xem các options có sẵn
-  console.log('TeacherSelect options:', teacherOptions);
+  // console.log('TeacherSelect options:', teacherOptions);
 
   return (
     <div
@@ -51,11 +51,11 @@ const TeacherSelect = ({
         defaultValue={defaultValue}
         render={({ field, fieldState }) => {
           // Debug để xem giá trị hiện tại của field
-          console.log('Field value:', field.value);
+          // console.log('Field value:', field.value);
 
           // Đảm bảo value luôn là mảng
           const selectedValues = Array.isArray(field.value) ? field.value : [];
-          console.log('Select Value', selectedValues);
+          // console.log('Select Value', selectedValues);
 
           // Tạo options từ selectedValues
           const selectedOptions = selectedValues.map((id) => {
