@@ -183,7 +183,7 @@ const SingleStudentPage = () => {
                 className='w-6 h-6'
               />
               <div className=''>
-                <h1 className='text-xl font-semibold'>
+                <h1 className='text-xl font-semibold truncate w-32'>
                   {student.className || 'No class assigned'}
                 </h1>
                 <span className='text-sm text-gray-400'>Classes</span>

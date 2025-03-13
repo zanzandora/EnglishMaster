@@ -20,6 +20,7 @@ expressRouter.get('/list', async (req, res) => {
         courseID: CourseTeachers.courseID,
         teacherId: Teachers.id,
         teacherName: Users.name,
+        userID: Teachers.userID,
       })
       .from(CourseTeachers)
       .leftJoin(Teachers, eq(CourseTeachers.teacherID, Teachers.id))
@@ -117,7 +118,7 @@ expressRouter.post('/add', async (req, res) => {
 
 expressRouter.post('/edit', async (req, res) => {
   const { id, name, description, duration, fee, teachers } = req.body;
-  // !console.log('🔴 API Received:', req.body);
+  // console.log('🔴 API Received:', req.body);
   // Kiểm tra id có tồn tại không
   if (!id) {
     res.status(400).send('Course id is required');
@@ -145,9 +146,9 @@ expressRouter.post('/edit', async (req, res) => {
           await db.delete(CourseTeachers).where(eq(CourseTeachers.courseID, id));
           
           // Thêm các bản ghi mới
-          const courseTeachersData = teachers.map((teacherID) => ({
+          const courseTeachersData = teachers.map((teacherId) => ({
             courseID: id,
-            teacherID: teacherID
+            teacherID: teacherId
           }));
           await db.insert(CourseTeachers).values(courseTeachersData);
         }
@@ -172,13 +173,11 @@ expressRouter.delete('/delete/:id', async (req, res) => {
   }
 
   try {
-    // Kiểm tra xem Course có tồn tại không
     const course = await db.select().from(Courses).where(eq(Courses.id, Number(id)));
     if (!course.length) {
       return res.status(404).json({ error: 'Course not found' });
     }
 
-    // Xóa Course (CASCADE sẽ tự động xóa dữ liệu liên quan)
     await db.delete(Courses).where(eq(Courses.id, Number(id)));
 
     res.json({ message: 'Course deleted successfully' });

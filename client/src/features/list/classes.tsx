@@ -1,17 +1,12 @@
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import {
-  role,
-  mockClasses,
-  mockTeachers,
-  mockCourses,
-} from '@mockData/mockData';
+import { role } from '@mockData/mockData';
 import FormModal from '@components/common/FormModal';
 import { useTranslation } from 'react-i18next';
 import usePagination from 'hooks/usePagination';
 import { useState, useEffect } from 'react';
-import { formatDate, formatDateLocale } from '@utils/dateUtils';
+import { formatDate } from '@utils/dateUtils';
 
 const columns = (t: any) => [
   {
@@ -48,9 +43,10 @@ const columns = (t: any) => [
 const ClassListPage = () => {
   const { t } = useTranslation();
 
-  const [classes, setClasses] = useState(mockTeachers);
+  const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [reloadTrigger, setReloadTrigger] = useState(0); // Triggers a re-render when data is updated
 
   useEffect(() => {
     const fetchTeachers = async () => {
@@ -75,7 +71,11 @@ const ClassListPage = () => {
     };
 
     fetchTeachers();
-  }, []);
+  }, [reloadTrigger]);
+
+  const handleSuccess = () => {
+    setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa
+  };
 
   const { currentData, currentPage, totalPages, setCurrentPage } =
     usePagination(classes, 10);
@@ -91,13 +91,13 @@ const ClassListPage = () => {
       >
         <td className='flex items-center gap-4 p-4'>
           <div className='flex flex-col'>
-            <h3 className='font-semibold'>{item.className}</h3>
+            <h3 className='font-semibold'>{item.name}</h3>
             <p className='text-xs text-gray-500'>
               {item.startTime} - {item.endTime}
             </p>
           </div>
         </td>
-        <td className='hidden md:table-cell'>{item.capicity}</td>
+        <td className='hidden md:table-cell'>{item.capacity}</td>
 
         <td className='hidden md:table-cell'>{item.totalStudents}</td>
         <td className='hidden md:table-cell'>
@@ -108,10 +108,22 @@ const ClassListPage = () => {
         </td>
         <td>
           <div className='flex items-center gap-2'>
+            <FormModal table='students' type='list' id={item.id} />
+
             {role === 'admin' && (
               <>
-                <FormModal table='class' type='update' data={item} />
-                <FormModal table='class' type='delete' id={item.id} />
+                <FormModal
+                  table='class'
+                  type='update'
+                  data={item}
+                  onSuccess={handleSuccess}
+                />
+                <FormModal
+                  table='class'
+                  type='delete'
+                  id={item.id}
+                  onSuccess={handleSuccess}
+                />
               </>
             )}
           </div>
@@ -136,18 +148,24 @@ const ClassListPage = () => {
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/sort.png' alt='' width={14} height={14} />
             </button>
-            {role === 'admin' && <FormModal table='class' type='create' />}
+            {role === 'admin' && (
+              <FormModal
+                table='class'
+                type='create'
+                onSuccess={handleSuccess}
+              />
+            )}
           </div>
         </div>
       </div>
-      {/* LIST */}
-      <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
       {/* PAGINATION */}
       <Pagination
         totalPages={totalPages}
         currentPage={currentPage}
         onPageChange={setCurrentPage}
       />
+      {/* LIST */}
+      <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
     </div>
   );
 };

@@ -7,8 +7,8 @@ import { role } from '@mockData/mockData';
 import FormModal from '@components/common/FormModal';
 import { useTranslation } from 'react-i18next';
 import usePagination from 'hooks/usePagination';
-import { useEffect, useState } from 'react';
-import { formatDate } from '@utils/dateUtils';
+import { useState } from 'react';
+import useFetchStudents from 'hooks/useFetchStudents';
 
 const columns = (t: any) => [
   {
@@ -44,34 +44,8 @@ const columns = (t: any) => [
 const StudentListPage = () => {
   const { t } = useTranslation();
 
-  const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [reloadTrigger, setReloadTrigger] = useState(0);
-
-  useEffect(() => {
-    const fetchStudents = async () => {
-      try {
-        const response = await fetch('/student/list');
-        if (!response.ok) throw new Error('Lỗi khi tải dữ liệu');
-
-        const data = await response.json();
-
-        setStudents(
-          data.map((c: any) => ({
-            ...c,
-            dateOfBirth: formatDate(c.dateOfBirth, 'yyyy-MM-dd'),
-          }))
-        ); // Cập nhật state với dữ liệu đã xử lý
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStudents();
-  }, [reloadTrigger]);
+  const { students, loading, error } = useFetchStudents(reloadTrigger);
 
   const handleSuccess = () => {
     setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa

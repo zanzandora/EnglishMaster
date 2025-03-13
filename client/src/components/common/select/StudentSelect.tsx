@@ -8,23 +8,23 @@ import {
   FieldError,
   FieldErrorsImpl,
 } from 'react-hook-form';
-import useFetchTeachers from 'hooks/useFetchTeachers';
+import useFetchStudents from 'hooks/useFetchStudents';
 
-interface TeacherSelectProps {
+interface StudentSelectProps {
   control: Control<FieldValues>; // Sử dụng kiểu Control từ react-hook-form
   name: string;
   error?: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | string; // Sử dụng kiểu FieldErrors
   className?: string;
   defaultValue?: number[];
 }
-const TeacherSelect = ({
+const StudentSelect = ({
   control,
   name,
   error,
   className,
   defaultValue,
-}: TeacherSelectProps) => {
-  const { teachers, loading } = useFetchTeachers();
+}: StudentSelectProps) => {
+  const { students, loading } = useFetchStudents();
 
   const animatedComponents = makeAnimated();
 
@@ -32,20 +32,20 @@ const TeacherSelect = ({
   // console.log('TeacherSelect defaultValue:', defaultValue);
 
   // Format các options từ teachers data
-  const teacherOptions = teachers.map((teacher: any) => ({
-    value: teacher.id,
-    label: teacher.name,
+  const studentOptions = students.map((student: any) => ({
+    value: student.id,
+    label: `${student.name} - (${student.id})`,
   }));
 
   // Debug để xem các options có sẵn
-  // console.log('TeacherSelect options:', teacherOptions);
+  // console.log('studentSelect options:', studentOptions);
 
   return (
     <div
       className={`relative flex flex-col gap-2 w-full my-1 md:w-1/4 ${className}`}
     >
       <label className='text-xs text-gray-500' htmlFor='teachers'>
-        Select Teachers
+        Select Students
       </label>
       <Controller
         name={name}
@@ -59,33 +59,35 @@ const TeacherSelect = ({
           const selectedValues = Array.isArray(field.value) ? field.value : [];
           console.log('Select Value', selectedValues);
 
-          // Tạo options từ selectedValues
-          const selectedIDs = field.value.map((obj) => obj.teacherId); // Mảng số
-          const selectedOptions = teacherOptions.filter((opt) =>
-            selectedIDs.includes(opt.value)
-          );
+          // // Tạo options từ selectedValues
+          // const selectedIDs = field.value.map((obj) => obj.studentID);
+          // const selectedOptions = studentOptions.filter((opt) =>
+          //   selectedIDs.includes(opt.value)
+          // );
 
-          // Debug để xem các options đã chọn
-          console.log('Selected options:', selectedOptions);
+          // // Debug để xem các options đã chọn
+          // console.log('Selected options:', selectedOptions);
 
           return (
             <Select
               {...field}
               isClearable
               isMulti
-              options={teacherOptions}
-              value={teacherOptions.filter((option) =>
+              options={studentOptions}
+              value={studentOptions.filter((option) =>
                 selectedValues
-                  .map((obj) => obj.teacherId)
+                  .map((obj) => obj.studentID)
                   .includes(option.value)
               )}
               onChange={(selected) => {
+                // Chuyển đổi selected từ dạng options sang dạng { studentID, studentName }
                 const newValue = selected.map((opt) => ({
-                  teacherId: opt.value,
-                  teacherName: opt.label,
+                  studentID: opt.value,
+                  studentName: opt.label.split(' - ')[0],
                 }));
                 field.onChange(newValue);
-                console.log(selected);
+                console.log('selected student', newValue);
+                // console.log(selected);
               }}
               onBlur={() => {
                 if (!fieldState.error) {
@@ -94,9 +96,11 @@ const TeacherSelect = ({
               }}
               isLoading={loading}
               components={animatedComponents}
+              menuPlacement='auto'
               closeMenuOnSelect={false}
+              menuShouldBlockScroll={false}
               classNamePrefix='select'
-              placeholder={`Choose teachers to manage course`}
+              placeholder={`Choose students to add class`}
             />
           );
         }}
@@ -115,4 +119,4 @@ const TeacherSelect = ({
   );
 };
 
-export default TeacherSelect;
+export default StudentSelect;

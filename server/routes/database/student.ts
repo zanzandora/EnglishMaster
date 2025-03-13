@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { eq } from 'drizzle-orm'
+import { eq, not, inArray, isNull, sql,notExists } from 'drizzle-orm'
 
 import { Students, Classes, ClassStudents, Courses  } from '../../database/entity'
 import { db } from '../../database/driver'
@@ -173,5 +173,43 @@ expressRouter.delete('/delete/:id', async (req, res) => {
     res.status(500).send(err.toString())
   }
 })
+
+// *get students per classID
+expressRouter.get('/students/:classID', async (req, res) => {
+  const { classID } = req.params;
+
+  try {
+    const students = await db
+      .select({
+        studentID: Students.id,
+        studentName: Students.name,
+        email: Students.email,
+        phone: Students.phoneNumber,
+        gender: Students.gender,
+        dateOfBirth: Students.dateOfBirth,
+      })
+      .from(ClassStudents)
+      .innerJoin(Students, eq(ClassStudents.studentID, Students.id))
+      .where(eq(ClassStudents.classID, Number(classID)));
+
+    res.send(students);
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+});
+
+// expressRouter.get('/unassigned-students', async (_, res) => {
+//   try {
+//     const unassignedStudents = await db
+//       .select()
+//       .from(Students)
+//       .leftJoin(ClassStudents, eq(Students.id, ClassStudents.studentID))
+//       .where(notExists(ClassStudents.studentID));
+
+//     res.send(unassignedStudents);
+//   } catch (err) {
+//     res.status(500).send(err.toString());
+//   }
+// });
 
 export const router = expressRouter

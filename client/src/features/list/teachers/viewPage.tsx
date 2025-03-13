@@ -22,7 +22,8 @@ const localizer = dateFnsLocalizer({
 });
 
 const SingleTeacherPage = () => {
-  const { id } = useParams();
+  const { userID } = useParams();
+  console.log('userID from useParams:', userID);
   const [view, setView] = useState<View>('week');
   const [selectedClass, setSelectedClass] = useState<string>('all');
 
@@ -63,7 +64,7 @@ const SingleTeacherPage = () => {
   useEffect(() => {
     const fetchStudent = async () => {
       try {
-        const res = await fetch(`/teacher/${id}`);
+        const res = await fetch(`/teacher/${userID}`);
 
         const data = await res.json();
 
@@ -78,11 +79,11 @@ const SingleTeacherPage = () => {
     };
 
     fetchStudent();
-  }, [id]);
+  }, [userID]);
 
   if (loading) return <p>Đang tải...</p>;
 
-  if (!teacher) return <p>Không tìm thấy sinh viên</p>;
+  if (!teacher) return <p>Không tìm thấy giáo viên</p>;
 
   return (
     <div className='flex-1 p-4 flex flex-col gap-4 xl:flex-row'>

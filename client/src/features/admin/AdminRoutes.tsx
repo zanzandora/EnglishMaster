@@ -25,7 +25,7 @@ const AdminRoutes = () => {
       <Route path='list/students/:id' element={<StudentViewPage />} />
 
       <Route path='list/teachers' element={<TeacherListPage />} />
-      <Route path='list/teachers/:id' element={<TeacherViewPage />} />
+      <Route path='list/teachers/:userID' element={<TeacherViewPage />} />
 
       <Route path='list/subjects' element={<CoursesListPage />} />
       <Route path='list/classes' element={<ClassListPage />} />

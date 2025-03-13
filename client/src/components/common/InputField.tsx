@@ -5,6 +5,7 @@ type InputFieldProps = {
   type?: string;
   register: any;
   name: string;
+  value?: string;
   defaultValue?: string;
   error?: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | string;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement> &
@@ -20,6 +21,7 @@ const InputField: FC<InputFieldProps> = ({
   type = 'text',
   register,
   name,
+  value,
   defaultValue,
   error,
   inputProps,
@@ -41,13 +43,14 @@ const InputField: FC<InputFieldProps> = ({
         {...register(name)}
         {...(inputProps as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
         className='ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full resize-none'
-        defaultValue={defaultValue}
+        value={value !== undefined ? value : defaultValue}
       />
     ),
     select: (
       <select
         {...register(name)}
         {...(inputProps as React.SelectHTMLAttributes<HTMLSelectElement>)}
+        defaultValue={defaultValue}
         className='ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full'
       >
         {children}

@@ -13,6 +13,8 @@ const ResultForm = lazy(() => import('./forms/ResultForm'));
 const EventForm = lazy(() => import('./forms/EventForm'));
 const ShiftForm = lazy(() => import('./forms/ShiftForm'));
 
+const StudentsList = lazy(() => import('./forms/StudentsList'));
+
 const forms: {
   [key: string]: (
     type: 'create' | 'update',
@@ -46,7 +48,14 @@ const forms: {
       setOpen={setOpen}
     />
   ),
-  class: (type, data) => <ClassForm type={type} data={data} />,
+  class: (type, data, _, onSuccess, setOpen) => (
+    <ClassForm
+      type={type}
+      data={data}
+      onSuccess={onSuccess}
+      setOpen={setOpen}
+    />
+  ),
   lesson: (type, data) => <LessonForm type={type} data={data} />,
   exam: (type, data) => <ExamForm type={type} data={data} />,
   result: (type, data) => <ResultForm type={type} data={data} />,
@@ -78,8 +87,9 @@ const FormModal = ({
     | 'attendance'
     | 'event'
     | 'shift'
-    | 'announcement';
-  type: 'create' | 'update' | 'delete';
+    | 'announcement'
+    | 'students';
+  type: 'list' | 'create' | 'update' | 'delete';
   data?: any;
   id?: number;
   userID?: number;
@@ -94,6 +104,8 @@ const FormModal = ({
       ? 'bg-tables-actions-bgCreateIcon'
       : type === 'update'
       ? 'bg-tables-actions-bgEditIcon'
+      : type === 'list'
+      ? 'bg-tables-actions-bgViewIcon'
       : 'bg-tables-actions-bgDeleteIcon';
 
   const [open, setOpen] = useState(false);
@@ -162,6 +174,8 @@ const FormModal = ({
       </form>
     ) : type === 'create' || type === 'update' ? (
       forms[table](type, data, handleSubmit, onSuccess, setOpen)
+    ) : table === 'students' && type === 'list' ? (
+      <StudentsList classID={id?.toString()} />
     ) : (
       'Form not found!'
     );

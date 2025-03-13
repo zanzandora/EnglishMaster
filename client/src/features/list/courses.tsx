@@ -2,10 +2,10 @@ import FormModal from '@components/common/FormModal';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import { role, mockCourses, mockTeachers, mockUsers } from '@mockData/mockData';
+import { role } from '@mockData/mockData';
+import useFetchcourses from 'hooks/useFetchCourses';
 import usePagination from 'hooks/usePagination';
-import useRelationMapper from 'hooks/useRelationMapper';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -38,29 +38,8 @@ const columns = (t: any) => [
 
 const SubjectListPage = () => {
   const { t } = useTranslation();
-  const [courses, setCourses] = useState([]);
   const [reloadTrigger, setReloadTrigger] = useState(0); // Triggers a re-render when data is updated
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const response = await fetch('/course/list');
-        if (!response.ok) throw new Error('Lỗi khi tải dữ liệu');
-
-        const data = await response.json();
-
-        setCourses(data); // Cập nhật state với dữ liệu đã xử lý
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCourses();
-  }, [reloadTrigger]);
+  const { courses, loading, error } = useFetchcourses(reloadTrigger);
 
   const handleSuccess = () => {
     setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa
@@ -68,6 +47,7 @@ const SubjectListPage = () => {
 
   const { currentData, currentPage, totalPages, setCurrentPage } =
     usePagination(courses, 10);
+  console.log(courses.teachers);
 
   if (loading) return <p>Đang tải dữ liệu...</p>;
   if (error) return <p>Lỗi: {error}</p>;

@@ -68,6 +68,7 @@ const TeacherForm = ({
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),

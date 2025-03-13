@@ -5,7 +5,6 @@ import InputField from '../InputField';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import TeacherSelect from '@components/common/select/TeacherSelect';
-import { useEffect, useState } from 'react';
 
 // Định nghĩa schema bằng cách sử dụng z.object() để mô tả cấu trúc dữ liệu và điều kiện hợp lệ.
 const baseCourseSchema = {
@@ -13,7 +12,14 @@ const baseCourseSchema = {
   description: z.string().min(10, 'Description must be at least 10 characters'),
   duration: z.coerce.number().int().positive('Duration is required'),
   fee: z.coerce.number().int().positive('Fee is required'),
-  teachers: z.any(),
+  teachers: z
+    .array(
+      z.object({
+        teacherId: z.number(),
+        teacherName: z.string().optional(),
+      })
+    )
+    .min(1, 'Teachers is required'),
 };
 
 // Tạo TypeScript type từ schema Zod
@@ -39,26 +45,6 @@ const CourseForm = ({
   setOpen?: (open: boolean) => void;
 }) => {
   const { t } = useTranslation();
-  // const [currentTeachers, setCurrentTeachers] = useState([]);
-
-  // useEffect(() => {
-  //   if (type === 'update' && data?.id) {
-  //     // Lấy danh sách giáo viên hiện tại của khóa học
-  //     const fetchTeachers = async () => {
-  //       try {
-  //         const response = await fetch(`/course/teachers/${data.id}`);
-  //         if (response.ok) {
-  //           const teachers = await response.json();
-  //           setCurrentTeachers(teachers);
-  //         }
-  //       } catch (error) {
-  //         console.error('Failed to fetch teachers:', error);
-  //       }
-  //     };
-
-  //     fetchTeachers();
-  //   }
-  // }, [type, data]);
 
   const schema = type === 'create' ? CreateCourseSchema : UpdateCourseSchema;
 
@@ -67,7 +53,7 @@ const CourseForm = ({
     handleSubmit,
     control,
     trigger,
-    formState: { errors },
+    formState: { errors, dirtyFields },
   } = useForm({
     // Khi submit form, Zod sẽ tự động kiểm tra dữ liệu dựa trên StudentSchema.
     resolver: zodResolver(schema),
@@ -82,7 +68,7 @@ const CourseForm = ({
 
   const submitCourse = async (formattedData: any) => {
     const url = type === 'create' ? '/course/add' : '/course/edit';
-    // console.log('🔴 API Sending:', formattedData);
+    console.log('🔴 API Sending:', formattedData);
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -127,18 +113,31 @@ const CourseForm = ({
     try {
       if (type === 'update' && data?.id) {
         formData.id = data.id;
-        formData.teachers =
-          formData.teachers?.map((t: any) => t.teacherId) || [];
       }
-      // console.log('🚀 Raw Form Data:', formData);
-      await submitCourse({
-        ...formData,
-      });
+      console.log('🔴 Before Mapping:', formData.teachers);
+
+      // Tạo object dữ liệu để gửi đi
+      const dataToSubmit = { ...formData };
+
+      // !Nếu teachers không thay đổi, giữ nguyên danh sách cũ
+      if (!dirtyFields.teachers) {
+        dataToSubmit.teachers =
+          data?.teachers?.map((t: any) => t.teacherId) || [];
+      } else {
+        // !Nếu có thay đổi, chỉ lấy danh sách teacherId từ formData
+        dataToSubmit.teachers = formData.teachers.map(
+          (t: any) => t.teacherId || t
+        );
+      }
+
+      console.log('🟢 After Mapping:', dataToSubmit.teachers);
+      console.log('🚀 Raw Form Data:', dataToSubmit);
+
+      await submitCourse(dataToSubmit);
     } catch (error: any) {
       toast.error('Error processing form' + error.message);
     }
   };
-
   return (
     <form className='flex flex-col gap-8' onSubmit={handleSubmit(onSubmit)}>
       <h1 className='text-xl font-semibold'>
@@ -174,9 +173,9 @@ const CourseForm = ({
           name='teachers'
           error={errors.teachers}
           defaultValue={
-            data?.teachers?.map((t: any) => ({
-              value: t.teacherId ?? t.value,
-              label: t.teacherName || t.label,
+            data?.teachers?.map((t) => ({
+              teacherId: t.teacherId,
+              teacherName: t.teacherName,
             })) || []
           }
           className='min-w-full'
