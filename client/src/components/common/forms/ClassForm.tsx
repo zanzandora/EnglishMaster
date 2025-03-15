@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,14 +8,11 @@ import { toast } from 'react-toastify';
 import StudentSelect from '@components/common/select/StudentSelect';
 import useFetchTeachers from 'hooks/useFetchTeachers';
 import useFetchCourses from 'hooks/useFetchCourses';
-import { formatDate } from '@utils/dateUtils';
 
 //* Định nghĩa schema bằng cách sử dụng z.object() để mô tả cấu trúc dữ liệu và điều kiện hợp lệ.
 const baseClassSchema = {
   name: z.string().min(2, 'Class name must be at least 2 characters'),
   capacity: z.coerce.number().int().positive('Capacity is required'),
-  startTime: z.string().min(1, 'start date is required'),
-  endTime: z.string().min(1, 'end date is required'),
   teacherID: z.coerce.number().min(1, 'Teacher is required'),
   courseID: z.coerce.number().min(1, 'Course is required'),
   students: z
@@ -139,12 +136,6 @@ const ClassForm = ({
 
       await submitClass({
         ...formData,
-        startDate: formData.startTime
-          ? formatDate(formData.startTime, 'yyyy-MM-dd')
-          : '',
-        endDate: formData.endTime
-          ? formatDate(formData.endTime, 'yyyy-MM-dd')
-          : '',
       });
     } catch (error: any) {
       toast.error('Error processing form' + error.message);
@@ -191,31 +182,7 @@ const ClassForm = ({
             error={errors.name}
             className='min-w-full'
           />
-          <InputField
-            label='Capacity'
-            name='capacity'
-            type='number'
-            register={register}
-            error={errors.capacity}
-          />
-          <InputField
-            label='Start Date'
-            name='startTime'
-            type='date'
-            register={register}
-            error={errors.startDate}
-            inputProps={{
-              onChange: (e) =>
-                console.log('📅 User Selected Start Date:', e.target.value),
-            }}
-          />
-          <InputField
-            label='End Date'
-            name='endTime'
-            type='date'
-            register={register}
-            error={errors.endDate}
-          />
+
           <div className='flex flex-wrap gap-4 w-full justify-between order-1'>
             <InputField
               label='Teacher in charge'
@@ -247,6 +214,13 @@ const ClassForm = ({
               ))}
             </InputField>
           </div>
+          <InputField
+            label='Capacity'
+            name='capacity'
+            type='number'
+            register={register}
+            error={errors.capacity}
+          />
         </div>
       )}
 

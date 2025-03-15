@@ -54,6 +54,10 @@
   background-color: rgb(240,253,250) !important;
 }
 
+.rbc-month-view .rbc-row-segment {
+  @apply max-h-8 overflow-hidden
+}
+
 /* CALENDAR WRAPPER  */
 .calendar-wrapper{
 }

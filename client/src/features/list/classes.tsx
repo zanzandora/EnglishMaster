@@ -59,8 +59,8 @@ const ClassListPage = () => {
         setClasses(
           data.map((c: any) => ({
             ...c,
-            startTime: formatDate(c.startTime, 'yyyy-MM-dd'),
-            endTime: formatDate(c.endTime, 'yyyy-MM-dd'),
+            startDate: formatDate(c.startDate, 'yyyy/MM/dd'),
+            endDate: formatDate(c.endDate, 'yyyy/MM/dd'),
           }))
         ); // Cập nhật state với dữ liệu đã xử lý
       } catch (error) {
@@ -93,13 +93,15 @@ const ClassListPage = () => {
           <div className='flex flex-col'>
             <h3 className='font-semibold'>{item.name}</h3>
             <p className='text-xs text-gray-500'>
-              {item.startTime} - {item.endTime}
+              {item.startDate} - {item.endDate}
             </p>
           </div>
         </td>
         <td className='hidden md:table-cell'>{item.capacity}</td>
 
-        <td className='hidden md:table-cell'>{item.totalStudents}</td>
+        <td className='hidden md:table-cell'>
+          {item.totalStudents ? item.totalStudents : 0}
+        </td>
         <td className='hidden md:table-cell'>
           {item.courseName || 'No course assigned'}
         </td>

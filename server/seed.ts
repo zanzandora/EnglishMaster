@@ -61,18 +61,31 @@ const majors = [
   'TRVL-2 English for Travel',
 ]
 
-function generateTimeRange() {
-  const startHour = faker.number.int({ min: 0, max: 22 })
-  const startMinute = faker.number.int({ min: 0, max: 59 })
+// function generateTimeRange() {
+//   const startHour = faker.number.int({ min: 0, max: 22 })
+//   const startMinute = faker.number.int({ min: 0, max: 59 })
 
-  const endHour = faker.number.int({ min: startHour + 1, max: 23 })
-  const endMinute = faker.number.int({ min: 0, max: 59 })
+//   const endHour = faker.number.int({ min: startHour + 1, max: 23 })
+//   const endMinute = faker.number.int({ min: 0, max: 59 })
 
-  const startTime = `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}:00`
-  const endTime = `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}:00`
+//   const startTime = `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}:00`
+//   const endTime = `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}:00`
 
-  return { startTime, endTime }
-}
+//   return { startTime, endTime }
+// }
+
+const generateTimeRange = () => {
+  const timeSlots = [
+    { startTime: '17:30:00', endTime: '19:30:00' }, // Ca 1
+    { startTime: '19:30:00', endTime: '21:30:00' }, // Ca 2
+  ];
+  return faker.helpers.arrayElement(timeSlots);
+};
+
+const generateDaysOfWeek = () => {
+  const rules = ['1,3', '2,4', '3,5', '4,6']; // Một số mẫu lịch
+  return faker.helpers.arrayElement(rules);
+};
 
 // Seed Users
 const users = Array.from({ length: 20 }, () => ({
@@ -129,14 +142,12 @@ const courses = majors.map((course) => ({
 const courseIDs = await db.insert(Courses).values(courses).$returningId()
 
 // Seed Classes
-const classes = Array.from({ length: 20 }, () => ({
+const classes = mockClasses.map((className) => ({
   teacherID: faker.helpers.arrayElement(teacherIDs.map(({ id }) => id)),
   courseID: faker.helpers.arrayElement(courseIDs.map(({ id }) => id)),
-  name: faker.helpers.arrayElement(mockClasses),
+  name: className,
   description: faker.lorem.paragraph(),
   capacity: faker.number.int({ min: 20, max: 60, multipleOf: 5 }),
-  startTime: new Date(),
-  endTime: new Date(),
   createdAt: new Date(),
   updatedAt: new Date(),
 }));
@@ -162,16 +173,44 @@ const courseTeachers = courseIDs.flatMap(({ id: courseID }) => {
 await db.insert(CourseTeachers).values(courseTeachers)
 
 // Seed Schedule
-let time = generateTimeRange()
-const schedules = classIDs.map((classID) => ({
-  classID: classID.id,
-  sessionDate: faker.date.future(),
-  startTime: time.startTime,
-  endTime: time.endTime,
-  location: faker.location.city(),
-  createdAt: new Date(),
-  updatedAt: new Date(),
-}))
+
+const schedules = classIDs.flatMap((classID) => {
+  const time = generateTimeRange();
+  const classStartDate = faker.date.future({ years: 0.5 });
+  const classEndDate = faker.date.future({ years: 1 });
+  const examDate = classEndDate;
+
+  return [
+    {
+      classID: classID.id,
+      type: 'class',
+      repeatRule: 'weekly',
+      daysOfWeek: generateDaysOfWeek(),
+      startDate: classStartDate,
+      endDate: classEndDate,
+      startTime: time.startTime,
+      endTime: time.endTime,
+      location: faker.location.city(),
+      room: faker.number.int({ min: 1, max: 10 }),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+    {
+      classID: classID.id,
+      type: 'exam',
+      repeatRule: 'custom',
+      daysOfWeek: null, // Lịch thi không có ngày lặp
+      startDate: examDate,
+      endDate: examDate,
+      startTime: time.startTime,
+      endTime: time.endTime,
+      location: faker.location.city(),
+      room: faker.number.int({ min: 1, max: 10 }),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  ];
+});
 const scheduleIDs = await db.insert(Schedule).values(schedules).$returningId()
 
 // Seed Lessons

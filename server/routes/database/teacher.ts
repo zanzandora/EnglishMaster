@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { eq, sql,and, not, or } from 'drizzle-orm'
+import { eq, sql,and, not, or, isNotNull } from 'drizzle-orm'
 
 import { Classes, Courses, CourseTeachers, Teachers, Users } from '../../database/entity'
 import { db } from '../../database/driver'
@@ -34,6 +34,24 @@ expressRouter.get('/list', async (req, res) => {
     res.status(500).send(err.toString())
   }
 })
+
+expressRouter.get('/options', async (_, res) => {
+  try {
+    const classOptions = await db
+      .select({
+        id: Teachers.id,
+        userID: Teachers.userID,
+        name: Users.name,
+      })
+      .from(Teachers)
+      .innerJoin(Users, eq(sql`CAST(${Teachers.userID} AS INTEGER)`, Users.id));
+      
+
+    res.send(classOptions);
+  } catch (err) {
+    res.status(500).send(err.toString());
+  }
+});
 
 expressRouter.get('/:userID', async (req, res) => {
   const userID = req.params.userID; // Lấy userID từ URL

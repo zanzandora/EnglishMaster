@@ -27,21 +27,14 @@ export const handleSelectSlot = (
 
 export const handleSelectEvent = (
     event: Event,
-    events: Event[],
-    setNewEvent: SetState<Event>,
-    setEditing: SetState<boolean>,
-    setShowPopup: SetState<boolean>
-) => {
-    setNewEvent({
-        id: events.findIndex((e) => e.start === event.start && e.end === event.end),
-        title: typeof event.title === "string" ? event.title : String(event.title) || "",
-        start: event.start,
-        end: event.end,
-        resource: event.resource,
-    });
-    setEditing(true);
-    setShowPopup(true);
-};
+    setView: React.Dispatch<React.SetStateAction<View>>,
+    setCurrentDate: React.Dispatch<React.SetStateAction<Date>>
+  ) => {
+    // Chuyển sang week view
+    setView('week');
+    // Đặt current date thành ngày bắt đầu của event
+    setCurrentDate(new Date(event.start));
+  };
 
 export const handleSaveEvent = (
     newEvent: Event,

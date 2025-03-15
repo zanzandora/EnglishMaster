@@ -37,6 +37,7 @@ app.use('/teacher', authenticateToken, (await import('./routes/database/teacher'
 app.use('/user', authenticateToken, (await import('./routes/database/user')).router)
 app.use('/course', authenticateToken, (await import('./routes/database/course')).router)
 app.use('/attendance', authenticateToken, (await import('./routes/database/attendance')).router)
+app.use('/schedule', authenticateToken, (await import('./routes/database/schedule')).router)
 app.use('/class', authenticateToken, (await import('./routes/database/class')).router)
 app.use('/exam', authenticateToken, (await import('./routes/database/exam')).router)
 app.use('/lesson', authenticateToken, (await import('./routes/database/lesson')).router)

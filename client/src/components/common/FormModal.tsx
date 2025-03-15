@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState, lazy, Suspense, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 
@@ -10,7 +10,7 @@ const ClassForm = lazy(() => import('./forms/ClassForm'));
 const LessonForm = lazy(() => import('./forms/LessonForm'));
 const ExamForm = lazy(() => import('./forms/ExamForm'));
 const ResultForm = lazy(() => import('./forms/ResultForm'));
-const EventForm = lazy(() => import('./forms/EventForm'));
+const ScheduleForm = lazy(() => import('./forms/EventForm'));
 const ShiftForm = lazy(() => import('./forms/ShiftForm'));
 
 const StudentsList = lazy(() => import('./forms/StudentsList'));
@@ -21,7 +21,7 @@ const forms: {
     data?: any,
     handleSubmit?: (data: any) => void,
     onSuccess?: () => void,
-    setOpen?: (open: boolean) => void // auto close
+    setOpen?: (open: boolean) => void
   ) => JSX.Element;
 } = {
   teacher: (type, data, _, onSuccess, setOpen) => (
@@ -59,7 +59,14 @@ const forms: {
   lesson: (type, data) => <LessonForm type={type} data={data} />,
   exam: (type, data) => <ExamForm type={type} data={data} />,
   result: (type, data) => <ResultForm type={type} data={data} />,
-  event: (type, data) => <EventForm type={type} data={data} />,
+  schedule: (type, data, _, onSuccess, setOpen) => (
+    <ScheduleForm
+      type={type}
+      data={data}
+      onSuccess={onSuccess}
+      setOpen={setOpen}
+    />
+  ),
   shift: (type, data, handleSubmit) => (
     <ShiftForm type={type} data={data} handleSubmit={handleSubmit} />
   ),
@@ -74,6 +81,8 @@ const FormModal = ({
   onShiftChange,
   onSuccess,
   onError,
+  hideTrigger,
+  openTrigger,
 }: {
   table:
     | 'teacher'
@@ -85,7 +94,7 @@ const FormModal = ({
     | 'assignment'
     | 'result'
     | 'attendance'
-    | 'event'
+    | 'schedule'
     | 'shift'
     | 'announcement'
     | 'students';
@@ -96,6 +105,8 @@ const FormModal = ({
   onShiftChange?: (shift: { value: string; label: string }) => void;
   onSuccess?: () => void;
   onError?: (error: any) => void;
+  hideTrigger?: boolean;
+  openTrigger?: number;
 }) => {
   const { t } = useTranslation();
   const size = type === 'create' ? 'w-8 h-8' : 'w-7 h-7';
@@ -109,6 +120,13 @@ const FormModal = ({
       : 'bg-tables-actions-bgDeleteIcon';
 
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (openTrigger) {
+      setOpen(true);
+    }
+  }, [openTrigger]);
+
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleSubmit = (newShift: { value: string; label: string }) => {
@@ -183,12 +201,14 @@ const FormModal = ({
 
   return (
     <>
-      <button
-        className={`${size} flex items-center justify-center rounded-full ${bgColor}`}
-        onClick={() => setOpen(true)}
-      >
-        <img src={`/${type}.png`} alt='' width={16} height={16} />
-      </button>
+      {!hideTrigger && (
+        <button
+          className={`${size} flex items-center justify-center rounded-full ${bgColor}`}
+          onClick={() => setOpen(true)}
+        >
+          <img src={`/${type}.png`} alt='' width={16} height={16} />
+        </button>
+      )}
       {open && (
         <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50'>
           <div className='bg-white p-6 rounded-md shadow-lg relative w-[90%] md:w-[70%] lg:w-[50%] xl:w-[40%]'>

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { and, eq, sql, inArray } from 'drizzle-orm';
+import { and, eq, sql, inArray, desc } from 'drizzle-orm';
 
 import {
   Classes,
@@ -8,6 +8,7 @@ import {
   ClassStudents,
   Users,
   Students,
+  Schedule,
 } from '../../database/entity';
 import { db } from '../../database/driver';
 
@@ -15,27 +16,45 @@ const expressRouter = Router();
 
 expressRouter.get('/list', async (req, res) => {
   try {
-    let allClasses = await db
-      .select({
-        id: Classes.id,
-        name: Classes.name,
-        teacherID: Classes.teacherID,
-        courseID: Classes.courseID,
-        capacity: Classes.capacity,
-        startTime: Classes.startTime,
-        endTime: Classes.endTime,
-        teacherName: Users.name,
-        courseName: Courses.name,
-        totalStudents: sql<number>`COUNT(${ClassStudents.studentID})`.as(
-          'totalStudents'
-        ),
-      })
-      .from(Classes)
-      .innerJoin(Teachers, eq(Classes.teacherID, Teachers.id))
-      .innerJoin(Users, eq(Teachers.userID, Users.id))
-      .innerJoin(Courses, eq(Classes.courseID, Courses.id))
-      .leftJoin(ClassStudents, eq(ClassStudents.classID, Classes.id))
-      .groupBy(Classes.id, Users.name, Courses.name);
+    const studentCounts = db
+    .select({
+      classID: ClassStudents.classID,
+      totalStudents: sql<number>`COUNT(DISTINCT ${ClassStudents.studentID})`.as('totalStudents'),
+    })
+    .from(ClassStudents)
+    .groupBy(ClassStudents.classID)
+    .as('studentCounts');
+  
+  const classSchedule = db
+    .select({
+      classID: Schedule.classID,
+      startDate: sql<Date>`MIN(${Schedule.startDate})`.as('startDate'),
+      endDate: sql<Date>`MIN(${Schedule.endDate})`.as('endDate'),
+    })
+    .from(Schedule)
+    .groupBy(Schedule.classID)
+    .as('classSchedule');
+  
+  let allClasses = await db
+    .select({
+      id: Classes.id,
+      name: Classes.name,
+      teacherID: Classes.teacherID,
+      courseID: Classes.courseID,
+      capacity: Classes.capacity,
+      startDate: classSchedule.startDate,
+      endDate: classSchedule.endDate,
+      teacherName: Users.name,
+      courseName: Courses.name,
+      totalStudents: studentCounts.totalStudents,
+    })
+    .from(Classes)
+    .innerJoin(Teachers, eq(Classes.teacherID, Teachers.id))
+    .innerJoin(Users, eq(Teachers.userID, Users.id))
+    .innerJoin(Courses, eq(Classes.courseID, Courses.id))
+    .leftJoin(studentCounts, eq(studentCounts.classID, Classes.id))
+    .leftJoin(classSchedule, eq(classSchedule.classID, Classes.id))
+    .orderBy(desc(Classes.id));
 
     // Get students assigned to this class
     const studentsData = await db
@@ -65,6 +84,21 @@ expressRouter.get('/list', async (req, res) => {
     }));
 
     res.send(classWithStudents);
+  } catch (err) {
+    res.status(500).send(err.toString());
+  }
+});
+
+expressRouter.get('/options', async (req, res) => {
+  try {
+    const classOptions = await db
+      .select({
+        id: Classes.id,
+        name: Classes.name,
+      })
+      .from(Classes);
+
+    res.send(classOptions);
   } catch (err) {
     res.status(500).send(err.toString());
   }
@@ -106,7 +140,7 @@ expressRouter.get('/', async (req, res) => {
 });
 
 expressRouter.post('/add', async (req, res) => {
-  const { courseID, teacherID, name, capacity, startTime, endTime, students } =
+  const { courseID, teacherID, name, capacity, students } =
     req.body;
 
   const missingFields: string[] = [];
@@ -114,8 +148,6 @@ expressRouter.post('/add', async (req, res) => {
   if (!teacherID) missingFields.push('teacherID');
   if (!name) missingFields.push('name');
   if (!capacity) missingFields.push('capacity');
-  if (!startTime) missingFields.push('startTime');
-  if (!endTime) missingFields.push('endTime');
   if (!students) missingFields.push('students');
 
   if (missingFields.length > 0) {
@@ -151,8 +183,6 @@ expressRouter.post('/add', async (req, res) => {
         teacherID,
         name,
         capacity,
-        startTime,
-        endTime,
       })
       .execute();
 
@@ -178,8 +208,6 @@ expressRouter.post('/edit', async (req, res) => {
     teacherID,
     name,
     capacity,
-    startTime,
-    endTime,
     students,
   } = req.body;
   console.log('🔴 API Received:', req.body);
@@ -194,8 +222,6 @@ expressRouter.post('/edit', async (req, res) => {
   if (teacherID) set1['teacherID'] = teacherID;
   if (name) set1['name'] = name;
   if (capacity) set1['capacity'] = capacity;
-  if (startTime) set1['startTime'] = startTime;
-  if (endTime) set1['endTime'] = endTime;
 
   try {
     if (Object.keys(set1).length > 0) {
@@ -212,16 +238,23 @@ expressRouter.post('/edit', async (req, res) => {
 
         // Lấy danh sách học viên đã được gán lớp
         const assignedRows = await db
-          .select({ studentID: ClassStudents.studentID, classID: ClassStudents.classID })
+          .select({
+            studentID: ClassStudents.studentID,
+            classID: ClassStudents.classID,
+          })
           .from(ClassStudents)
           .where(inArray(ClassStudents.studentID, studentIDs));
         const assignedIDs = assignedRows.map((row) => row.studentID);
-        const assignedOutsideClass = assignedRows.filter(row => row.classID !== id).map(row => row.studentID);
+        const assignedOutsideClass = assignedRows
+          .filter((row) => row.classID !== id)
+          .map((row) => row.studentID);
 
         // Nếu có học viên đã được gán lớp ngoài class đang edit, trả về lỗi để client hiển thị thông báo
         if (assignedOutsideClass.length > 0) {
           return res.status(400).json({
-            error: `Students with IDs ${assignedOutsideClass.join(', ')} had assigned`,
+            error: `Students with IDs ${assignedOutsideClass.join(
+              ', '
+            )} had assigned`,
           });
         }
 
@@ -230,7 +263,13 @@ expressRouter.post('/edit', async (req, res) => {
 
         // Thêm các bản ghi mới, bỏ qua học viên đã gán tại lớp đang edit
         const classStudentsData = studentIDs
-          .filter(studentID => !assignedIDs.includes(studentID) || assignedRows.some(row => row.studentID === studentID && row.classID === id))
+          .filter(
+            (studentID) =>
+              !assignedIDs.includes(studentID) ||
+              assignedRows.some(
+                (row) => row.studentID === studentID && row.classID === id
+              )
+          )
           .map((studentID) => ({
             classID: id,
             studentID: studentID,
@@ -264,6 +303,5 @@ expressRouter.delete('/delete/:id', async (req, res) => {
     res.status(500).send(err.toString());
   }
 });
-
 
 export const router = expressRouter;

@@ -47,6 +47,21 @@ expressRouter.get('/list', async (req, res) => {
   }
 });
 
+expressRouter.get('/options', async (req, res) => {
+  try {
+    const classOptions = await db
+      .select({
+        id: Courses.id,
+        name: Courses.name,
+      })
+      .from(Courses);
+
+    res.send(classOptions);
+  } catch (err) {
+    res.status(500).send(err.toString());
+  }
+});
+
 expressRouter.get('/', async (req, res) => {
   const name = req.body.name
 

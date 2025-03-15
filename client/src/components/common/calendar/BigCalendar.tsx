@@ -9,70 +9,88 @@ import { vi } from 'date-fns/locale/vi';
 import { useTranslation } from 'react-i18next';
 import 'react-tooltip/dist/react-tooltip.css';
 import 'react-datepicker/dist/react-datepicker.css';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 registerLocale('en-GB', enGB);
 registerLocale('vi', vi);
 
 interface BigCalendarProps {
-  events: ExtendedEvent[];
-  resources: ResourceCalendar[];
+  events: any[];
+  resources: any;
   view: View;
   setView: (view: View) => void;
   filteredEvents: ExtendedEvent[];
   localizer: any;
   onDoubleClickEvent?: (event: ExtendedEvent) => void;
+  onSelectEvent?: (event: ExtendedEvent) => void;
 }
 
 // Custom Event Component
 const CustomEventComponent: React.FC<EventProps<ExtendedEvent>> = ({
   event,
 }) => {
+  const anchorId = `anchor-${event.id}-${event.start?.getTime()}`;
+
   return (
-    <div
-      className='p-2 rounded-lg shadow-md text-white h-full flex flex-col'
-      style={{
-        backgroundColor: event.data?.type === 'exam' ? '#e74c3c' : '#3498db',
-      }}
-      data-tooltip-id={`event-tooltip-${event.id}`}
-    >
-      {/* Phần hiển thị gốc vẫn giữ nguyên */}
-      <span className='font-bold text-sm'>{event.title}</span>
-      {event.data?.subject && (
-        <span className='text-xs'>📚 {event.data.subject}</span>
-      )}
-      {event.data?.room && (
-        <span className='text-xs'>🏫 {event.data.room}</span>
-      )}
-      {event.data?.teacher && (
-        <span className='text-xs'>👨‍🏫 {event.data.teacher}</span>
-      )}
+    <>
+      <div
+        id={anchorId}
+        className='p-2 rounded-lg shadow-md text-white h-full flex flex-col'
+        style={{
+          backgroundColor: event.data?.type === 'exam' ? '#e74c3c' : '#3498db',
+        }}
+        // data-tooltip-id={`event-tooltip-${event.id}`}
+      >
+        {/* Phần hiển thị gốc vẫn giữ nguyên */}
+        <span className='font-bold text-sm relative'>
+          {event.title}{' '}
+          {event.data?.startTime && event.data?.endTime && (
+            <span className='text-xs absolute left-1/2 transform -translate-x-1/2 right-1/2'>
+              {format(event.start, 'HH:mm')} - {format(event.end, 'HH:mm')}
+            </span>
+          )}
+        </span>
+
+        {event.data?.room && (
+          <span className='text-xs'>🏫 Room {event.data.room}</span>
+        )}
+        {event.data?.teacher && (
+          <span className='text-xs'>👨‍🏫 Teacher: {event.data.teacher}</span>
+        )}
+        {event.data?.course && (
+          <span className='text-xs'>📚 Course: {event.data.course}</span>
+        )}
+        {event.data?.type === 'exam' && (
+          <span className=' text-red-500'>Exam</span>
+        )}
+      </div>
       {/* Tooltip */}
       <Tooltip
-        id={`event-tooltip-${event.id}`}
+        id={`tooltip-${event.id}-${event.start?.getTime()}`}
+        anchorId={anchorId}
         place='top'
         variant='dark'
         className='z-50 text-left'
         render={() => (
-          <div>
+          <div className=' overflow-auto'>
             <strong>{event.title}</strong>
-            <br />
-            {event.data?.subject && (
-              <>
-                📚 {event.data.subject}
-                <br />
-              </>
+            {event.data?.type === 'exam' && (
+              <span className=' text-red-500 font-bold'>(Exam)</span>
             )}
+            <br />
             {event.data?.room && (
               <>
-                🏫 {event.data.room}
+                🏫 Room: {event.data.room}
                 <br />
               </>
             )}
-            {event.data?.teacher && <>👨‍🏫 {event.data.teacher}</>}
+            {event.data?.teacher && <>👨‍🏫 Teacher: {event.data.teacher}</>}
+            <br />
+            {event.data?.course && <> 📚 Course: {event.data.course}</>}
           </div>
         )}
       />
-    </div>
+    </>
   );
 };
 
@@ -189,6 +207,7 @@ const BigCalendar: React.FC<BigCalendarProps> = ({
   filteredEvents,
   localizer,
   onDoubleClickEvent,
+  onSelectEvent,
 }) => {
   const { t } = useTranslation();
 
@@ -208,17 +227,18 @@ const BigCalendar: React.FC<BigCalendarProps> = ({
       style={{ height: 'calc(100vh - 100px)' }}
       timeslots={1}
       step={30}
-      min={setHours(setMinutes(new Date(), 0), 7)}
+      min={setHours(setMinutes(new Date(), 0), 17)}
       max={setHours(setMinutes(new Date(), 0), 23)}
       scrollToTime={setHours(setMinutes(new Date(), 0), 7)}
       onDoubleClickEvent={onDoubleClickEvent}
+      onSelectEvent={onSelectEvent}
       formats={{
         dayFormat: (date) =>
           format(date, 'EEE (dd/MM)', {
             locale: t('calendar.locale') === 'en-GB' ? enGB : vi,
           }),
         weekdayFormat: (date) =>
-          format(date, 'EEE (dd/MM)', {
+          format(date, 'EEEE', {
             locale: t('calendar.locale') === 'en-GB' ? enGB : vi,
           }),
         monthHeaderFormat: (date) =>
@@ -240,6 +260,8 @@ const BigCalendar: React.FC<BigCalendarProps> = ({
         toolbar: CustomToolbar,
         event: CustomEventComponent,
       }}
+      popup
+      dayLayoutAlgorithm='no-overlap'
     />
   );
 };

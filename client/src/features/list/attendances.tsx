@@ -14,6 +14,9 @@ import {
 } from 'date-fns';
 import { enGB } from 'date-fns/locale/en-GB';
 import { vi } from 'date-fns/locale/vi';
+import usePagination from 'hooks/usePagination';
+
+const role = 'admin';
 
 registerLocale('en-GB', enGB);
 registerLocale('vi', vi);
@@ -24,11 +27,12 @@ type Student = {
   name: string;
   className: string;
   teacher: string;
-  attendance: Record<string, boolean>; // Lưu điểm danh theo ngày thực tế
+  attendance: Record<string, boolean>;
+  note?: string; // Lưu điểm danh theo ngày thực tế
 };
 
 // Tách cấu hình columns
-const columns = (currentWeekDays: Date[], t: any) => [
+const columnsAdmin = (currentWeekDays: Date[], t: any) => [
   {
     header: t('table.attendances.header.name'),
     accessor: 'name',
@@ -49,8 +53,23 @@ const columns = (currentWeekDays: Date[], t: any) => [
   },
 ];
 
+const columnsTeacher = [
+  { header: 'STT', accessor: 'id' },
+  {
+    header: 'Student Name',
+    accessor: 'name',
+  },
+  { header: 'Birth', accessor: 'birth' },
+  {
+    header: 'Checked',
+    accessor: 'attendance',
+  },
+  { header: 'Note', accessor: 'note' },
+];
+
 const AttendancePage = () => {
   const { t } = useTranslation();
+  const [role, setRole] = useState('admin');
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [currentWeek, setCurrentWeek] = useState<number>(1);
   const [attendances, setAttendances] = useState<Student[]>(() =>
@@ -62,6 +81,7 @@ const AttendancePage = () => {
           attended ?? false,
         ])
       ),
+      note: student.note || '', // Ensure note property is included
     }))
   );
   const [selectedTeacher, setSelectedTeacher] = useState<string>('All');
@@ -129,9 +149,10 @@ const AttendancePage = () => {
       selectedDate || new Date()
     ),
   }));
-
+  const { currentData, currentPage, totalPages, setCurrentPage } =
+    usePagination(tableData, 10);
   // Render từng dòng trong bảng
-  const renderRow = (item: unknown) => {
+  const renderRowAdmin = (item: unknown) => {
     const student = item as Student & {
       total: number;
       attendancePercentage: string;
@@ -167,6 +188,7 @@ const AttendancePage = () => {
                       )
                     );
                   }}
+                  disabled={role === 'admin'}
                   className='w-5 h-5 hidden peer'
                 />
                 <span className='relative w-5 h-5 flex justify-center items-center bg-gray-100 border-2 border-gray-400 rounded-md shadow-md transition-all duration-300 peer-checked:border-blue-500 peer-checked:bg-blue-500 group-hover:scale-105'></span>
@@ -175,6 +197,44 @@ const AttendancePage = () => {
           );
         })}
         <td className='text-center'>{student.attendancePercentage}%</td>
+        <td className='p-4'>{student.note}</td>
+      </tr>
+    );
+  };
+
+  const renderRowTeacher = (item: unknown) => {
+    const student = item as Student;
+    return (
+      <tr
+        key={student.id}
+        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavender_fade'
+      >
+        <td className='p-4'>{student.id}</td>
+        <td className='p-4'>{student.name}</td>
+        <td className='p-4'>{student.birth}</td>
+        <td className='p-4'>
+          <input
+            type='checkbox'
+            onChange={() => {
+              setAttendances((prev) =>
+                prev.map((s) =>
+                  s.id === student.id
+                    ? {
+                        ...s,
+                        attendance: {
+                          ...s.attendance,
+                          [format(new Date(), 'dd/MM/yyyy')]:
+                            !s.attendance[format(new Date(), 'dd/MM/yyyy')],
+                        },
+                      }
+                    : s
+                )
+              );
+            }}
+            className='w-5 h-5'
+          />
+        </td>
+        <td className='p-4'>{student.note}</td>
       </tr>
     );
   };
@@ -186,6 +246,16 @@ const AttendancePage = () => {
           {t('table.attendances.title')}
         </h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
+          <button
+            className={`w-full text-sm text-gray-500 hover:text-gray-700`}
+            onClick={() =>
+              setRole((prevRole) =>
+                prevRole === 'admin' ? 'teacher' : 'admin'
+              )
+            }
+          >
+            {role}
+          </button>
           <select
             className='border rounded-md p-2'
             value={selectedTeacher}
@@ -223,13 +293,25 @@ const AttendancePage = () => {
         </div>
       </div>
       <div className='overflow-x-auto'>
-        <Table
-          columns={columns(currentWeekDays, t)}
-          data={tableData}
-          renderRow={renderRow}
-        />
+        {role === 'admin' ? (
+          <Table
+            columns={columnsAdmin(currentWeekDays, t)}
+            data={currentData}
+            renderRow={renderRowAdmin}
+          />
+        ) : (
+          <Table
+            columns={columnsTeacher}
+            data={currentData}
+            renderRow={renderRowTeacher}
+          />
+        )}
       </div>
-      <Pagination />
+      <Pagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };

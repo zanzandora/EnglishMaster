@@ -1,14 +1,22 @@
 export interface ExtendedEvent {
   id: string | number;
-  title: string; // Đảm bảo đây là string
+  title: string; // Dùng className làm tiêu đề
   start: Date;
   end: Date;
-  resource: string;
+  resource: number; // Dùng room làm resource (số)
   data: {
-    subject?: string;
-    class?: string;
-    room?: string;
-    teacher?: string;
-    type?: string; // Để xác định màu sắc
+    id: number;
+    classID: number;
+    className: string;
+    type: 'class' | 'exam';
+    repeatRule: string;
+    daysOfWeek?: number[];
+    startDate: string;
+    endDate: string;
+    startTime: string;
+    endTime: string;
+    teacher: string;
+    course?: string;
+    room: number;
   };
 }

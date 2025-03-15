@@ -114,10 +114,10 @@ const CourseForm = ({
       if (type === 'update' && data?.id) {
         formData.id = data.id;
       }
-      console.log('🔴 Before Mapping:', formData.teachers);
 
       // Tạo object dữ liệu để gửi đi
       const dataToSubmit = { ...formData };
+      console.log('🚀 Raw Form Data:', dataToSubmit);
 
       // !Nếu teachers không thay đổi, giữ nguyên danh sách cũ
       if (!dirtyFields.teachers) {
@@ -129,9 +129,7 @@ const CourseForm = ({
           (t: any) => t.teacherId || t
         );
       }
-
-      console.log('🟢 After Mapping:', dataToSubmit.teachers);
-      console.log('🚀 Raw Form Data:', dataToSubmit);
+      console.log('🚀 Before submit Form Data:', dataToSubmit);
 
       await submitCourse(dataToSubmit);
     } catch (error: any) {
