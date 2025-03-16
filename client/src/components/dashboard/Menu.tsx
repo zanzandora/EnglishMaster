@@ -20,7 +20,7 @@ const getMenuItems = (t: any) => [
         icon: '/teacher.png',
         label: t('menu.teachers'),
         href: `${basePath[role]}/list/teachers`,
-        visible: ['admin', 'teacher'],
+        visible: ['admin'],
       },
       {
         icon: '/student.png',
@@ -62,25 +62,25 @@ const getMenuItems = (t: any) => [
         icon: '/result.png',
         label: t('menu.results'),
         href: `${basePath[role]}/list/results`,
-        visible: ['admin', 'teacher', 'student', 'parent'],
+        visible: ['admin', 'teacher', 'student'],
       },
       {
         icon: '/attendance.png',
         label: t('menu.attendance'),
         href: `${basePath[role]}/list/attendance`,
-        visible: ['admin', 'teacher', 'student', 'parent'],
+        visible: ['admin', 'teacher', 'student'],
       },
       {
         icon: '/calendar.png',
         label: t('menu.schedule'),
         href: `${basePath[role]}/list/schedule`,
-        visible: ['admin', 'teacher', 'student', 'parent'],
+        visible: ['admin', 'teacher', 'student'],
       },
       {
         icon: '/report.png',
         label: t('menu.report'),
         href: `${basePath[role]}/list/reports`,
-        visible: ['admin', 'teacher', 'student', 'parent'],
+        visible: ['admin', 'teacher', 'student'],
       },
       // {
       //   icon: '/announcement.png',

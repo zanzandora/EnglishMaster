@@ -1,14 +1,41 @@
 import { Router } from 'express'
 import { and, eq } from 'drizzle-orm'
 
-import { Attendances } from '../../database/entity'
+import { Attendances, Classes, ClassStudents, Schedule, Students, Teachers, Users } from '../../database/entity'
 import { db } from '../../database/driver'
 
 const expressRouter = Router()
 
 expressRouter.get('/list', async (req, res) => {
   try {
-    let allAttendances = await db.select().from(Attendances)
+    const allAttendances = await db
+  .select({
+    id: Attendances.id,
+    scheduleID: Attendances.scheduleID,
+    checkInTime: Attendances.checkInTime,
+    note: Attendances.note,
+    status: Attendances.status,
+    student: {
+      studentID: ClassStudents.studentID,  
+      studentName: Students.name,
+      dateOfBirth: Students.dateOfBirth,
+    },
+    class:{
+      classID: ClassStudents.classID,
+      className: Classes.name,
+    },
+    teacher: {
+      teacherID: Classes.teacherID,
+      teacherName: Users.name,
+    }
+  })
+  .from(Attendances)
+  .leftJoin(ClassStudents, eq(Attendances.studentID, ClassStudents.studentID))
+  .leftJoin(Students, eq(ClassStudents.studentID, Students.id))
+  .leftJoin(Schedule, eq(Attendances.scheduleID, Schedule.id))
+  .leftJoin(Classes, eq(Schedule.classID, Classes.id))
+  .leftJoin(Teachers, eq(Classes.teacherID, Teachers.id))
+  .leftJoin(Users, eq(Teachers.userID, Users.id));
 
     res.send(allAttendances)
   }

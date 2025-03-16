@@ -45,7 +45,7 @@ const CustomEventComponent: React.FC<EventProps<ExtendedEvent>> = ({
         <span className='font-bold text-sm relative'>
           {event.title}{' '}
           {event.data?.startTime && event.data?.endTime && (
-            <span className='text-xs absolute left-1/2 transform -translate-x-1/2 right-1/2'>
+            <span className='text-xs '>
               {format(event.start, 'HH:mm')} - {format(event.end, 'HH:mm')}
             </span>
           )}

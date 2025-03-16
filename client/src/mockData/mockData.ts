@@ -57,6 +57,27 @@ const qualification = [
   'Trinity CertTESOL',
 ]
 
+const lessonTypes = [
+  "TOEIC Preparation",
+  "IELTS Speaking",
+  "Business English",
+  "Conversational English",
+  "Pronunciation Practice"
+];
+const exams = [
+  "TOEIC",
+  "IELTS",
+  "TOEFL",
+  "Cambridge FCE",
+  "Cambridge CAE",
+  "Cambridge CPE",
+  "PTE Academic",
+  "DUOLINGO English Test",
+  "SAT English",
+  "GRE Verbal Reasoning",
+  "Midterm Exam",
+  "Final Exam"
+];
 // Generate mock data
 const mockUsers = Array.from({ length: 10 }).map(() => ({
   
@@ -172,8 +193,7 @@ const mockClassStudents = mockStudents.map((student, index) => ({
 
 const mockLessons = Array.from({ length: 20 }).map(() => ({
   id: faker.string.uuid(),
-  classId: faker.helpers.arrayElement(mockClasses).id,
-  teacherId: faker.helpers.arrayElement(mockTeachers).userId,
+  type: faker.helpers.arrayElement(lessonTypes),
   title: faker.lorem.sentence(),
   description: faker.lorem.paragraph(),
   file_url: faker.internet.url(),
@@ -186,9 +206,7 @@ const mockLessons = Array.from({ length: 20 }).map(() => ({
 const mockExams = Array.from({ length: 10 }).map(() => ({
   id: faker.string.uuid(),
   classId: faker.helpers.arrayElement(mockClasses).id,
-  uploaderId: faker.helpers.arrayElement(mockTeachers).id,
-  title: faker.lorem.lines(),
-  description: faker.lorem.paragraph(),
+  title: faker.helpers.arrayElement(exams),
   exam_file_url: faker.internet.url(),
   exam_file_type: faker.helpers.arrayElement(['pdf', 'docx', 'pptx']),
   exam_file_size: faker.number.int({ min: 1000, max: 1000000 }),

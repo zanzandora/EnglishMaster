@@ -35,11 +35,7 @@ const columns = (t: any) => [
     accessor: 'teacher',
     className: 'hidden md:table-cell',
   },
-  {
-    header: t('table.exams.header.date'),
-    accessor: 'date',
-    className: 'hidden md:table-cell',
-  },
+
   {
     header: t('table.exams.header.actions'),
     accessor: 'action',
@@ -77,7 +73,6 @@ const ExamListPage = () => {
         <td className='hidden md:table-cell'>
           {item.uploaderID ? item.uploaderID.id : 'No teacher assigned'}
         </td>
-        <td className='hidden md:table-cell'>{item.exam_date}</td>
         <td>
           <div className='flex items-center gap-2'>
             {role === 'admin' && (

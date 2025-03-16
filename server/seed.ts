@@ -60,6 +60,36 @@ const majors = [
   'TRVL-1 English for Travel',
   'TRVL-2 English for Travel',
 ]
+const mockLessons = [
+  "Introduction to English Grammar",
+  "Basic Vocabulary Building",
+  "Everyday Conversations",
+  "Pronunciation Practice",
+  "Reading Comprehension",
+  "Writing Simple Sentences",
+  "Listening Skills Development",
+  "Speaking Fluency Exercises",
+  "Intermediate Grammar Rules",
+  "Advanced Vocabulary Expansion",
+  "Business English Basics",
+  "English for Travel",
+  "Phrasal Verbs and Idioms",
+  "Academic Writing Skills",
+  "Public Speaking in English",
+  "English for Job Interviews",
+  "Understanding English Movies",
+  "English for Kids: Fun Activities",
+  "TOEFL/IELTS Preparation",
+  "English for Specific Purposes (ESP)"
+]
+
+const lessonTypes = [
+  "TOEIC Preparation",
+  "IELTS Speaking",
+  "Business English",
+  "Conversational English",
+  "Pronunciation Practice"
+];
 
 // function generateTimeRange() {
 //   const startHour = faker.number.int({ min: 0, max: 22 })
@@ -118,7 +148,7 @@ const teacherEntries = teachers.map(({ id }) => ({
 const teacherIDs = await db.insert(Teachers).values(teacherEntries).$returningId()
 
 // Seed Students
-const studentEntries = Array.from({ length: 20 }).map((_, i) => ({
+const studentEntries = Array.from({ length: 50 }).map((_, i) => ({
   name: faker.person.fullName(),
   phoneNumber: faker.phone.number(),
   email: faker.internet.email(),
@@ -214,11 +244,10 @@ const schedules = classIDs.flatMap((classID) => {
 const scheduleIDs = await db.insert(Schedule).values(schedules).$returningId()
 
 // Seed Lessons
-const lessons = classIDs.map((classID) => ({
-  classID: classID.id,
-  teacherID: faker.helpers.arrayElement(teacherIDs.map(({ id }) => id)),
-  title: faker.word.words(4),
+const lessons = mockLessons.map((title) => ({
+  title: title,
   description: faker.lorem.paragraph(),
+  type: faker.helpers.arrayElement(lessonTypes),
   file_url: faker.internet.url(),
   file_type: faker.helpers.arrayElement(['pdf', 'docx', 'pptx']),
   file_size: faker.number.int({ min: 100, max: 10000 }),
@@ -230,32 +259,42 @@ await db.insert(Lessons).values(lessons).$returningId()
 // Seed Exams
 const exams = classIDs.map((classID) => ({
   classID: classID.id,
-  teacherID: faker.helpers.arrayElement(teacherIDs.map(({ id }) => id)),
   title: faker.word.words(5),
-  description: faker.lorem.paragraph(),
   file_url: faker.internet.url(),
   file_type: faker.helpers.arrayElement(['pdf', 'docx', 'pptx']),
   file_size: faker.number.int({ min: 100, max: 5000 }),
-  date: faker.date.future(),
   createdAt: new Date(),
   updatedAt: new Date(),
-}))
+})).slice(0, classIDs.length);
 await db.insert(Exams).values(exams).$returningId()
 
 // Seed Attendances
-const attendances = classIDs.flatMap((classID) =>
-  studentIDs.map((studentID) => ({
-    classID: classID.id,
-    studentID: studentID.id,
-    scheduleID: faker.helpers.arrayElement(scheduleIDs).id,
-    teacherID: faker.helpers.arrayElement(teacherIDs).id,
-    date: faker.date.recent(),
-    status: faker.datatype.boolean(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  }))
-)
-await db.insert(Attendances).values(attendances).$returningId()
+const attendances = [];
+
+// Chỉ tạo attendance cho các schedule có type là 'class'
+schedules.forEach((schedule, index) => {
+  if (schedule.type === 'class') {
+    // Lấy scheduleID tương ứng (giả sử thứ tự của scheduleIDs trùng khớp với mảng schedules)
+    const scheduleID = scheduleIDs[index].id;
+    // Lấy classID từ schedule
+    const classID = schedule.classID;
+    // Lọc ra các học viên thuộc lớp này (theo bảng classStudents)
+    const relevantStudents = classStudents.filter(cs => cs.classID === classID);
+    relevantStudents.forEach(cs => {
+      attendances.push({
+        studentID: cs.studentID,           
+        scheduleID: scheduleID,            
+        note: faker.lorem.words({min:1, max:2}),      
+        checkInTime: faker.date.recent(),  
+        status: faker.datatype.boolean(),  
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    });
+  }
+});
+
+await db.insert(Attendances).values(attendances).$returningId();
 
 console.log('Database seeding completed!')
 process.exit(0)

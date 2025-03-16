@@ -20,18 +20,14 @@ const columns = (t: any) => [
     accessor: 'name',
   },
   {
-    header: t('table.lessons.header.course'),
-    accessor: 'course',
+    header: 'Source',
+    accessor: 'source',
   },
   {
-    header: t('table.lessons.header.classes'),
-    accessor: 'class',
+    header: 'Lesson Type',
+    accessor: 'type',
   },
-  {
-    header: t('table.lessons.header.teachers'),
-    accessor: 'teacher',
-    className: 'hidden md:table-cell',
-  },
+
   {
     header: t('table.lessons.header.actions'),
     accessor: 'action',
@@ -41,14 +37,8 @@ const columns = (t: any) => [
 const LessonListPage = () => {
   const { t } = useTranslation();
 
-  const lessons = useRelationMapper(mockLessons, {
-    classID: mockClasses,
-    teacherID: mockTeachers,
-    courseID: mockCourses,
-  });
-
   const { currentData, currentPage, totalPages, setCurrentPage } =
-    usePagination(lessons, 10);
+    usePagination(mockLessons, 10);
   const renderRow = (item: any) => {
     return (
       <tr
@@ -63,15 +53,10 @@ const LessonListPage = () => {
             </p>
           </div>
         </td>
-        <td className='hidden md:table-cell'>
-          {item.courseID ? item.courseID.coursename : 'No course assigned'}
-        </td>
-        <td className='hidden md:table-cell'>
-          {item.classID ? item.classID.className : 'No class assigned'}
-        </td>
-        <td className='hidden md:table-cell'>
-          {item.teacherID ? item.teacherID.name : 'No teacher assigned'}
-        </td>
+
+        <td className='hidden md:table-cell'>{item.file_url}</td>
+        <td className='hidden md:table-cell'>{item.type}</td>
+
         <td>
           <div className='flex items-center gap-2'>
             {role === 'admin' && (

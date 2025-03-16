@@ -113,8 +113,8 @@ const EventForm = ({
             type: data?.type || 'class',
           }
         : {
-            classID: '',
-            room: '',
+            classID: 0,
+            room: 0,
             daysOfWeek: '',
             shift: '',
             type: 'class',
