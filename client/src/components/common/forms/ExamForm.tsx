@@ -73,16 +73,7 @@ const ExamForm = ({
           error={errors.title}
           className='min-w-full'
         />
-        <InputField
-          label='Teacher'
-          name='teacher'
-          register={register}
-          error={errors.teacher}
-        >
-          <option value=''>{t('form.placeholders.select')}</option>
-          <option value='TeacherA'>Teacher A</option>
-          <option value='female'>Teacher B</option>
-        </InputField>
+
         <InputField
           label='Class'
           name='class'
@@ -93,16 +84,7 @@ const ExamForm = ({
           <option value='TeacherA'>CLass A</option>
           <option value='female'>Class B</option>
         </InputField>
-        <InputField
-          label='Course'
-          name='course'
-          register={register}
-          error={errors.teacher}
-        >
-          <option value=''>{t('form.placeholders.select')}</option>
-          <option value='TeacherA'>Course A</option>
-          <option value='female'>Course B</option>
-        </InputField>
+
         <InputField
           label='Exam date'
           name='examDate'

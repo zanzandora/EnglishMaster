@@ -7,14 +7,12 @@ import { useState, useEffect } from 'react';
 
 //* Định nghĩa schema bằng cách sử dụng z.object() để mô tả cấu trúc dữ liệu và điều kiện hợp lệ.
 const LessonSchema = z.object({
-  title: z
+  name: z
     .string()
-    .min(3, 'Title must be at least 3 characters')
-    .max(10, 'Title must be at most 10 characters'),
-  description: z.string().min(10, 'Description must be at least 10 characters'),
-  class: z.string().min(1, 'Class is required'),
-  teacher: z.string().min(1, 'Teacher is required'),
-  course: z.string().min(1, 'Course is required'),
+    .min(3, 'Name must be at least 3 characters')
+    .max(10, 'Name must be at most 10 characters'),
+  source: z.string().min(1, 'Source is required'),
+  lessonType: z.string().min(1, 'Lesson type is required'),
   file: z.any().optional(),
 });
 
@@ -53,11 +51,9 @@ const LessonForm = ({
   } = useForm<LessonFormData>({
     resolver: zodResolver(schema),
     defaultValues: data || {
-      title: '',
-      description: '',
-      class: '',
-      teacher: '',
-      course: '',
+      name: '',
+      source: '',
+      lessonType: '',
       file: '',
     },
   });
@@ -100,10 +96,6 @@ const LessonForm = ({
     }
 
     try {
-      // const finalFilePath = selectedFile
-      //   ? `/${selectedFile.name}`
-      //   : existingFilePath;
-
       const formattedData = {
         ...formData,
       };
@@ -146,51 +138,18 @@ const LessonForm = ({
         {activeTab === 'lessonInformation' && (
           <>
             <InputField
-              label='Title'
-              name='title'
+              label='Name'
+              name='name'
               register={register}
-              error={errors.title}
+              error={errors.name}
               className='min-w-full'
             />
             <InputField
-              label='Teacher'
-              name='teacher'
+              label='Lesson Type'
+              name='lessonType'
               register={register}
-              error={errors.teacher}
-            >
-              <option value=''>{t('form.placeholders.select')}</option>
-              <option value='TeacherA'>Teacher A</option>
-              <option value='TeacherB'>Teacher B</option>
-            </InputField>
-            <InputField
-              label='Class'
-              name='class'
-              register={register}
-              error={errors.class}
-            >
-              <option value=''>{t('form.placeholders.select')}</option>
-              <option value='ClassA'>Class A</option>
-              <option value='ClassB'>Class B</option>
-            </InputField>
-            <InputField
-              label='Course'
-              name='course'
-              register={register}
-              error={errors.course}
-            >
-              <option value=''>{t('form.placeholders.select')}</option>
-              <option value='CourseA'>Course A</option>
-              <option value='CourseB'>Course B</option>
-            </InputField>
-            <InputField
-              label='Description'
-              name='description'
-              type='textarea'
-              register={register}
-              error={errors.description}
-              inputProps={{ rows: 5, placeholder: 'Nhập ghi chú...' }}
-              className='min-w-full'
-            />
+              error={errors.lessonType}
+            ></InputField>
             <InputField
               label='Upload file'
               type='file'

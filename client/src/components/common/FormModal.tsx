@@ -14,6 +14,7 @@ const ScheduleForm = lazy(() => import('./forms/EventForm'));
 const ShiftForm = lazy(() => import('./forms/ShiftForm'));
 
 const StudentsList = lazy(() => import('./forms/StudentsList'));
+const AttendanceList = lazy(() => import('./forms/AttendanceList'));
 
 const forms: {
   [key: string]: (
@@ -97,7 +98,8 @@ const FormModal = ({
     | 'schedule'
     | 'shift'
     | 'announcement'
-    | 'students';
+    | 'students'
+    | 'attendances';
   type: 'list' | 'create' | 'update' | 'delete';
   data?: any;
   id?: number;
@@ -194,6 +196,8 @@ const FormModal = ({
       forms[table](type, data, handleSubmit, onSuccess, setOpen)
     ) : table === 'students' && type === 'list' ? (
       <StudentsList classID={id?.toString()} />
+    ) : table === 'attendances' && type === 'list' ? (
+      <AttendanceList studentID={id?.toString()} />
     ) : (
       'Form not found!'
     );
