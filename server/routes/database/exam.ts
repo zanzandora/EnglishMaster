@@ -2,8 +2,9 @@ import { Router } from 'express'
 import multer from 'multer'
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { eq } from 'drizzle-orm'
+import path from 'path'
 
-import { Exams } from '../../database/entity'
+import { Classes, Courses, Exams, Teachers, Users } from '../../database/entity'
 import { db } from '../../database/driver'
 
 const multerStorage = multer.memoryStorage()
@@ -21,7 +22,19 @@ const expressRouter = Router()
 
 expressRouter.get('/list', async (req, res) => {
   try {
-    let allExams = await db.select().from(Exams)
+    let allExams = await db
+    .select({
+      title: Exams.title,
+      source: Exams.file_url,
+      course: Courses.name,
+      class: Classes.name,
+      teacher: Users.name
+    })
+    .from(Exams)
+    .innerJoin(Classes, eq(Exams.classID, Classes.id))
+    .innerJoin(Courses, eq(Classes.courseID, Courses.id))
+    .innerJoin(Teachers, eq(Classes.teacherID, Teachers.id))
+    .innerJoin(Users, eq(Teachers.userID, Users.id))
 
     res.send(allExams)
   }
@@ -41,7 +54,20 @@ expressRouter.get('/', async (req, res) => {
   }
 
   try {
-    let selectedExams = await db.select().from(Exams).where(eq(Exams.id, id))
+    let selectedExams = await db
+      .select({
+        title: Exams.title,
+        source: Exams.file_url,
+        course: Courses.name,
+        class: Classes.name,
+        teacher: Users.name
+      })
+      .from(Exams)
+      .where(eq(Exams.id, id))
+      .innerJoin(Classes, eq(Exams.classID, Classes.id))
+      .innerJoin(Courses, eq(Classes.courseID, Courses.id))
+      .innerJoin(Teachers, eq(Classes.teacherID, Teachers.id))
+      .innerJoin(Users, eq(Teachers.userID, Users.id))
 
     if (selectedExams.length === 0) {
       res.status(404).send(`Exam "${id}" not found`)
@@ -59,15 +85,11 @@ expressRouter.get('/', async (req, res) => {
 
 expressRouter.post('/add', upload.single('file'), async (req, res) => {
   const title = req.body.title
-  const description = req.body.description
-  const teacherID = req.body.teacherID
   const classID = req.body.classID
   const file = req.file
 
   let missingFields: string[] = []
   if (!title) missingFields.push('title')
-  if (!description) missingFields.push('description')
-  if (!teacherID) missingFields.push('teacherID')
   if (!classID) missingFields.push('classID')
   if (missingFields.length > 0) {
     res.status(400).send(`Missing fields: ${missingFields.join(', ')}`)
@@ -90,12 +112,9 @@ expressRouter.post('/add', upload.single('file'), async (req, res) => {
 
     await db.insert(Exams).values({
       title,
-      description,
-      teacherID,
       classID,
-      date: new Date(),
-      file_size: +req.file?.size!,
-      file_type: 'docx',
+      file_size: +file?.size!,
+      file_type: path.extname(file.originalname),
       file_url: `https://${process.env.BUCKET_NAME}.s3.${process.env.BUCKET_REGION}.amazonaws.com/${req.file?.originalname}`
     })
 
@@ -108,7 +127,7 @@ expressRouter.post('/add', upload.single('file'), async (req, res) => {
 
 })
 
-expressRouter.post('/edit', async (req, res) => {
+expressRouter.post('/edit', upload.single('file'), async (req, res) => {
   const id = req.body.id
 
   if (!id) {
@@ -117,15 +136,12 @@ expressRouter.post('/edit', async (req, res) => {
   }
 
   const title = req.body.title
-  const description = req.body.description
-  const teacherID = req.body.teacherID
   const classID = req.body.classID
+  const file = req.file
 
   let set1 = {}
   if (title) set1['title'] = title
-  if (description) set1['description'] = description
   if (classID) set1['classID'] = classID
-  if (teacherID) set1['teacherID'] = teacherID
 
   try {
     if (Object.keys(set1).length > 0) await db.update(Exams).set(set1).where(eq(Exams.id, id))

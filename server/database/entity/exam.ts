@@ -6,7 +6,7 @@ export const Exams = mysqlTable('exams', {
   classID: int().references(() => Classes.id).notNull(),
   title: varchar({ length: 255 }).notNull(),
   file_url: varchar({ length: 255 }).notNull(),
-  file_type: mysqlEnum(['pdf', 'docx', 'pptx']).notNull(),
+  file_type: varchar({ length: 255 }).notNull(),
   file_size: int().notNull(),
   createdAt: date().default(new Date()),
   updatedAt: date().default(new Date()),

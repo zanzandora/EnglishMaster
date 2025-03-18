@@ -60,15 +60,13 @@ expressRouter.get('/', async (req, res) => {
 expressRouter.post('/add', upload.single('file'), async (req, res) => {
   const title = req.body.title
   const description = req.body.description
-  const teacherID = req.body.teacherID
-  const classID = req.body.classID
+  const type = req.body.type
   const file = req.file
 
   let missingFields: string[] = []
   if (!title) missingFields.push('title')
   if (!description) missingFields.push('description')
-  if (!teacherID) missingFields.push('teacherID')
-  if (!classID) missingFields.push('classID')
+  if (!type) missingFields.push('type')
   if (missingFields.length > 0) {
     res.status(400).send(`Missing fields: ${missingFields.join(', ')}`)
     return
@@ -82,18 +80,17 @@ expressRouter.post('/add', upload.single('file'), async (req, res) => {
   try {
     const command = new PutObjectCommand({
       Bucket: process.env.BUCKET_NAME!,
-      Key: req.file?.originalname,
-      Body: req.file?.buffer,
-      ContentType: req.file?.mimetype
+      Key: file.originalname,
+      Body: file.buffer,
+      ContentType: file.mimetype
     })
     await s3.send(command)
 
     await db.insert(Lessons).values({
       title,
       description,
-      teacherID,
-      classID,
-      file_size: +req.file?.size!,
+      type,
+      file_size: +file.size!,
       file_type: 'docx',
       file_url: `https://${process.env.BUCKET_NAME}.s3.${process.env.BUCKET_REGION}.amazonaws.com/${req.file?.originalname}`
     })
@@ -117,14 +114,12 @@ expressRouter.post('/edit', async (req, res) => {
 
   const title = req.body.title
   const description = req.body.description
-  const teacherID = req.body.teacherID
-  const classID = req.body.classID
+  const type = req.body.type
 
   let set1 = {}
   if (title) set1['title'] = title
   if (description) set1['description'] = description
-  if (classID) set1['classID'] = classID
-  if (teacherID) set1['teacherID'] = teacherID
+  if (type) set1['type'] = type
 
   try {
     if (Object.keys(set1).length > 0) await db.update(Lessons).set(set1).where(eq(Lessons.id, id))
