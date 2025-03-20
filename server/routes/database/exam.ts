@@ -24,6 +24,7 @@ expressRouter.get('/list', async (req, res) => {
   try {
     let allExams = await db
     .select({
+      id: Exams.id,
       title: Exams.title,
       source: Exams.file_url,
       course: Courses.name,
@@ -35,6 +36,7 @@ expressRouter.get('/list', async (req, res) => {
     .innerJoin(Courses, eq(Classes.courseID, Courses.id))
     .innerJoin(Teachers, eq(Classes.teacherID, Teachers.id))
     .innerJoin(Users, eq(Teachers.userID, Users.id))
+    .orderBy(Exams.id)
 
     res.send(allExams)
   }
@@ -153,8 +155,8 @@ expressRouter.post('/edit', upload.single('file'), async (req, res) => {
   }
 })
 
-expressRouter.post('/delete', async (req, res) => {
-  const id = req.body.id
+expressRouter.delete('/delete/:id', async (req, res) => {
+  const id = req.params.id
 
   if (!id) {
     res.status(400).send('Exam id is required')
@@ -162,7 +164,7 @@ expressRouter.post('/delete', async (req, res) => {
   }
 
   try {
-    await db.delete(Exams).where(eq(Exams.id, id))
+    await db.delete(Exams).where(eq(Exams.id, Number(id)))
 
     res.send('Exam deleted')
   }

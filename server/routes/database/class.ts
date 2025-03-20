@@ -9,6 +9,7 @@ import {
   Users,
   Students,
   Schedule,
+  Attendances,
 } from '../../database/entity';
 import { db } from '../../database/driver';
 
@@ -17,44 +18,47 @@ const expressRouter = Router();
 expressRouter.get('/list', async (req, res) => {
   try {
     const studentCounts = db
-    .select({
-      classID: ClassStudents.classID,
-      totalStudents: sql<number>`COUNT(DISTINCT ${ClassStudents.studentID})`.as('totalStudents'),
-    })
-    .from(ClassStudents)
-    .groupBy(ClassStudents.classID)
-    .as('studentCounts');
-  
-  const classSchedule = db
-    .select({
-      classID: Schedule.classID,
-      startDate: sql<Date>`MIN(${Schedule.startDate})`.as('startDate'),
-      endDate: sql<Date>`MIN(${Schedule.endDate})`.as('endDate'),
-    })
-    .from(Schedule)
-    .groupBy(Schedule.classID)
-    .as('classSchedule');
-  
-  let allClasses = await db
-    .select({
-      id: Classes.id,
-      name: Classes.name,
-      teacherID: Classes.teacherID,
-      courseID: Classes.courseID,
-      capacity: Classes.capacity,
-      startDate: classSchedule.startDate,
-      endDate: classSchedule.endDate,
-      teacherName: Users.name,
-      courseName: Courses.name,
-      totalStudents: studentCounts.totalStudents,
-    })
-    .from(Classes)
-    .innerJoin(Teachers, eq(Classes.teacherID, Teachers.id))
-    .innerJoin(Users, eq(Teachers.userID, Users.id))
-    .innerJoin(Courses, eq(Classes.courseID, Courses.id))
-    .leftJoin(studentCounts, eq(studentCounts.classID, Classes.id))
-    .leftJoin(classSchedule, eq(classSchedule.classID, Classes.id))
-    .orderBy(desc(Classes.id));
+      .select({
+        classID: ClassStudents.classID,
+        totalStudents:
+          sql<number>`COUNT(DISTINCT ${ClassStudents.studentID})`.as(
+            'totalStudents'
+          ),
+      })
+      .from(ClassStudents)
+      .groupBy(ClassStudents.classID)
+      .as('studentCounts');
+
+    const classSchedule = db
+      .select({
+        classID: Schedule.classID,
+        startDate: sql<Date>`MIN(${Schedule.startDate})`.as('startDate'),
+        endDate: sql<Date>`MIN(${Schedule.endDate})`.as('endDate'),
+      })
+      .from(Schedule)
+      .groupBy(Schedule.classID)
+      .as('classSchedule');
+
+    let allClasses = await db
+      .select({
+        id: Classes.id,
+        name: Classes.name,
+        teacherID: Classes.teacherID,
+        courseID: Classes.courseID,
+        capacity: Classes.capacity,
+        startDate: classSchedule.startDate,
+        endDate: classSchedule.endDate,
+        teacherName: Users.name,
+        courseName: Courses.name,
+        totalStudents: studentCounts.totalStudents,
+      })
+      .from(Classes)
+      .innerJoin(Teachers, eq(Classes.teacherID, Teachers.id))
+      .innerJoin(Users, eq(Teachers.userID, Users.id))
+      .innerJoin(Courses, eq(Classes.courseID, Courses.id))
+      .leftJoin(studentCounts, eq(studentCounts.classID, Classes.id))
+      .leftJoin(classSchedule, eq(classSchedule.classID, Classes.id))
+      .orderBy(desc(Classes.id));
 
     // Get students assigned to this class
     const studentsData = await db
@@ -140,8 +144,7 @@ expressRouter.get('/', async (req, res) => {
 });
 
 expressRouter.post('/add', async (req, res) => {
-  const { courseID, teacherID, name, capacity, students } =
-    req.body;
+  const { courseID, teacherID, name, capacity, students } = req.body;
 
   const missingFields: string[] = [];
   if (!courseID) missingFields.push('courseID');
@@ -195,6 +198,33 @@ expressRouter.post('/add', async (req, res) => {
       }))
     );
 
+    // **🔥 Cập nhật ATTENDANCE cho ngày hiện tại nếu chưa có**
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Đặt thời gian về 00:00:00
+
+    const todayString = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().split('T')[0];
+    for (const studentID of studentIDs) {
+      const existingAttendance = await db
+        .select()
+        .from(Attendances)
+        .where(
+          and(
+      eq(Attendances.studentID, studentID),
+      sql`DATE(${Attendances.checkInTime}) = ${todayString}`
+          )
+        );
+
+      if (existingAttendance.length === 0) {
+        // Nếu chưa có bản ghi attendance cho ngày hiện tại
+        await db.insert(Attendances).values({
+          studentID,
+          status: null, // Mặc định là null khi chưa điểm danh
+          checkInTime: new Date(todayString),
+          createdAt: new Date(),
+        });
+      } 
+    }
+
     res.send('Class added');
   } catch (err) {
     res.status(500).send(err.toString());
@@ -202,14 +232,7 @@ expressRouter.post('/add', async (req, res) => {
 });
 
 expressRouter.post('/edit', async (req, res) => {
-  const {
-    id,
-    courseID,
-    teacherID,
-    name,
-    capacity,
-    students,
-  } = req.body;
+  const { id, courseID, teacherID, name, capacity, students } = req.body;
   console.log('🔴 API Received:', req.body);
 
   if (!id) {
@@ -244,7 +267,6 @@ expressRouter.post('/edit', async (req, res) => {
           })
           .from(ClassStudents)
           .where(inArray(ClassStudents.studentID, studentIDs));
-        const assignedIDs = assignedRows.map((row) => row.studentID);
         const assignedOutsideClass = assignedRows
           .filter((row) => row.classID !== id)
           .map((row) => row.studentID);
@@ -258,23 +280,70 @@ expressRouter.post('/edit', async (req, res) => {
           });
         }
 
-        // Xóa các bản ghi cũ
-        await db.delete(ClassStudents).where(eq(ClassStudents.classID, id));
+        // Get current students in the class
+        const currentStudentsRows = await db
+          .select({ studentID: ClassStudents.studentID })
+          .from(ClassStudents)
+          .where(eq(ClassStudents.classID, id));
+        const currentStudentIDs = currentStudentsRows.map(
+          (row) => row.studentID
+        );
 
-        // Thêm các bản ghi mới, bỏ qua học viên đã gán tại lớp đang edit
-        const classStudentsData = studentIDs
-          .filter(
-            (studentID) =>
-              !assignedIDs.includes(studentID) ||
-              assignedRows.some(
-                (row) => row.studentID === studentID && row.classID === id
+        // Determine which students to add and which to remove
+        const studentsToAdd = studentIDs.filter(
+          (id) => !currentStudentIDs.includes(id)
+        );
+        const studentsToRemove = currentStudentIDs.filter(
+          (id) => !studentIDs.includes(id)
+        );
+
+        // Remove students that are no longer in the class
+        if (studentsToRemove.length > 0) {
+          await db
+            .delete(ClassStudents)
+            .where(
+              and(
+                eq(ClassStudents.classID, id),
+                inArray(ClassStudents.studentID, studentsToRemove)
               )
-          )
-          .map((studentID) => ({
+            );
+        }
+
+        // Add new students to the class
+        if (studentsToAdd.length > 0) {
+          const newClassStudentsData = studentsToAdd.map((studentID) => ({
             classID: id,
             studentID: studentID,
           }));
-        await db.insert(ClassStudents).values(classStudentsData);
+          await db.insert(ClassStudents).values(newClassStudentsData);
+        }
+
+        // **🔥 Cập nhật ATTENDANCE cho ngày hiện tại nếu chưa có**
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Đặt thời gian về 00:00:00
+
+        const todayString = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().split('T')[0];
+        for (const studentID of studentIDs) {
+          const existingAttendance = await db
+            .select()
+            .from(Attendances)
+            .where(
+              and(
+          eq(Attendances.studentID, studentID),
+          sql`DATE(${Attendances.checkInTime}) = ${todayString}`
+              )
+            );
+
+          if (existingAttendance.length === 0) {
+            // Nếu chưa có bản ghi attendance cho ngày hiện tại
+            await db.insert(Attendances).values({
+              studentID,
+              status: null, // Mặc định là null khi chưa điểm danh
+              checkInTime: new Date(todayString),
+              createdAt: new Date(),
+            });
+          } 
+        }
       } else {
         res.status(400).send('Students must be an array');
         return;

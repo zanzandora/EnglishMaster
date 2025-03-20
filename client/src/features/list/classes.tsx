@@ -5,8 +5,8 @@ import { role } from '@mockData/mockData';
 import FormModal from '@components/common/FormModal';
 import { useTranslation } from 'react-i18next';
 import usePagination from 'hooks/usePagination';
-import { useState, useEffect } from 'react';
-import { formatDate } from '@utils/dateUtils';
+import { useState } from 'react';
+import useFetchClasses from 'hooks/useFetchClasses';
 
 const columns = (t: any) => [
   {
@@ -42,36 +42,9 @@ const columns = (t: any) => [
 
 const ClassListPage = () => {
   const { t } = useTranslation();
-
-  const [classes, setClasses] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [reloadTrigger, setReloadTrigger] = useState(0); // Triggers a re-render when data is updated
 
-  useEffect(() => {
-    const fetchTeachers = async () => {
-      try {
-        const response = await fetch('/class/list');
-        if (!response.ok) throw new Error('Lỗi khi tải dữ liệu');
-
-        const data = await response.json();
-
-        setClasses(
-          data.map((c: any) => ({
-            ...c,
-            startDate: formatDate(c.startDate, 'yyyy/MM/dd'),
-            endDate: formatDate(c.endDate, 'yyyy/MM/dd'),
-          }))
-        ); // Cập nhật state với dữ liệu đã xử lý
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTeachers();
-  }, [reloadTrigger]);
+  const { classes, loading, error } = useFetchClasses(reloadTrigger);
 
   const handleSuccess = () => {
     setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa

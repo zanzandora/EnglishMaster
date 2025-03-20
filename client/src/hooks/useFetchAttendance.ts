@@ -1,14 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-const useFetchAttendances = (reloadTrigger?: number) => {
+const useFetchAttendances = (role: any, reloadTrigger?: number) => {
   const [attendances, setAttendances] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  // const prevTeacherID = useRef(teacherID); 
+  
   useEffect(() => {
+   
     const fetchAttendances = async () => {
+      // if (teacherID === prevTeacherID.current && !reloadTrigger) return; 
+    
       try {
-        const response = await fetch('/attendance/list');
+        setLoading(true);
+       
+        const response = await fetch(role === 'admin' ? '/attendance/list' : `/attendance/list-today`);
         if (!response.ok) throw new Error('Lỗi khi tải dữ liệu');
 
         const data = await response.json();
@@ -22,7 +28,8 @@ const useFetchAttendances = (reloadTrigger?: number) => {
     };
 
     fetchAttendances();
-  }, [reloadTrigger]);
+    // prevTeacherID.current = teacherID;
+  }, [reloadTrigger,role]);
 
   return { attendances, loading, error };
 };

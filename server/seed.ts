@@ -271,29 +271,26 @@ await db.insert(Exams).values(exams).$returningId()
 // Seed Attendances
 const attendances = [];
 
-// Chỉ tạo attendance cho các schedule có type là 'class'
-schedules.forEach((schedule, index) => {
-  if (schedule.type === 'class') {
-    // Lấy scheduleID tương ứng (giả sử thứ tự của scheduleIDs trùng khớp với mảng schedules)
-    const scheduleID = scheduleIDs[index].id;
-    // Lấy classID từ schedule
-    const classID = schedule.classID;
-    // Lọc ra các học viên thuộc lớp này (theo bảng classStudents)
-    const relevantStudents = classStudents.filter(cs => cs.classID === classID);
-    relevantStudents.forEach(cs => {
+// Chỉ tạo attendance cho các classStudents
+
+
+studentIDs.forEach(student => {
+  // Lấy danh sách lớp mà sinh viên tham gia
+  const studentClasses = classStudents.filter(cs => cs.studentID === student.id);
+
+    studentClasses.forEach(cs => {
       attendances.push({
-        studentID: cs.studentID,           
-        scheduleID: scheduleID,            
-        note: faker.lorem.words({min:1, max:2}),      
-        checkInTime: faker.date.recent(),  
-        status: faker.datatype.boolean(),  
+        studentID: student.id,
+        classID: cs.classID,
+        note: faker.lorem.words({ min: 1, max: 2 }),
+        checkInTime: faker.date.recent(),
+        status: faker.datatype.boolean(),
         createdAt: new Date(),
         updatedAt: new Date(),
       });
     });
   }
-});
-
+);
 await db.insert(Attendances).values(attendances).$returningId();
 
 console.log('Database seeding completed!')

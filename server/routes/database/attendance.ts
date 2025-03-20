@@ -1,149 +1,245 @@
 import { Router } from 'express'
-import { and, eq } from 'drizzle-orm'
+import { and, eq,count,sql  } from 'drizzle-orm'
 
-import { Attendances, Classes, ClassStudents, Schedule, Students, Teachers, Users } from '../../database/entity'
+import { Attendances, Classes, ClassStudents, Students, Teachers, Users } from '../../database/entity'
 import { db } from '../../database/driver'
 
 const expressRouter = Router()
 
+expressRouter.post('/login-teacher', async (req, res) => {
+  const { teacherID } = req.body;
+
+  if (!teacherID) {
+    return res.status(400).send('Teacher ID is required');
+  }
+
+  try {
+    const teacher = await db
+      .select({
+        teacherID: Teachers.id,
+        teacherName: Users.name,
+      })
+      .from(Teachers)
+      .leftJoin(Users, eq(Teachers.userID, Users.id))
+      .where(eq(Teachers.id, Number(teacherID)));
+
+    if (teacher.length === 0) {
+      return res.status(404).send(`No teacher found with ID "${teacherID}"`);
+    }
+
+    res.send({ message: "Login successful", teacher: teacher[0] });
+  } catch (err) {
+    res.status(500).send(err.toString());
+  }
+});
+
 expressRouter.get('/list', async (req, res) => {
   try {
     const allAttendances = await db
-  .select({
-    id: Attendances.id,
-    scheduleID: Attendances.scheduleID,
-    checkInTime: Attendances.checkInTime,
-    note: Attendances.note,
-    status: Attendances.status,
-    student: {
-      studentID: ClassStudents.studentID,  
-      studentName: Students.name,
-      dateOfBirth: Students.dateOfBirth,
-    },
-    class:{
-      classID: ClassStudents.classID,
-      className: Classes.name,
-    },
-    teacher: {
-      teacherID: Classes.teacherID,
-      teacherName: Users.name,
+      .select({
+        id: Attendances.id,
+        checkInTime: Attendances.checkInTime,
+        note: Attendances.note,
+        status: Attendances.status,
+        student: {
+          studentID: Students.id,
+          studentName: Students.name,
+          dateOfBirth: Students.dateOfBirth,
+        },
+        class: {
+          classID: Classes.id,
+          className: Classes.name,
+        },
+        teacher: {
+          teacherID: Teachers.id,
+          teacherName: Users.name,
+        },
+        totalCheckins: sql`COALESCE(COUNT(${sql.raw('att_check.studentID')}), 0)`.as("totalCheckins"),
+        
+      })
+      .from(ClassStudents) 
+      .leftJoin(Students, eq(ClassStudents.studentID, Students.id)) 
+      .leftJoin(Classes, eq(ClassStudents.classID, Classes.id)) 
+      .leftJoin(Teachers, eq(Classes.teacherID, Teachers.id)) 
+      .leftJoin(Users, eq(Teachers.userID, Users.id)) 
+      .leftJoin(Attendances, eq(ClassStudents.studentID, Attendances.studentID)) 
+      .leftJoin(
+        db
+          .select({
+            studentID: Attendances.studentID,
+          })
+          .from(Attendances)
+          .where(eq(Attendances.status, true))
+          .as("att_check"),
+        eq(ClassStudents.studentID, sql`att_check.studentID`)
+      )
+      .groupBy(
+        ClassStudents.studentID,
+        ClassStudents.classID,
+        Students.id,
+        Classes.id,
+        Teachers.id,
+        Users.id,
+        Attendances.id
+      );
+
+    res.send(allAttendances);
+  } catch (err) {
+    res.status(500).send(err.toString());
+  }
+});
+
+expressRouter.get('/list-today', async (req, res) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Đặt thời gian về 00:00 để so sánh ngày
+    console.log(today);
+    
+
+    // Lấy ngày hiện tại theo định dạng yyyy-mm-dd
+    const todayString = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().split('T')[0]; // Adjust for timezone offset
+    console.log(todayString);
+
+    // Kiểm tra xem có attendance cho ngày hôm nay không
+    const existingAttendances = await db
+      .select({
+        id: Attendances.id,
+      })
+      .from(Attendances)
+      .where(sql`DATE(${Attendances.checkInTime}) = DATE(${sql.param(todayString)})`); // So sánh chỉ ngày
+
+    if (existingAttendances.length === 0) {
+      // Nếu không có attendance cho ngày hôm nay, tạo mới attendance cho tất cả students
+      const students = await db.select().from(Students);
+
+      const newAttendances = students.map(student => ({
+        studentID: student.id,
+        checkInTime: new Date(todayString), // Đảm bảo checkInTime là ngày hiện tại
+        status: null, // Đặt status là NULL khi chưa điểm danh
+        note: '',
+      }));
+
+      await db.insert(Attendances).values(newAttendances);
     }
-  })
-  .from(Attendances)
-  .leftJoin(ClassStudents, eq(Attendances.studentID, ClassStudents.studentID))
-  .leftJoin(Students, eq(ClassStudents.studentID, Students.id))
-  .leftJoin(Schedule, eq(Attendances.scheduleID, Schedule.id))
-  .leftJoin(Classes, eq(Schedule.classID, Classes.id))
-  .leftJoin(Teachers, eq(Classes.teacherID, Teachers.id))
-  .leftJoin(Users, eq(Teachers.userID, Users.id));
 
-    res.send(allAttendances)
+    const todayAttendances = await db
+      .select({
+        id: Attendances.id,
+        checkInTime: Attendances.checkInTime,
+        note: Attendances.note,
+        status: Attendances.status,
+        student: {
+          studentID: Students.id,
+          studentName: Students.name,
+          dateOfBirth: Students.dateOfBirth,
+        },
+        class: {
+          classID: Classes.id,
+          className: Classes.name,
+        },
+        teacher: {
+          teacherID: Teachers.id,
+          teacherName: Users.name,
+        },
+      })
+      .from(ClassStudents)
+      .leftJoin(Students, eq(ClassStudents.studentID, Students.id))
+      .leftJoin(Classes, eq(ClassStudents.classID, Classes.id))
+      .leftJoin(Teachers, eq(Classes.teacherID, Teachers.id))
+      .leftJoin(Users, eq(Teachers.userID, Users.id))
+      .leftJoin(Attendances, eq(ClassStudents.studentID, Attendances.studentID))
+      .where(sql`DATE(${Attendances.checkInTime}) = DATE(${sql.param(todayString)})`);  // So sánh chỉ ngày
+
+    res.send(todayAttendances);
+  } catch (err) {
+    res.status(500).send(err.toString());
   }
-  catch (err) {
-    res.status(500).send(err.toString())
-  }
-})
+});
 
-expressRouter.get('/', async (req, res) => {
-  const classID = req.body.classID
-  const studentID = req.body.studentID
 
-  let missingFields: string[] = []
-  if (!classID) missingFields.push('classID')
-  if (!studentID) missingFields.push('studentID')
-  if (missingFields.length > 0) {
-    res.status(400).send(`Missing fields: ${missingFields.join(', ')}`)
-    return
+expressRouter.get('/:studentID', async (req, res) => {
+  const studentID = req.params.studentID;
+
+  if (!studentID) {
+    res.status(400).send('Student ID is required');
+    return;
   }
 
   try {
-    let selectedAttendances = await db.select().from(Attendances).where(and(eq(Attendances.classID, classID), eq(Attendances.studentID, studentID)))
+    const attendanceRecords = await db
+      .select({
+        id: Attendances.id,
+        checkInTime: Attendances.checkInTime,
+        status: sql`COALESCE(Attendances.status, NULL)`.as("status"), 
+        note: Attendances.note,
+        student: {
+          studentID: Students.id,
+          studentName: Students.name,
+          dateOfBirth: Students.dateOfBirth,
+        },
+      })
+      .from(ClassStudents) 
+      .leftJoin(Students, eq(ClassStudents.studentID, Students.id)) 
+      .leftJoin(Attendances, eq(ClassStudents.studentID, Attendances.studentID)) 
+      .where(eq(ClassStudents.studentID, Number(studentID)));
 
-    if (selectedAttendances.length === 0) {
-      res.status(404).send(`Attendance with "${classID}" and student "${studentID}" not found`)
-      return
+    if (attendanceRecords.length === 0) {
+      res.status(404).send(`No attendance records found for student ID "${studentID}"`);
+      return;
     }
 
-    res.send({
-      ...selectedAttendances[0]
-    })
+    res.send(attendanceRecords);
+  } catch (err) {
+    res.status(500).send(err.toString());
   }
-  catch (err) {
-    res.status(500).send(err.toString())
-  }
-})
+});
 
 expressRouter.post('/add', async (req, res) => {
-  const classID = req.body.classID
-  const studentID = req.body.studentID
-  const status = req.body.status
-  const scheduleID = req.body.scheduleID
-  const teacherID = req.body.teacherID
-  const checkInTime = req.body.checkInTime
+  const { studentID, status, note } = req.body;
 
-  let missingFields: string[] = []
-  if (!classID) missingFields.push('classID')
-  if (!studentID) missingFields.push('studentID')
-  if (!scheduleID) missingFields.push('scheduleID')
-  if (!teacherID) missingFields.push('teacherID')
-  if (!status) missingFields.push('status')
-  if (!checkInTime) missingFields.push('checkInTime')
-
-  if (missingFields.length > 0) {
-    res.status(400).send(`Missing fields: ${missingFields.join(', ')}`)
-    return
+  if (!studentID || typeof status !== 'boolean') {
+    return res.status(400).send('Thiếu dữ liệu');
   }
 
   try {
     await db.insert(Attendances).values({
-      classID,
       studentID,
-      scheduleID,
-      teacherID,
-      checkInTime,
+      checkInTime: new Date(), // Tạo thời gian mới
       status,
-    })
+      note: note || "",
+    });
 
-    res.send('Attendance added')
+    res.send('Điểm danh thành công');
+  } catch (err) {
+    res.status(500).send(err.toString());
   }
-  catch (err) {
-    res.status(500).send(err.toString())
-  }
+});
 
-})
 
 expressRouter.post('/edit', async (req, res) => {
-  const id = req.body.id
+  const { studentID, status, note } = req.body;
 
-  if (!id) {
-    res.status(400).send('Attendance id is required')
-    return
+  if (!studentID || !status) {
+    return res.status(400).send('Student ID và Status là bắt buộc');
   }
-
-  const classID = req.body.classID
-  const studentID = req.body.studentID
-  const status = req.body.status
-  const scheduleID = req.body.scheduleID
-  const teacherID = req.body.teacherID
-  const checkInTime = req.body.checkInTime
-
-  let set1 = {}
-  if (classID) set1['classID'] = classID
-  if (studentID) set1['studentID'] = studentID
-  if (status) set1['status'] = status
-  if (scheduleID) set1['scheduleID'] = scheduleID
-  if (teacherID) set1['teacherID'] = teacherID
-  if (checkInTime) set1['checkInTime'] = checkInTime
 
   try {
-    if (Object.keys(set1).length > 0) await db.update(Attendances).set(set1).where(eq(Attendances.id, id))
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set time to 00:00 for date comparison
 
-    res.send('Attendance updated')
+    await db.update(Attendances)
+      .set({ status, note })
+      .where(and(
+        eq(Attendances.studentID, studentID),
+        sql`DATE(${Attendances.checkInTime}) = DATE(NOW())`
+      ));
+
+    res.send('Attendance updated');
+  } catch (err) {
+    res.status(500).send(err.toString());
   }
-  catch (err) {
-    res.status(500).send(err.toString())
-  }
-})
+});
+
 
 expressRouter.post('/delete', async (req, res) => {
   const id = req.body.id
@@ -164,3 +260,7 @@ expressRouter.post('/delete', async (req, res) => {
 })
 
 export const router = expressRouter
+
+function partitionBy(studentID: MySqlColumn<{ name: "studentID"; tableName: "class_students"; dataType: "number"; columnType: "MySqlInt"; data: number; driverParam: string | number; notNull: true; hasDefault: false; isPrimaryKey: true; isAutoincrement: false; hasRuntimeDefault: false; enumValues: undefined; baseColumn: never; identity: undefined; generated: undefined }, {}, {}>): any {
+  throw new Error('Function not implemented.')
+}

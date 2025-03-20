@@ -1,18 +1,11 @@
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import {
-  role,
-  mockLessons,
-  mockClasses,
-  mockTeachers,
-  mockUsers,
-  mockCourses,
-} from '@mockData/mockData';
+import { role, mockLessons } from '@mockData/mockData';
 import FormModal from '@components/common/FormModal';
 import { useTranslation } from 'react-i18next';
 import usePagination from 'hooks/usePagination';
-import useRelationMapper from 'hooks/useRelationMapper';
+import { useEffect, useState } from 'react';
 
 const columns = (t: any) => [
   {
@@ -37,8 +30,41 @@ const columns = (t: any) => [
 const LessonListPage = () => {
   const { t } = useTranslation();
 
+  const [lessons, setLessons] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [reloadTrigger, setReloadTrigger] = useState(0);
+
   const { currentData, currentPage, totalPages, setCurrentPage } =
-    usePagination(mockLessons, 10);
+    usePagination(lessons, 10);
+
+  useEffect(() => {
+    const fetchLessons = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch('/lesson/list');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setLessons(data);
+      } catch (error) {
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLessons();
+  }, [reloadTrigger]);
+
+  const handleSuccess = () => {
+    setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa
+  };
+
+  if (loading) return <p>Đang tải dữ liệu...</p>;
+  if (error) return <p>Lỗi: {error}</p>;
+
   const renderRow = (item: any) => {
     return (
       <tr
@@ -54,15 +80,21 @@ const LessonListPage = () => {
           </div>
         </td>
 
-        <td className='hidden md:table-cell'>{item.file_url}</td>
+        <td className='hidden md:table-cell '>
+          <p className='truncate w-[250px]'>{item.file_url}</p>
+        </td>
         <td className='hidden md:table-cell'>{item.type}</td>
 
         <td>
           <div className='flex items-center gap-2'>
             {role === 'admin' && (
               <>
-                <FormModal table='lesson' type='update' data={item} />
-                <FormModal table='lesson' type='delete' id={item.id} />
+                <FormModal
+                  table='lesson'
+                  type='delete'
+                  id={item.id}
+                  onSuccess={handleSuccess}
+                />
               </>
             )}
           </div>
@@ -87,7 +119,13 @@ const LessonListPage = () => {
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/sort.png' alt='' width={14} height={14} />
             </button>
-            {role === 'admin' && <FormModal table='lesson' type='create' />}
+            {role === 'admin' && (
+              <FormModal
+                table='lesson'
+                type='create'
+                onSuccess={handleSuccess}
+              />
+            )}
           </div>
         </div>
       </div>

@@ -57,8 +57,17 @@ const forms: {
       setOpen={setOpen}
     />
   ),
-  lesson: (type, data) => <LessonForm type={type} data={data} />,
-  exam: (type, data) => <ExamForm type={type} data={data} />,
+  lesson: (type, data, _, onSuccess, setOpen) => (
+    <LessonForm
+      type={type}
+      data={data}
+      onSuccess={onSuccess}
+      setOpen={setOpen}
+    />
+  ),
+  exam: (type, data, _, onSuccess, setOpen) => (
+    <ExamForm type={type} data={data} onSuccess={onSuccess} setOpen={setOpen} />
+  ),
   result: (type, data) => <ResultForm type={type} data={data} />,
   schedule: (type, data, _, onSuccess, setOpen) => (
     <ScheduleForm

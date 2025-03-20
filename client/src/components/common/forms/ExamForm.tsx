@@ -4,18 +4,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import InputField from '../InputField';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import FileUploadModal from '../FileUploadModal';
+import useFetchClasses from 'hooks/useFetchClasses';
+import { toast } from 'react-toastify';
 
 //* Định nghĩa schema bằng cách sử dụng z.object() để mô tả cấu trúc dữ liệu và điều kiện hợp lệ.
 const ExamSchema = z.object({
-  title: z
-    .string()
-    .min(3, 'Title must be at least 3 characters')
-    .max(10, 'Title must be at most 10 characters'),
-  class: z.string().min(1, 'Class is required'),
-  teacher: z.string().min(1, 'Teacher is required'),
-  course: z.string().min(1, 'Course is required'),
-  exam_date: z.string().min(1, 'Exam date is required'),
+  title: z.string().min(3, 'Title must be at least 3 characters'),
+  classID: z.string().min(1, 'Class is required'),
+  file: z.any().optional(),
 });
 
 // *Tạo TypeScript type từ schema Zod, giúp đồng bộ schema và type
@@ -24,9 +20,13 @@ type ExamFormData = z.infer<typeof ExamSchema>;
 const ExamForm = ({
   type,
   data,
+  onSuccess = () => {},
+  setOpen,
 }: {
   type: 'create' | 'update';
   data?: any;
+  onSuccess?: () => void;
+  setOpen?: (open: boolean) => void;
 }) => {
   const { t } = useTranslation();
   const {
@@ -39,29 +39,78 @@ const ExamForm = ({
     defaultValues: data || {
       // *defaultValues: Đặt giá trị mặc định cho các input trên form.
       title: '',
-      exam_date: '',
-      class: '',
-      teacher: '',
-      course: '',
+      classID: '',
+      file: '',
     },
   });
+  const { classes } = useFetchClasses();
 
-  const onSubmit = (formData: ExamFormData) => {
-    console.log('Submitted Data:', formData);
-    alert(type === 'create' ? 'Exam Created!' : 'Exam Updated!');
+  const submitLesson = async (formData: any) => {
+    const url = type === 'create' ? '/exam/add' : '/exam/edit';
+
+    const formDataToSend = new FormData();
+    formDataToSend.append('title', formData.title);
+    formDataToSend.append('classID', formData.classID);
+    if (selectedFile) {
+      formDataToSend.append('file', selectedFile);
+    }
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        body: formDataToSend,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText);
+      }
+
+      toast.success(
+        type === 'create'
+          ? 'Exam created successfully!'
+          : 'Exam updated successfully!'
+      );
+      onSuccess();
+      if (setOpen) setOpen(false);
+    } catch (error: any) {
+      toast.error('❌ ' + error.message);
+    }
+  };
+
+  const onSubmit = async (formData: ExamFormData) => {
+    if (Object.keys(errors).length > 0) {
+      console.error('Có lỗi validation:', errors);
+      return;
+    }
+
+    try {
+      const formattedData = {
+        ...formData,
+      };
+
+      await submitLesson(formattedData);
+    } catch (error: any) {
+      alert('Error processing form' + error.message);
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      toast.info('✅ File selected:' + file.name);
+    }
   };
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-    }
-  };
-
   return (
-    <form className='flex flex-col gap-8' onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className='flex flex-col gap-8'
+      onSubmit={handleSubmit(onSubmit)}
+      encType='multipart/form-data'
+    >
       <h1 className='text-xl font-semibold'>
         {type === 'create' ? 'Create a new Exam' : 'Update Exam'}
       </h1>
@@ -76,33 +125,27 @@ const ExamForm = ({
 
         <InputField
           label='Class'
-          name='class'
+          name='classID'
           register={register}
-          error={errors.teacher}
+          error={errors.classID}
         >
           <option value=''>{t('form.placeholders.select')}</option>
-          <option value='TeacherA'>CLass A</option>
-          <option value='female'>Class B</option>
+          {classes.map((classItem) => (
+            <option key={classItem.id} value={classItem.id}>
+              {classItem.name}
+            </option>
+          ))}
         </InputField>
 
         <InputField
-          label='Exam date'
-          name='examDate'
-          type='date'
+          label='Upload file'
+          type='file'
+          inputProps={{ multiple: true }}
+          onFileChange={handleFileChange}
+          name='file'
           register={register}
-          error={errors.exam_date}
+          className='flex-1'
         />
-        {type === 'create' && (
-          <InputField
-            label='Upload source'
-            type='file'
-            inputProps={{ multiple: true }}
-            onFileChange={(file) => setSelectedFile(file)} // Cập nhật state
-            name='file'
-            register={register}
-            className='flex-1'
-          />
-        )}
       </div>
       <button className='bg-blue-400 text-white p-2 rounded-md'>
         {type === 'create' ? 'Create' : 'Update'}

@@ -131,8 +131,8 @@ expressRouter.post('/edit', async (req, res) => {
   }
 })
 
-expressRouter.post('/delete', async (req, res) => {
-  const id = req.body.id
+expressRouter.delete('/delete/:id', async (req, res) => {
+  const id = req.params.id
 
   if (!id) {
     res.status(400).send('Lesson id is required')
@@ -140,7 +140,7 @@ expressRouter.post('/delete', async (req, res) => {
   }
 
   try {
-    await db.delete(Lessons).where(eq(Lessons.id, id))
+    await db.delete(Lessons).where(eq(Lessons.id, Number(id)))
 
     res.send('Lesson deleted')
   }

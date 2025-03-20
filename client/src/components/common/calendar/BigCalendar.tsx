@@ -16,10 +16,10 @@ registerLocale('vi', vi);
 
 interface BigCalendarProps {
   events: any[];
-  resources: any;
+  resources?: any;
   view: View;
   setView: (view: View) => void;
-  filteredEvents: ExtendedEvent[];
+  filteredEvents?: ExtendedEvent[];
   localizer: any;
   onDoubleClickEvent?: (event: ExtendedEvent) => void;
   onSelectEvent?: (event: ExtendedEvent) => void;
