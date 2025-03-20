@@ -3,9 +3,11 @@ import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
 import { role } from '@mockData/mockData';
+import ErrorPage from 'features/error/error';
 import usePagination from 'hooks/usePagination';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 
 const columns = (t: any) => [
   {
@@ -38,41 +40,48 @@ const columns = (t: any) => [
 
 const ExamListPage = () => {
   const { t } = useTranslation();
+  const { userID } = useParams();
 
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reloadTrigger, setReloadTrigger] = useState(0);
 
-  const { currentData, currentPage, totalPages, setCurrentPage } =
-    usePagination(exams, 10);
+  useEffect(() => {
+    setReloadTrigger(0); // Reset trigger mỗi khi component được mount lại
+  }, [userID]);
 
   useEffect(() => {
     const fetchLessons = async () => {
       setLoading(true);
       try {
-        const response = await fetch('/exam/list');
+        const url = userID ? `/exam/${userID}` : '/exam/list';
+        const response = await fetch(url);
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          const errorData = await response.text();
+          throw new Error(errorData || 'Network response was not ok');
         }
         const data = await response.json();
         setExams(data);
       } catch (error) {
-        setError(error);
+        setError(error.message);
       } finally {
         setLoading(false);
       }
     };
 
     fetchLessons();
-  }, [reloadTrigger]);
+  }, [reloadTrigger, userID]);
 
   const handleSuccess = () => {
     setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa
   };
 
+  const { currentData, currentPage, totalPages, setCurrentPage } =
+    usePagination(exams, 10);
+
   if (loading) return <p>Đang tải dữ liệu...</p>;
-  if (error) return <p>Lỗi: {error}</p>;
+  if (error) return <ErrorPage message={error} />;
 
   const renderRow = (item: any, index: number) => {
     return (
@@ -95,7 +104,7 @@ const ExamListPage = () => {
         </td>
         <td>
           <div className='flex items-center gap-2'>
-            {role === 'admin' && (
+            {role === 'admin' && !userID && (
               <>
                 <FormModal
                   table='exam'
@@ -128,7 +137,7 @@ const ExamListPage = () => {
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/sort.png' alt='' width={14} height={14} />
             </button>
-            {role === 'admin' && (
+            {role === 'admin' && !userID && (
               <FormModal table='exam' type='create' onSuccess={handleSuccess} />
             )}
           </div>

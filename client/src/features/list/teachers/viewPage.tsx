@@ -1,7 +1,7 @@
 import Announcements from '@components/admin/Announcements';
 import { useState, useMemo, useEffect } from 'react';
 import FormModal from '@components/common/FormModal';
-import { role, calendarEvents } from '@mockData/data';
+import { role } from '@mockData/data';
 import { View, dateFnsLocalizer } from 'react-big-calendar';
 import { Link, useParams } from 'react-router-dom';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
@@ -9,6 +9,8 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import BigCalendar from '@components/common/calendar/BigCalendar';
 import 'react-tooltip/dist/react-tooltip.css';
 import { Tooltip } from 'react-tooltip';
+import { ExtendedEvent, Teacher } from '@interfaces';
+import useFetchSchedules from 'hooks/useFetchSchedules';
 const locales = {
   'en-US': import('date-fns/locale/en-US'),
 };
@@ -21,48 +23,99 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
+// *Helper: Tạo đối tượng Date từ base date và chuỗi thời gian (hh:mm)
+const createEventDate = (base: Date, timeStr: string): Date => {
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  const date = new Date(base);
+  date.setHours(hours, minutes);
+  return date;
+};
+
+const generateRecurringEvents = (schedule: any): ExtendedEvent[] => {
+  const events: ExtendedEvent[] = [];
+  const startDate = new Date(schedule.startDate);
+  const endDate = new Date(schedule.endDate);
+
+  // Trường hợp exam: chỉ tạo 1 event dựa trên startDate
+  if (schedule.type === 'exam') {
+    const eventStart = createEventDate(
+      new Date(schedule.startDate),
+      schedule.startTime
+    );
+    const eventEnd = createEventDate(
+      new Date(schedule.startDate),
+      schedule.endTime
+    );
+    return [{ ...schedule, start: eventStart, end: eventEnd }];
+  }
+
+  // Các event lặp theo daysOfWeek: chuyển chuỗi thành mảng số
+  const daysOfWeek = schedule.daysOfWeek?.split(',').map(Number) || [];
+  let currentDate = new Date(startDate);
+  while (currentDate <= endDate) {
+    // Chuyển JS day (0-6, CN-Sat) thành 1-7, với thứ 2 = 1
+    const dayJs = ((currentDate.getDay() + 6) % 7) + 1;
+    if (daysOfWeek.includes(dayJs)) {
+      const eventStart = createEventDate(currentDate, schedule.startTime);
+      const eventEnd = createEventDate(currentDate, schedule.endTime);
+      events.push({ ...schedule, start: eventStart, end: eventEnd });
+    }
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+  return events;
+};
+
 const SingleTeacherPage = () => {
   const { userID } = useParams();
-  console.log('userID from useParams:', userID);
-  const [view, setView] = useState<View>('week');
-  const [selectedClass, setSelectedClass] = useState<string>('all');
+  const [reloadTrigger, setReloadTrigger] = useState(0);
 
-  const [teacher, setTeacehr] = useState<Student | null>(null);
+  const [view, setView] = useState<View>('week');
+  const [teacherClass, setTeacherClass] = useState<string>('null');
+
+  const { schedules } = useFetchSchedules(reloadTrigger);
+
+  const [teacher, setTeacehr] = useState<Teacher | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Room Resources cho Calendar
-  const resourcesRooms = [
-    { id: 'room101', title: 'Phòng 101', type: 'room' },
-    { id: 'room102', title: 'Phòng 102', type: 'room' },
-    { id: 'room103', title: 'Phòng 103', type: 'room' },
-  ];
+  const [events, setEvents] = useState<ExtendedEvent[]>([]);
 
-  // Chuẩn hóa dữ liệu sự kiện
-  const normalizeEvent = (event: any) => {
+  const normalizeEvent = (eventObj: any): ExtendedEvent => {
+    const startDatePart = eventObj.startDate.split('T')[0];
+    const endDatePart = eventObj.endDate.split('T')[0];
     return {
-      id: event.id ?? Date.now(),
-      title: typeof event.title === 'string' ? event.title : 'No Title',
-      start: event.start instanceof Date ? event.start : new Date(event.start),
-      end: event.end instanceof Date ? event.end : new Date(event.end),
-      resource: event.resource ?? 'Unknown',
-      data: event.data || {},
+      id: eventObj.id,
+      title: eventObj.class.className,
+      start: eventObj.start,
+      end: eventObj.end,
+      resource: eventObj.room,
+      data: {
+        id: eventObj.id,
+        classID: eventObj.class.classID,
+        className: eventObj.class.className,
+        type: eventObj.type,
+        repeatRule: eventObj.repeatRule,
+        daysOfWeek: eventObj.daysOfWeek,
+        startDate: startDatePart,
+        endDate: endDatePart,
+        startTime: eventObj.startTime,
+        endTime: eventObj.endTime,
+        room: eventObj.room,
+        teacher: eventObj.teacher?.teacherName || '',
+        course: eventObj.course?.courseName || 'N/A',
+      },
     };
   };
 
-  const normalizedEvents = useMemo(
-    () => calendarEvents.map(normalizeEvent),
-    []
-  );
+  const normalizedEvents = useMemo(() => events.map(normalizeEvent), [events]);
 
   const filteredEvents = useMemo(() => {
-    if (selectedClass === 'all') return normalizedEvents;
-    return normalizedEvents.filter(
-      (event) => event.data?.class === selectedClass
+    return normalizedEvents.filter((event) =>
+      teacherClass.includes(event.data?.className)
     );
-  }, [selectedClass, normalizedEvents]);
+  }, [teacherClass, normalizedEvents]);
 
   useEffect(() => {
-    const fetchStudent = async () => {
+    const fetchTeacher = async () => {
       try {
         const res = await fetch(`/teacher/${userID}`);
 
@@ -71,6 +124,7 @@ const SingleTeacherPage = () => {
         if (!res.ok) throw new Error(data.error || 'Lỗi không xác định');
 
         setTeacehr(data);
+        setTeacherClass(data?.classNames);
       } catch (error) {
         console.error('Lỗi khi fetch teacher:', error);
       } finally {
@@ -78,8 +132,17 @@ const SingleTeacherPage = () => {
       }
     };
 
-    fetchStudent();
+    fetchTeacher();
   }, [userID]);
+
+  console.log(teacherClass);
+
+  // *Khi schedules thay đổi, tạo các event bằng cách "flatMap" qua generateRecurringEvents
+  useEffect(() => {
+    if (schedules) {
+      setEvents(schedules.flatMap(generateRecurringEvents));
+    }
+  }, [schedules, reloadTrigger]);
 
   if (loading) return <p>Đang tải...</p>;
 
@@ -162,7 +225,11 @@ const SingleTeacherPage = () => {
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
                   <img src='/date.png' alt='' width={14} height={14} />
                   Birth:
-                  <span>{teacher.dateOfBirth.split('T')[0]}</span>
+                  <span>
+                    {teacher.dateOfBirth
+                      ? teacher.dateOfBirth.split('T')[0]
+                      : 'N/A'}
+                  </span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2 '>
                   <img src='/mail.png' alt='' width={14} height={14} />
@@ -243,12 +310,11 @@ const SingleTeacherPage = () => {
           </div>
         </div>
         {/* BOTTOM */}
-        <div className='mt-4 bg-white rounded-md p-4 h-[800px]'>
+        <div className='mt-4 bg-white rounded-md p-4 h-[750px] overflow-auto'>
           <h1>Teacher&apos;s Schedule</h1>
           <div className='calendar-wrapper'>
             <BigCalendar
-              events={normalizedEvents}
-              resources={resourcesRooms}
+              events={filteredEvents}
               view='week'
               setView={setView}
               filteredEvents={filteredEvents}
@@ -262,20 +328,18 @@ const SingleTeacherPage = () => {
         <div className='bg-white p-4 rounded-md'>
           <h1 className='text-xl font-semibold'>Shortcuts</h1>
           <div className='mt-4 flex gap-4 flex-wrap text-sm text-gray-500 '>
-            <Link className='p-3 rounded-md bg-secondary-blueLight' to='/'>
-              Teacher&apos;s Classes
+            <Link
+              className='p-3 rounded-md bg-secondary-blueLight'
+              to={`/admin/list/classes/${teacher.id}`}
+            >
+              Teacher&apos;s Classes and Students
             </Link>
-            <Link className='p-3 rounded-md bg-secondary-lavenderFade' to='/'>
-              Teacher&apos;s Students
-            </Link>
-            <Link className='p-3 rounded-md bg-secondary-lavenderFade' to='/'>
-              Teacher&apos;s Lessons
-            </Link>
-            <Link className='p-3 rounded-md bg-secondary-lavenderLight' to='/'>
+
+            <Link
+              className='p-3 rounded-md bg-secondary-lavenderLight'
+              to={`/admin/list/exams/${teacher.id}`}
+            >
               Teacher&apos;s Exams
-            </Link>
-            <Link className='p-3 rounded-md bg-secondary-blueLight' to='/'>
-              Teacher&apos;s Assignments
             </Link>
           </div>
         </div>

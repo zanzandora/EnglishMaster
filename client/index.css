@@ -60,6 +60,7 @@
 
 /* CALENDAR WRAPPER  */
 .calendar-wrapper{
+  @apply w-screen 
 }
 
 /* *EVENT STYLES */

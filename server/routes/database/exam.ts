@@ -45,11 +45,11 @@ expressRouter.get('/list', async (req, res) => {
   }
 })
 
-expressRouter.get('/', async (req, res) => {
-  const id = req.body.id
+expressRouter.get('/:userID', async (req, res) => {
+  const userID = req.params.userID
 
   let missingFields: string[] = []
-  if (!id) missingFields.push('id')
+  if (!userID) missingFields.push('id')
   if (missingFields.length > 0) {
     res.status(400).send(`Missing fields: ${missingFields.join(', ')}`)
     return
@@ -65,20 +65,20 @@ expressRouter.get('/', async (req, res) => {
         teacher: Users.name
       })
       .from(Exams)
-      .where(eq(Exams.id, id))
+      .where(eq(Teachers.id, Number(userID)))
       .innerJoin(Classes, eq(Exams.classID, Classes.id))
       .innerJoin(Courses, eq(Classes.courseID, Courses.id))
       .innerJoin(Teachers, eq(Classes.teacherID, Teachers.id))
       .innerJoin(Users, eq(Teachers.userID, Users.id))
 
     if (selectedExams.length === 0) {
-      res.status(404).send(`Exam "${id}" not found`)
+      res.status(404).send(`Exam of user "${userID}" not found`)
       return
     }
 
-    res.send({
-      ...selectedExams[0]
-    })
+    res.send(
+      selectedExams
+    )
   }
   catch (err) {
     res.status(500).send(err.toString())

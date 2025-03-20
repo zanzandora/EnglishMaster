@@ -5,8 +5,9 @@ import { role } from '@mockData/mockData';
 import FormModal from '@components/common/FormModal';
 import { useTranslation } from 'react-i18next';
 import usePagination from 'hooks/usePagination';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import useFetchClasses from 'hooks/useFetchClasses';
+import { useParams } from 'react-router-dom';
 
 const columns = (t: any) => [
   {
@@ -42,9 +43,18 @@ const columns = (t: any) => [
 
 const ClassListPage = () => {
   const { t } = useTranslation();
+
+  const { userID } = useParams();
   const [reloadTrigger, setReloadTrigger] = useState(0); // Triggers a re-render when data is updated
 
-  const { classes, loading, error } = useFetchClasses(reloadTrigger);
+  useEffect(() => {
+    setReloadTrigger(0); // Reset trigger mỗi khi component được mount lại
+  }, [userID]);
+
+  const { classes, loading, error } = useFetchClasses(
+    reloadTrigger,
+    userID ? parseInt(userID) : undefined
+  );
 
   const handleSuccess = () => {
     setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa
@@ -85,7 +95,7 @@ const ClassListPage = () => {
           <div className='flex items-center gap-2'>
             <FormModal table='students' type='list' id={item.id} />
 
-            {role === 'admin' && (
+            {role === 'admin' && !userID && (
               <>
                 <FormModal
                   table='class'
@@ -123,7 +133,7 @@ const ClassListPage = () => {
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/sort.png' alt='' width={14} height={14} />
             </button>
-            {role === 'admin' && (
+            {role === 'admin' && !userID && (
               <FormModal
                 table='class'
                 type='create'

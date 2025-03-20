@@ -1,13 +1,14 @@
 import Announcements from '@components/admin/Announcements';
 import { useState, useMemo, useEffect } from 'react';
 import FormModal from '@components/common/FormModal';
-import { role, calendarEvents } from '@mockData/data';
+import { role } from '@mockData/data';
 import { View, dateFnsLocalizer } from 'react-big-calendar';
 import { Link, useParams } from 'react-router-dom';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import BigCalendar from '@components/common/calendar/BigCalendar';
-import { Student } from '@interfaces';
+import { ExtendedEvent, Student } from '@interfaces';
+import useFetchSchedules from 'hooks/useFetchSchedules';
 
 const locales = {
   'en-US': import('date-fns/locale/en-US'),
@@ -21,44 +22,98 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
+// *Helper: Tạo đối tượng Date từ base date và chuỗi thời gian (hh:mm)
+const createEventDate = (base: Date, timeStr: string): Date => {
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  const date = new Date(base);
+  date.setHours(hours, minutes);
+  return date;
+};
+
+const generateRecurringEvents = (schedule: any): ExtendedEvent[] => {
+  const events: ExtendedEvent[] = [];
+  const startDate = new Date(schedule.startDate);
+  const endDate = new Date(schedule.endDate);
+
+  // Trường hợp exam: chỉ tạo 1 event dựa trên startDate
+  if (schedule.type === 'exam') {
+    const eventStart = createEventDate(
+      new Date(schedule.startDate),
+      schedule.startTime
+    );
+    const eventEnd = createEventDate(
+      new Date(schedule.startDate),
+      schedule.endTime
+    );
+    return [{ ...schedule, start: eventStart, end: eventEnd }];
+  }
+
+  // Các event lặp theo daysOfWeek: chuyển chuỗi thành mảng số
+  const daysOfWeek = schedule.daysOfWeek?.split(',').map(Number) || [];
+  let currentDate = new Date(startDate);
+  while (currentDate <= endDate) {
+    // Chuyển JS day (0-6, CN-Sat) thành 1-7, với thứ 2 = 1
+    const dayJs = ((currentDate.getDay() + 6) % 7) + 1;
+    if (daysOfWeek.includes(dayJs)) {
+      const eventStart = createEventDate(currentDate, schedule.startTime);
+      const eventEnd = createEventDate(currentDate, schedule.endTime);
+      events.push({ ...schedule, start: eventStart, end: eventEnd });
+    }
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+  return events;
+};
+
 const SingleStudentPage = () => {
   const { id } = useParams();
+  const [reloadTrigger, setReloadTrigger] = useState(0);
+
   const [student, setStudent] = useState<Student | null>(null);
+  const [studentClass, setStudentClass] = useState<any>(null);
+  const [classSchedule, setClassSchedule] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [view, setView] = useState<View>('week');
-  const [selectedClass, setSelectedClass] = useState<string>('all');
+  const { schedules } = useFetchSchedules(reloadTrigger);
 
-  const normalizeEvent = (event: any) => {
+  const [events, setEvents] = useState<ExtendedEvent[]>([]);
+
+  const [view, setView] = useState<View>('week');
+
+  const normalizeEvent = (eventObj: any): ExtendedEvent => {
+    const startDatePart = eventObj.startDate.split('T')[0];
+    const endDatePart = eventObj.endDate.split('T')[0];
     return {
-      id: event.id ?? Date.now(),
-      title: typeof event.title === 'string' ? event.title : 'No Title',
-      start: event.start instanceof Date ? event.start : new Date(event.start),
-      end: event.end instanceof Date ? event.end : new Date(event.end),
-      resource: event.resource ?? 'Unknown',
-      data: event.data || {},
+      id: eventObj.id,
+      title: eventObj.class.className,
+      start: eventObj.start,
+      end: eventObj.end,
+      resource: eventObj.room,
+      data: {
+        id: eventObj.id,
+        classID: eventObj.class.classID,
+        className: eventObj.class.className,
+        type: eventObj.type,
+        repeatRule: eventObj.repeatRule,
+        daysOfWeek: eventObj.daysOfWeek,
+        startDate: startDatePart,
+        endDate: endDatePart,
+        startTime: eventObj.startTime,
+        endTime: eventObj.endTime,
+        room: eventObj.room,
+        teacher: eventObj.teacher?.teacherName || '',
+        course: eventObj.course?.courseName || 'N/A',
+      },
     };
   };
 
-  const normalizedEvents = useMemo(
-    () => calendarEvents.map(normalizeEvent),
-    []
-  );
+  const normalizedEvents = useMemo(() => events.map(normalizeEvent), [events]);
 
   const filteredEvents = useMemo(() => {
-    if (selectedClass === 'all') return normalizedEvents;
+    if (studentClass === 'all') return normalizedEvents;
     return normalizedEvents.filter(
-      (event) => event.data?.class === selectedClass
+      (event) => event.data?.className === studentClass
     );
-  }, [selectedClass, normalizedEvents]);
-  // Chuẩn hóa dữ liệu sự kiện
-
-  // Room Resources cho Calendar
-  const resourcesRooms = [
-    { id: 'room101', title: 'Phòng 101', type: 'room' },
-    { id: 'room102', title: 'Phòng 102', type: 'room' },
-    { id: 'room103', title: 'Phòng 103', type: 'room' },
-  ];
+  }, [studentClass, normalizedEvents]);
 
   useEffect(() => {
     const fetchStudent = async () => {
@@ -68,21 +123,34 @@ const SingleStudentPage = () => {
         // Thử parse JSON
         const data = await res.json();
 
-        if (!res.ok) throw new Error(data.error || 'Lỗi không xác định');
-
         setStudent(data);
+        setStudentClass(data.className);
+
+        const classScheduleData = schedules.filter(
+          (event) => event.class.className === data.className
+        );
+
+        setClassSchedule(classScheduleData);
       } catch (error) {
-        console.error('Lỗi khi fetch student:', error);
+        console.error('Lỗi khi fetch teacher:', error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchStudent();
-  }, [id]);
+  }, [id, schedules]);
+
+  // *Khi schedules thay đổi, tạo các event bằng cách "flatMap" qua generateRecurringEvents
+  useEffect(() => {
+    if (schedules) {
+      setEvents(schedules.flatMap(generateRecurringEvents));
+    }
+  }, [schedules, reloadTrigger]);
 
   if (loading) return <p>Đang tải...</p>;
   if (!student) return <p>Không tìm thấy sinh viên</p>;
+  console.log(classSchedule);
 
   return (
     <div className='flex-1 p-4 flex flex-col gap-4 xl:flex-row'>
@@ -209,16 +277,15 @@ const SingleStudentPage = () => {
           </div>
         </div>
         {/* BOTTOM */}
-        <div className='mt-4 bg-white rounded-md p-4 h-[800px]'>
+        <div className='mt-4 bg-white rounded-md p-4 h-[650px] overflow-auto'>
           <h1>Student&apos;s Schedule</h1>
-          <div className='calendar-wrapper'>
+          <div className='calendar-wrapper '>
             <BigCalendar
-              events={normalizedEvents}
-              resources={resourcesRooms}
+              events={filteredEvents}
               view='week'
               setView={setView}
-              filteredEvents={filteredEvents}
               localizer={localizer}
+              filteredEvents={filteredEvents}
             />
           </div>
         </div>
@@ -236,9 +303,6 @@ const SingleStudentPage = () => {
             </Link>
             <Link className='p-3 rounded-md bg-secondary-lavenderLight' to='/'>
               Student&apos;s Exams
-            </Link>
-            <Link className='p-3 rounded-md bg-secondary-blueLight' to='/'>
-              Student&apos;s Assignments
             </Link>
           </div>
         </div>

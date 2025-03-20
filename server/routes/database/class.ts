@@ -108,36 +108,50 @@ expressRouter.get('/options', async (req, res) => {
   }
 });
 
-expressRouter.get('/', async (req, res) => {
-  const courseID = req.body.courseID;
-  const teacherID = req.body.teacherID;
+expressRouter.get('/:userID', async (req, res) => {
+  const userID = req.params.userID;
 
-  let missingFields: string[] = [];
-  if (!courseID) missingFields.push('courseID');
-  if (!teacherID) missingFields.push('teacherID');
-  if (missingFields.length > 0) {
-    res.status(400).send(`Missing fields: ${missingFields.join(', ')}`);
+  if (!userID) {
+    res.status(400).send('User ID is required');
     return;
   }
 
   try {
-    let selectedClasses = await db
-      .select()
+    const studentCounts = db
+      .select({
+        classID: ClassStudents.classID,
+        totalStudents:
+          sql<number>`COUNT(DISTINCT ${ClassStudents.studentID})`.as(
+            'totalStudents'
+          ),
+      })
+      .from(ClassStudents)
+      .groupBy(ClassStudents.classID)
+      .as('studentCounts');
+      const userClasses = await db
+      .select({
+        id: Classes.id,
+        name: Classes.name,
+        teacherID: Classes.teacherID,
+        courseID: Classes.courseID,
+        capacity: Classes.capacity,
+        startDate: Schedule.startDate,
+        endDate: Schedule.endDate,
+        teacherName: Users.name,
+        courseName: Courses.name,
+        totalStudents: studentCounts.totalStudents,
+      })
       .from(Classes)
-      .where(
-        and(eq(Classes.courseID, courseID), eq(Classes.teacherID, teacherID))
-      );
+      .innerJoin(Teachers, eq(Classes.teacherID, Teachers.id))
+      .innerJoin(Users, eq(Teachers.userID, Users.id))
+      .innerJoin(Courses, eq(Classes.courseID, Courses.id))
+      .leftJoin(Schedule, eq(Schedule.classID, Classes.id))
+      .leftJoin(studentCounts, eq(studentCounts.classID, Classes.id))
+      .where(eq(Teachers.id, Number(userID)))
+      .groupBy(Classes.id,) // Nhóm theo lớp học
+      .orderBy(desc(Classes.id));
 
-    if (selectedClasses.length === 0) {
-      res
-        .status(404)
-        .send(`Class "${courseID}" with teacher "${teacherID}" not found`);
-      return;
-    }
-
-    res.send({
-      ...selectedClasses[0],
-    });
+    res.send(userClasses);
   } catch (err) {
     res.status(500).send(err.toString());
   }
