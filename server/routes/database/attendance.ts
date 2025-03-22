@@ -3,15 +3,28 @@ import { and, eq,count,sql  } from 'drizzle-orm'
 
 import { Attendances, Classes, ClassStudents, Students, Teachers, Users } from '../../database/entity'
 import { db } from '../../database/driver'
+import { getTeacherIdByUserId } from '../../helper/getTeacherID'
+import { authenticateToken } from '../middleware'
 
 const expressRouter = Router()
 
-expressRouter.post('/login-teacher', async (req, res) => {
-  const { teacherID } = req.body;
+expressRouter.get('/current-teacher', async (req, res) => {
+  console.log("User from token:", req.user);
+  const userID = req.user.user_id;
+  console.log(userID);
 
-  if (!teacherID) {
-    return res.status(400).send('Teacher ID is required');
+  if (!userID || isNaN(Number(userID))) {
+    return res.status(400).send("Invalid user ID");
   }
+  
+  let teacherRecords = await getTeacherIdByUserId(userID);
+  console.log(teacherRecords);
+  
+  if (!teacherRecords || isNaN(Number(teacherRecords))) {
+    return res.status(404).send("Teacher not found or invalid teacher ID");
+  }
+
+  
 
   try {
     const teacher = await db
@@ -21,13 +34,18 @@ expressRouter.post('/login-teacher', async (req, res) => {
       })
       .from(Teachers)
       .leftJoin(Users, eq(Teachers.userID, Users.id))
-      .where(eq(Teachers.id, Number(teacherID)));
+      .where(eq(Teachers.id, Number(teacherRecords)));
 
     if (teacher.length === 0) {
-      return res.status(404).send(`No teacher found with ID "${teacherID}"`);
+      return res.status(404).send(`No teacher found with ID "${teacherRecords}"`);
     }
 
-    res.send({ message: "Login successful", teacher: teacher[0] });
+    res.send({ 
+      teacher: {
+        teacherID: teacher[0].teacherID,
+        teacherName: teacher[0].teacherName
+      }
+    });
   } catch (err) {
     res.status(500).send(err.toString());
   }
@@ -89,12 +107,15 @@ expressRouter.get('/list', async (req, res) => {
   }
 });
 
-expressRouter.get('/list-today', async (req, res) => {
+expressRouter.get('/list-today',authenticateToken, async (req, res) => {
   try {
+    const userID = req.user.user_id; 
+
+    let teacherID = await getTeacherIdByUserId(Number(userID));
+      
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Đặt thời gian về 00:00 để so sánh ngày
     console.log(today);
-    
 
     // Lấy ngày hiện tại theo định dạng yyyy-mm-dd
     const todayString = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().split('T')[0]; // Adjust for timezone offset
@@ -108,9 +129,16 @@ expressRouter.get('/list-today', async (req, res) => {
       .from(Attendances)
       .where(sql`DATE(${Attendances.checkInTime}) = DATE(${sql.param(todayString)})`); // So sánh chỉ ngày
 
-    if (existingAttendances.length === 0) {
-      // Nếu không có attendance cho ngày hôm nay, tạo mới attendance cho tất cả students
-      const students = await db.select().from(Students);
+      if (existingAttendances.length === 0) {
+      // Lọc students theo teacher (nếu có)
+      let studentsQuery = db
+        .select({ id: Students.id })
+        .from(Students)
+        .leftJoin(ClassStudents, eq(Students.id, ClassStudents.studentID))
+        .leftJoin(Classes, eq(ClassStudents.classID, Classes.id))
+        .where(eq(Classes.teacherID, teacherID));
+
+      const students = await studentsQuery.execute();
 
       const newAttendances = students.map(student => ({
         studentID: student.id,
@@ -148,7 +176,12 @@ expressRouter.get('/list-today', async (req, res) => {
       .leftJoin(Teachers, eq(Classes.teacherID, Teachers.id))
       .leftJoin(Users, eq(Teachers.userID, Users.id))
       .leftJoin(Attendances, eq(ClassStudents.studentID, Attendances.studentID))
-      .where(sql`DATE(${Attendances.checkInTime}) = DATE(${sql.param(todayString)})`);  // So sánh chỉ ngày
+      .where(
+        and(
+          sql`DATE(${Attendances.checkInTime}) = DATE(${sql.param(todayString)})`, // Lọc theo ngày hôm nay
+          eq(Classes.teacherID, teacherID) // Lọc theo teacherID
+        )
+      );
 
     res.send(todayAttendances);
   } catch (err) {

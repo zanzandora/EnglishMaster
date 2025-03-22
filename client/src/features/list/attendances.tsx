@@ -8,8 +8,10 @@ import { vi } from 'date-fns/locale/vi';
 import usePagination from 'hooks/usePagination';
 import useFetchAttendances from 'hooks/useFetchAttendance';
 import FormModal from '@components/common/FormModal';
-import useFetchTeacherLoginDemo from 'hooks/useFetchTeacherLoginDemo';
+import useFetchCurrentTeacher from 'hooks/useFetchCurrentTeacher';
 import { toast } from 'react-toastify';
+import { useAuth } from 'hooks/useAuth';
+import { decodeToken } from '@utils/decodeToken ';
 
 // const role = 'admin';
 
@@ -62,9 +64,14 @@ const columnsTeacher = [
 
 const AttendancePage = () => {
   const { t } = useTranslation();
+  const { token } = useAuth();
+  const decodedToken = decodeToken(token);
+
   // ! TEEACHER LOGIN DEMO
-  const { teacher } = useFetchTeacherLoginDemo(4);
-  const [role, setRole] = useState('teacher');
+  const { teacher } = useFetchCurrentTeacher();
+  // const [role, setRole] = useState('teacher');
+
+  const role = decodedToken?.role;
 
   const [selectedTeacher, setSelectedTeacher] = useState<string>('All');
   const [selectedClass, setSelectedClass] = useState<string>('All');
@@ -290,7 +297,7 @@ const AttendancePage = () => {
           {role === 'teacher' && `- ${teacher?.teacherName}`}
         </h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
-          <button
+          {/* <button
             className={`w-full text-sm text-gray-500 hover:text-gray-700`}
             onClick={() =>
               setRole((prevRole) =>
@@ -299,7 +306,7 @@ const AttendancePage = () => {
             }
           >
             {role}
-          </button>
+          </button> */}
           {role === 'admin' && (
             <>
               <select

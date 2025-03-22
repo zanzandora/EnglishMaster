@@ -1,4 +1,3 @@
-import { decodeToken } from "@utils/decodeToken ";
 import { useState, useEffect } from "react";
 import { useAuth } from "./useAuth";
 
@@ -10,19 +9,10 @@ const useFetchCurrentTeacher = () => {
 
     const fetchTeacher = async () => {
       try {
-        const decodedToken = decodeToken(token);
-        const userID = decodedToken?.user_id;
-
-        if (!token) throw new Error("No token found");
-        if (!userID) {
-          throw new Error("Invalid token");
-        }
-        
         const response = await fetch("/attendance/current-teacher", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          credentials: "include",
         });
+
 
         if (!response.ok) {
           throw new Error(`Failed to fetch teache: ${response.statusText}`);
