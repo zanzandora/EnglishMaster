@@ -3,9 +3,11 @@ import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
 import { role } from '@mockData/mockData';
+import { decodeToken } from '@utils/decodeToken ';
 import ErrorPage from 'features/error/error';
+import { useAuth } from 'hooks/useAuth';
 import usePagination from 'hooks/usePagination';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
@@ -40,22 +42,38 @@ const columns = (t: any) => [
 
 const ExamListPage = () => {
   const { t } = useTranslation();
-  const { userID } = useParams();
+
+  const { token } = useAuth();
+  const decodedToken = decodeToken(token);
+  const role = decodedToken?.role;
+  const tokenUserID = decodedToken?.user_id;
+
+  const { userID: urlUserID } = useParams();
 
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reloadTrigger, setReloadTrigger] = useState(0);
 
+  const targetUserID = useMemo(() => {
+    if (role === 'teacher') {
+      return parseInt(tokenUserID); // Teacher luôn dùng userID từ token
+    } else if (urlUserID) {
+      // Admin truy cập qua URL /admin/teachers/{userID}/classes
+      return parseInt(urlUserID);
+    }
+    return undefined; // Admin xem tất cả
+  }, [role, tokenUserID, urlUserID]);
+
   useEffect(() => {
     setReloadTrigger(0); // Reset trigger mỗi khi component được mount lại
-  }, [userID]);
+  }, [urlUserID]);
 
   useEffect(() => {
     const fetchLessons = async () => {
       setLoading(true);
       try {
-        const url = userID ? `/exam/${userID}` : '/exam/list';
+        const url = targetUserID ? `/exam/${targetUserID}` : '/exam/list';
         const response = await fetch(url);
         if (!response.ok) {
           const errorData = await response.text();
@@ -71,7 +89,7 @@ const ExamListPage = () => {
     };
 
     fetchLessons();
-  }, [reloadTrigger, userID]);
+  }, [reloadTrigger, targetUserID]);
 
   const handleSuccess = () => {
     setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa
@@ -81,7 +99,7 @@ const ExamListPage = () => {
     usePagination(exams, 10);
 
   if (loading) return <p>Đang tải dữ liệu...</p>;
-  if (error) return <ErrorPage message={error} />;
+  // if (error) return <ErrorPage message={error} />;
 
   const renderRow = (item: any, index: number) => {
     return (
@@ -104,7 +122,7 @@ const ExamListPage = () => {
         </td>
         <td>
           <div className='flex items-center gap-2'>
-            {role === 'admin' && !userID && (
+            {role === 'admin' && !targetUserID && (
               <>
                 <FormModal
                   table='exam'
@@ -137,25 +155,25 @@ const ExamListPage = () => {
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/sort.png' alt='' width={14} height={14} />
             </button>
-            {role === 'admin' && !userID && (
+            {role === 'admin' && !targetUserID && (
               <FormModal table='exam' type='create' onSuccess={handleSuccess} />
             )}
           </div>
         </div>
       </div>
       {/* LIST */}
-      <Pagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-      />
-      <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
-      {/* PAGINATION */}
-      <Pagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-      />
+      {totalPages > 1 && (
+        <Pagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
+      )}
+      {currentData.length === 0 ? (
+        <div className='text-center py-6 text-gray-500'>no exam found</div>
+      ) : (
+        <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
+      )}
     </div>
   );
 };

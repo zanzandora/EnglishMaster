@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken'
 import { Users } from '../database/entity/user'
 import { db } from '../database/driver'
 import { transporter } from '../mailer'
+import { Teachers } from '../database/entity'
 
 const expressRouter = Router()
 
@@ -27,7 +28,7 @@ expressRouter.post('/login', async (req, res): Promise<any> => {
       return res.status(401).json({ msg: 'Invalid username or password' })
 
     const token = jwt.sign(
-      { user_id: user.id, username: user.name },
+      { user_id: user.id, username: user.name , role:user.role},
       process.env.JWT_SECRET!,
     )
 
@@ -39,7 +40,7 @@ expressRouter.post('/login', async (req, res): Promise<any> => {
       path: '/'
     }))
 
-    res.status(200).json({ msg: 'success' })
+    res.status(200).json({ msg: 'success',token: token })
   }
   catch (e) {
     res.status(500).json({ msg: 'Internal server error' })
@@ -55,6 +56,8 @@ expressRouter.post('/register', async (req, res) => {
   const gender = req.body.gender
   const phoneNumber = req.body.phone
   const address = req.body.address
+  const photo = req.body.photo || '/avatar.png'
+  const role = req.body.role ?? 'teacher'
 
   const user = (await db.select().from(Users).where(or(eq(Users.username, username), eq(Users.email, email)))).at(0)
   if (!user) {
@@ -67,7 +70,18 @@ expressRouter.post('/register', async (req, res) => {
       gender,
       phoneNumber,
       address,
+      photo,
+      role,
     })
+
+     // Nếu người dùng là giáo viên, thêm bản ghi vào bảng TEACHER
+     if (role === 'teacher') {
+      await db.insert(Teachers).values({
+        userID: insertedUser[0].insertId,
+        experience: req.body.experience || 0,  
+        specialization: req.body.specialization || '',  
+      })
+    }
 
     const token = jwt.sign(
       { user_id: insertedUser[0].insertId, username },
@@ -82,7 +96,7 @@ expressRouter.post('/register', async (req, res) => {
       path: '/'
     }))
 
-    res.status(200).json({ msg: 'success' })
+    res.status(200).json({ msg: 'success', token: token })
   }
   else {
     if (user.username === username)

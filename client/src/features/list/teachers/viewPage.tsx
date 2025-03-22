@@ -330,14 +330,14 @@ const SingleTeacherPage = () => {
           <div className='mt-4 flex gap-4 flex-wrap text-sm text-gray-500 '>
             <Link
               className='p-3 rounded-md bg-secondary-blueLight'
-              to={`/admin/list/classes/${teacher.id}`}
+              to={`/admin/list/classes/${teacher.userID}`}
             >
               Teacher&apos;s Classes and Students
             </Link>
 
             <Link
               className='p-3 rounded-md bg-secondary-lavenderLight'
-              to={`/admin/list/exams/${teacher.id}`}
+              to={`/admin/list/exams/${teacher.userID}`}
             >
               Teacher&apos;s Exams
             </Link>

@@ -47,6 +47,7 @@ const StudentForm = ({
   const { t } = useTranslation();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [existingPhotoPath, setExistingPhotoPath] = useState<string>('');
+  const [photoPath, setPhotoPath] = useState<string>('');
 
   // Choose the appropriate schema based on form type
   const schema = type === 'create' ? CreateStudentSchema : UpdateStudentSchema;
@@ -119,23 +120,13 @@ const StudentForm = ({
     }
 
     try {
-      // console.log('Form data before processing:', formData);
-
-      // Handle photo file if selected
-      let photoPath = existingPhotoPath || DEFAULT_AVATAR;
-
-      if (selectedFile instanceof File) {
-        // New file is selected, use the new file
-        photoPath = URL.createObjectURL(selectedFile);
-      } else if (type === 'update' && existingPhotoPath) {
-        // No new file selected in edit mode, keep existing photo
-        photoPath = existingPhotoPath;
-        console.log('Keeping existing photo:', photoPath);
-      }
+      const finalPhotoPath = selectedFile
+        ? `/${selectedFile.name}`
+        : existingPhotoPath || DEFAULT_AVATAR;
 
       const formattedData = {
         ...formData,
-        photo: photoPath,
+        photo: finalPhotoPath,
         dateOfBirth: formData.dateOfBirth
           ? formatDate(formData.dateOfBirth, 'yyyy-MM-dd')
           : '',
@@ -152,9 +143,13 @@ const StudentForm = ({
     }
   };
 
-  const handleFileChange = (file: any) => {
-    setSelectedFile(file);
-    console.log('File selected:', file);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setPhotoPath(file.name); // Chỉ lấy tên file
+      console.log('✅ File selected:', file.name);
+    }
   };
 
   return (

@@ -12,6 +12,7 @@ import {
   Attendances,
 } from '../../database/entity';
 import { db } from '../../database/driver';
+import { getTeacherIdByUserId } from '../../helper/getTeacherID';
 
 const expressRouter = Router();
 
@@ -110,6 +111,12 @@ expressRouter.get('/options', async (req, res) => {
 
 expressRouter.get('/:userID', async (req, res) => {
   const userID = req.params.userID;
+  const teacherId = await getTeacherIdByUserId(Number(userID));
+
+  console.log('userID: ' + userID);
+  console.log(teacherId);
+  
+  
 
   if (!userID) {
     res.status(400).send('User ID is required');
@@ -147,7 +154,7 @@ expressRouter.get('/:userID', async (req, res) => {
       .innerJoin(Courses, eq(Classes.courseID, Courses.id))
       .leftJoin(Schedule, eq(Schedule.classID, Classes.id))
       .leftJoin(studentCounts, eq(studentCounts.classID, Classes.id))
-      .where(eq(Teachers.id, Number(userID)))
+      .where(eq(Teachers.id, teacherId))
       .groupBy(Classes.id,) // Nhóm theo lớp học
       .orderBy(desc(Classes.id));
 

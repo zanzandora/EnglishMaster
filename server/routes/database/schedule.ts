@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { eq,and, sql } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 
 import {
   Schedule,
@@ -9,6 +9,9 @@ import {
   Courses,
 } from '../../database/entity';
 import { db } from '../../database/driver';
+
+import { authenticateToken } from '../middleware';
+import { getTeacherIdByUserId } from '../../helper/getTeacherID';
 
 const expressRouter = Router();
 
@@ -78,7 +81,13 @@ expressRouter.post('/check-conflict', async (req, res) => {
       );
 
     if (conflicts.length > 0) {
-      return res.status(409).send(`Lớp này đã có lịch ${conflicts[0].type === 'exam' ? 'thi' : 'học'} trong khoảng thời gian này!`);
+      return res
+        .status(409)
+        .send(
+          `Lớp này đã có lịch ${
+            conflicts[0].type === 'exam' ? 'thi' : 'học'
+          } trong khoảng thời gian này!`
+        );
     }
 
     res.send({ message: 'Không có xung đột' });
@@ -87,34 +96,52 @@ expressRouter.post('/check-conflict', async (req, res) => {
   }
 });
 
-expressRouter.get('/', async (req, res) => {
-  const id = req.body.id;
-
-  let missingFields: string[] = [];
-  if (!id) missingFields.push('id');
-  if (missingFields.length > 0) {
-    res.status(400).send(`Missing fields: ${missingFields.join(', ')}`);
-    return;
-  }
-
+// Lấy lịch theo teacherID
+expressRouter.get('/by-teacher', authenticateToken, async (req, res) => {
   try {
-    let selectedSchedule = await db
-      .select()
-      .from(Schedule)
-      .where(eq(Schedule.id, id));
+      const teacherID = req.user.user_id;
+  
+      const id = await getTeacherIdByUserId(Number(teacherID));
 
-    if (selectedSchedule.length === 0) {
-      res.status(404).send(`Student "${id}" not found`);
-      return;
+      const schedules = await db
+        .select({
+          id: Schedule.id,
+          classID: Schedule.classID,
+          type: Schedule.type,
+          repeatRule: Schedule.repeatRule,
+          daysOfWeek: Schedule.daysOfWeek,
+          startTime: Schedule.startTime,
+          endTime: Schedule.endTime,
+          startDate: Schedule.startDate,
+          endDate: Schedule.endDate,
+          room: Schedule.room,
+          class: {
+            classID: Classes.id,
+            className: Classes.name,
+            teacherID: Classes.teacherID,
+          },
+          teacher: {
+            userID: Teachers.userID,
+            teacherName: Users.name,
+          },
+          course: {
+            courseID: Courses.id,
+            courseName: Courses.name,
+          },
+        })
+        .from(Schedule)
+        .leftJoin(Classes, eq(Schedule.classID, Classes.id))
+        .leftJoin(Teachers, eq(Classes.teacherID, Teachers.id))
+        .leftJoin(Users, eq(Teachers.userID, Users.id))
+        .leftJoin(Courses, eq(Classes.courseID, Courses.id))
+        .where(eq(Classes.teacherID, id));
+
+      res.json(schedules);
+    } catch (err) {
+      res.status(500).send(err.toString());
     }
-
-    res.send({
-      ...selectedSchedule[0],
-    });
-  } catch (err) {
-    res.status(500).send(err.toString());
   }
-});
+);
 
 expressRouter.post('/add', async (req, res) => {
   const {
@@ -232,8 +259,5 @@ expressRouter.delete('/delete/:id', async (req, res) => {
     res.status(500).send(err.toString());
   }
 });
-
-
-
 
 export const router = expressRouter;

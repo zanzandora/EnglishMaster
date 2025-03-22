@@ -5,9 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { blueTextBottom, submitForm } from './login/functions';
 import { hideInvalidate, showInvalidate } from './login/validation';
 import LanguagePopover from '@components/dashboard/components/navBar/LanguagePopover';
+import { useAuth } from 'hooks/useAuth';
 
 const Login = () => {
   const { t } = useTranslation();
+
+  const { setToken } = useAuth();
 
   const [isRegistering, setIsRegistering] = useState(false);
 
@@ -44,7 +47,8 @@ const Login = () => {
                     isRegistering,
                     setNotice,
                     setIsRegistering,
-                    navigate
+                    navigate,
+                    setToken
                   )
                 }
               >

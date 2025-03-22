@@ -14,41 +14,16 @@ import TeacherRoutes from './src/features/teacher/TeacherRoutes';
 import Login from './src/features/admin/login/Login';
 import Forgot from './src/features/admin/login/Forgot';
 import ProtectedRoute from 'ProtectedRoute';
+import { AuthProvider } from 'context/AuthProvider';
 
 hydrateRoot(
   document.getElementById('root') as HTMLElement,
-  <BrowserRouter>
-    <Routes>
-      {/* Public Routes */}
-      <Route path='/login' element={<Login />} />
-      <Route path='/forgot' element={<Forgot />} />
-      <Route
-        path='/faq'
-        element={
-          <DashboardLayout>
-            <FAQ />
-          </DashboardLayout>
-        }
-      />
-
-      {/* Protected Routes */}
-      <Route element={<ProtectedRoute />}>
-        <Route
-          path='/admin/*'
-          element={
-            <DashboardLayout>
-              <AdminRoutes />
-            </DashboardLayout>
-          }
-        />
-        <Route
-          path='/teacher/*'
-          element={
-            <DashboardLayout>
-              <TeacherRoutes />
-            </DashboardLayout>
-          }
-        />
+  <AuthProvider>
+    <BrowserRouter>
+      <Routes>
+        {/* Public Routes */}
+        <Route path='/login' element={<Login />} />
+        <Route path='/forgot' element={<Forgot />} />
         <Route
           path='/faq'
           element={
@@ -57,10 +32,38 @@ hydrateRoot(
             </DashboardLayout>
           }
         />
-      </Route>
 
-      <Route path='*' element={<ErrorPage />} />
-    </Routes>
-    <ToastContainer newestOnTop={true} closeOnClick={true} autoClose={3000} />
-  </BrowserRouter>
+        {/* Protected Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route
+            path='/admin/*'
+            element={
+              <DashboardLayout>
+                <AdminRoutes />
+              </DashboardLayout>
+            }
+          />
+          <Route
+            path='/teacher/*'
+            element={
+              <DashboardLayout>
+                <TeacherRoutes />
+              </DashboardLayout>
+            }
+          />
+          <Route
+            path='/faq'
+            element={
+              <DashboardLayout>
+                <FAQ />
+              </DashboardLayout>
+            }
+          />
+        </Route>
+
+        <Route path='*' element={<ErrorPage />} />
+      </Routes>
+      <ToastContainer newestOnTop={true} closeOnClick={true} autoClose={3000} />
+    </BrowserRouter>
+  </AuthProvider>
 );

@@ -7,9 +7,9 @@ const MenuItem = ({ icon, label, href }: MenuItemProps) => {
   // Tối ưu tính toán isActive với useMemo()
   const isActive = useMemo(() => {
     const { pathname } = location;
+    const isBaseRoute = ['/admin', '/teacher'].includes(href);
     return (
-      pathname === href ||
-      (pathname.startsWith(href + '/') && href !== '/admin')
+      pathname === href || (pathname.startsWith(href + '/') && !isBaseRoute)
     );
   }, [location, href]);
 

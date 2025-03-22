@@ -1,7 +1,7 @@
 import { formatDate } from '@utils/dateUtils';
 import { useState, useEffect } from 'react';
 
-const useFetchStudents = (reloadTrigger?: number) => {
+const useFetchStudents = (reloadTrigger?: number,role?: string) => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -9,7 +9,10 @@ const useFetchStudents = (reloadTrigger?: number) => {
   useEffect(() => {
     const fetchstudents = async () => {
       try {
-        const response = await fetch('/student/list');
+        const endpoint = role === 'teacher' 
+        ? '/student/by-teacher'  
+        : '/student/list';  
+        const response = await fetch(endpoint);
         if (!response.ok) throw new Error('Lỗi khi tải dữ liệu');
 
         const data = await response.json();
@@ -28,7 +31,7 @@ const useFetchStudents = (reloadTrigger?: number) => {
     };
 
     fetchstudents();
-  }, [reloadTrigger]);
+  }, [reloadTrigger,role]);
 
   return { students, loading, error };
 };

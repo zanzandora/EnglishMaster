@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const useFetchSchedules = (reloadTrigger?: number) => {
+const useFetchSchedules = (reloadTrigger?: number, role?: string) => {
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -8,7 +8,9 @@ const useFetchSchedules = (reloadTrigger?: number) => {
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
-        const response = await fetch('/schedule/list');
+        const endpoint =
+          role === 'teacher' ? '/schedule/by-teacher' : '/schedule/list';
+        const response = await fetch(endpoint);
         if (!response.ok) throw new Error('Lỗi khi tải dữ liệu');
 
         const data = await response.json();
@@ -22,7 +24,7 @@ const useFetchSchedules = (reloadTrigger?: number) => {
     };
 
     fetchSchedules();
-  }, [reloadTrigger]);
+  }, [reloadTrigger,role]);
 
   return { schedules, loading, error };
 };

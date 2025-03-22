@@ -1,13 +1,16 @@
 import MenuList from './components/menu/MenuList';
 import { useTranslation } from 'react-i18next';
+import { decodeToken } from '@utils/decodeToken ';
+import ErrorPage from 'features/error/error';
+import { useAuth } from 'hooks/useAuth';
 
-const basePath = {
+const basePath: any = {
   admin: '/admin',
   teacher: '/teacher',
   student: '/student',
 };
-const role = 'admin';
-const getMenuItems = (t: any) => [
+// const role = 'admin';
+const getMenuItems = (t: any, role: string) => [
   {
     items: [
       {
@@ -94,7 +97,16 @@ const getMenuItems = (t: any) => [
 
 const Menu = () => {
   const { t } = useTranslation();
-  const menuItems = getMenuItems(t);
+  const { token } = useAuth();
+
+  if (!token) {
+    return <ErrorPage />; // Hoặc xử lý khi không có token
+  }
+
+  const decoded = decodeToken(token);
+  const role = decoded?.role;
+
+  const menuItems = getMenuItems(t, role);
   return (
     <div className='mt-4 text-sm '>
       {menuItems.map((menu, index) => (

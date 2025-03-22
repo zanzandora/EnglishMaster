@@ -4,6 +4,8 @@ import { eq, sql,and, not, or, isNotNull } from 'drizzle-orm'
 import { Classes, Courses, CourseTeachers, Teachers, Users } from '../../database/entity'
 import { db } from '../../database/driver'
 
+import bcrypt from 'bcrypt'
+
 const expressRouter = Router()
 
 expressRouter.get('/list', async (req, res) => {
@@ -55,6 +57,7 @@ expressRouter.get('/options', async (_, res) => {
 
 expressRouter.get('/:userID', async (req, res) => {
   const userID = req.params.userID; // Lấy userID từ URL
+  
 
   if (!userID) {
     return res.status(400).json({ error: "Missing userID" });
@@ -169,7 +172,7 @@ expressRouter.post('/add', async (req, res) => {
       .insert(Users)
       .values({
         username,
-        password,
+        password : await bcrypt.hash(password, +process.env.SALT_ROUND!),
         email,
         name,
         phoneNumber,

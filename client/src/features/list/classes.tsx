@@ -1,13 +1,14 @@
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import { role } from '@mockData/mockData';
 import FormModal from '@components/common/FormModal';
 import { useTranslation } from 'react-i18next';
 import usePagination from 'hooks/usePagination';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import useFetchClasses from 'hooks/useFetchClasses';
 import { useParams } from 'react-router-dom';
+import { useAuth } from 'hooks/useAuth';
+import { decodeToken } from '@utils/decodeToken ';
 
 const columns = (t: any) => [
   {
@@ -44,16 +45,32 @@ const columns = (t: any) => [
 const ClassListPage = () => {
   const { t } = useTranslation();
 
-  const { userID } = useParams();
+  const { token } = useAuth();
+  const decodedToken = decodeToken(token);
+  const role = decodedToken?.role;
+  const tokenUserID = decodedToken?.user_id;
+
+  const { userID: urlUserID } = useParams();
   const [reloadTrigger, setReloadTrigger] = useState(0); // Triggers a re-render when data is updated
+
+  // Xác định userID dựa trên role
+  const targetUserID = useMemo(() => {
+    if (role === 'teacher') {
+      return parseInt(tokenUserID); // Teacher luôn dùng userID từ token
+    } else if (urlUserID) {
+      // Admin truy cập qua URL /admin/teachers/{userID}/classes
+      return parseInt(urlUserID);
+    }
+    return undefined; // Admin xem tất cả
+  }, [role, tokenUserID, urlUserID]);
 
   useEffect(() => {
     setReloadTrigger(0); // Reset trigger mỗi khi component được mount lại
-  }, [userID]);
+  }, [urlUserID]);
 
   const { classes, loading, error } = useFetchClasses(
     reloadTrigger,
-    userID ? parseInt(userID) : undefined
+    targetUserID
   );
 
   const handleSuccess = () => {
@@ -68,52 +85,54 @@ const ClassListPage = () => {
 
   const renderRow = (item: any) => {
     return (
-      <tr
-        key={item.id}
-        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
-      >
-        <td className='flex items-center gap-4 p-4'>
-          <div className='flex flex-col'>
-            <h3 className='font-semibold'>{item.name}</h3>
-            <p className='text-xs text-gray-500'>
-              {item.startDate} - {item.endDate}
-            </p>
-          </div>
-        </td>
-        <td className='hidden md:table-cell'>{item.capacity}</td>
+      <>
+        <tr
+          key={item.id}
+          className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
+        >
+          <td className='flex items-center gap-4 p-4'>
+            <div className='flex flex-col'>
+              <h3 className='font-semibold'>{item.name}</h3>
+              <p className='text-xs text-gray-500'>
+                {item.startDate} - {item.endDate}
+              </p>
+            </div>
+          </td>
+          <td className='hidden md:table-cell'>{item.capacity}</td>
 
-        <td className='hidden md:table-cell'>
-          {item.totalStudents ? item.totalStudents : 0}
-        </td>
-        <td className='hidden md:table-cell'>
-          {item.courseName || 'No course assigned'}
-        </td>
-        <td className='hidden md:table-cell'>
-          {item.teacherName || 'No teacher assigned'}
-        </td>
-        <td>
-          <div className='flex items-center gap-2'>
-            <FormModal table='students' type='list' id={item.id} />
+          <td className='hidden md:table-cell'>
+            {item.totalStudents ? item.totalStudents : 0}
+          </td>
+          <td className='hidden md:table-cell'>
+            {item.courseName || 'No course assigned'}
+          </td>
+          <td className='hidden md:table-cell'>
+            {item.teacherName || 'No teacher assigned'}
+          </td>
+          <td>
+            <div className='flex items-center gap-2'>
+              <FormModal table='students' type='list' id={item.id} />
 
-            {role === 'admin' && !userID && (
-              <>
-                <FormModal
-                  table='class'
-                  type='update'
-                  data={item}
-                  onSuccess={handleSuccess}
-                />
-                <FormModal
-                  table='class'
-                  type='delete'
-                  id={item.id}
-                  onSuccess={handleSuccess}
-                />
-              </>
-            )}
-          </div>
-        </td>
-      </tr>
+              {role === 'admin' && !targetUserID && (
+                <>
+                  <FormModal
+                    table='class'
+                    type='update'
+                    data={item}
+                    onSuccess={handleSuccess}
+                  />
+                  <FormModal
+                    table='class'
+                    type='delete'
+                    id={item.id}
+                    onSuccess={handleSuccess}
+                  />
+                </>
+              )}
+            </div>
+          </td>
+        </tr>
+      </>
     );
   };
 
@@ -133,7 +152,7 @@ const ClassListPage = () => {
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/sort.png' alt='' width={14} height={14} />
             </button>
-            {role === 'admin' && !userID && (
+            {role === 'admin' && !targetUserID && (
               <FormModal
                 table='class'
                 type='create'
@@ -144,13 +163,18 @@ const ClassListPage = () => {
         </div>
       </div>
       {/* PAGINATION */}
-      <Pagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-      />
-      {/* LIST */}
-      <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
+      {totalPages > 1 && (
+        <Pagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
+      )}
+      {currentData.length === 0 ? (
+        <div className='text-center py-6 text-gray-500'>no class found</div>
+      ) : (
+        <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
+      )}
     </div>
   );
 };

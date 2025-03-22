@@ -1,3 +1,5 @@
+import { decodeToken } from "@utils/decodeToken "
+
 export const checkPassword = (password: string, confirmPassword: string): string => {
   return password !== confirmPassword ? 'Mật khẩu phải trùng nhau' : ''
 }
@@ -7,7 +9,8 @@ export const submitForm = async (
   isRegistering: boolean,
   setNotice: React.Dispatch<React.SetStateAction<string>>,
   setIsRegistering: React.Dispatch<React.SetStateAction<boolean>>,
-  navigate: (path: string) => void
+  navigate: (path: string) => void,
+  setToken: (token: string | null) => void
 ) => {
   e.preventDefault()
 
@@ -44,9 +47,20 @@ const res = await fetch(isRegistering ? '/register' : '/login', {
   if (res.status === 200 && resJson.msg === 'success') {
     setNotice(`Sign ${isRegistering ? 'up' : 'in'} successful!`)
     if (!isRegistering) {
+      localStorage.setItem('token', resJson.token);
+      setToken(resJson.token);
+
+      const decodedToken = decodeToken(resJson.token); // Hàm parseJWT sẽ giải mã token
+      const role = decodedToken?.role;
       setTimeout(() => {
-        navigate('/admin')
-      }, 1500) // Điều hướng đến trang admin
+        if (role === 'admin') {
+          navigate('/admin'); 
+        } else if (role === 'teacher') {
+          navigate('/teacher'); 
+        } else {
+          navigate('/'); 
+        }
+      }, 1500); // Điều hướng đến trang admin
     } else {
       setIsRegistering(false)
     }

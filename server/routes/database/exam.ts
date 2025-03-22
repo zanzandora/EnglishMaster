@@ -6,6 +6,7 @@ import path from 'path'
 
 import { Classes, Courses, Exams, Teachers, Users } from '../../database/entity'
 import { db } from '../../database/driver'
+import { getTeacherIdByUserId } from '../../helper/getTeacherID'
 
 const multerStorage = multer.memoryStorage()
 const upload = multer({ storage: multerStorage })
@@ -47,6 +48,7 @@ expressRouter.get('/list', async (req, res) => {
 
 expressRouter.get('/:userID', async (req, res) => {
   const userID = req.params.userID
+  const teacherId = await getTeacherIdByUserId(Number(userID));
 
   let missingFields: string[] = []
   if (!userID) missingFields.push('id')
@@ -65,7 +67,7 @@ expressRouter.get('/:userID', async (req, res) => {
         teacher: Users.name
       })
       .from(Exams)
-      .where(eq(Teachers.id, Number(userID)))
+      .where(eq(Teachers.id, teacherId))
       .innerJoin(Classes, eq(Exams.classID, Classes.id))
       .innerJoin(Courses, eq(Classes.courseID, Courses.id))
       .innerJoin(Teachers, eq(Classes.teacherID, Teachers.id))

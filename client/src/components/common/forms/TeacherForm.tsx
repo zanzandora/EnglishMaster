@@ -135,11 +135,6 @@ const TeacherForm = ({
         ? `/${selectedFile.name}`
         : existingPhotoPath || DEFAULT_AVATAR; // Sử dụng ảnh hiện tại hoặc ảnh mặc định
 
-      // if (selectedFile instanceof File) {
-      //   finalPhotoPath = URL.createObjectURL(selectedFile);
-      //   console.log('Photo path updated in onSubmit:', finalPhotoPath);
-      // }
-
       const formattedData = {
         ...formData,
         photo: finalPhotoPath,
@@ -189,8 +184,13 @@ const TeacherForm = ({
           <InputField
             label='Password'
             name='password'
+            type='password'
             register={register}
             error={errors.password}
+            inputProps={{
+              readOnly: type === 'update',
+              disabled: type === 'update',
+            }}
             className='flex-1'
           />
         </div>

@@ -1,8 +1,11 @@
 import { Router } from 'express'
 import { eq, not, inArray, isNull, sql,notExists } from 'drizzle-orm'
 
-import { Students, Classes, ClassStudents, Courses  } from '../../database/entity'
+import { Students, Classes, ClassStudents, Courses, Teachers  } from '../../database/entity'
 import { db } from '../../database/driver'
+
+import { authenticateToken } from '../middleware';
+import { getTeacherIdByUserId } from '../../helper/getTeacherID';
 
 const expressRouter = Router()
 
@@ -32,6 +35,42 @@ expressRouter.get('/list', async (req, res) => {
     res.status(500).send(err.toString())
   }
 })
+
+// Thêm endpoint lọc học sinh theo teacher đăng nhập
+expressRouter.get('/by-teacher', authenticateToken,async (req, res) => {
+  try {
+    // Lấy teacherID từ middleware xác thực (đã thêm trước đó)
+    const teacherID = req.user.user_id; 
+
+    const id = await getTeacherIdByUserId(Number(teacherID));
+    
+
+    // Truy vấn học sinh thuộc các lớp của teacher
+    const students = await db
+      .select({
+        id: Students.id,
+      name: Students.name,
+      email: Students.email,
+      phoneNumber: Students.phoneNumber,
+      address: Students.address,
+      photo: Students.photo,
+      dateOfBirth: Students.dateOfBirth,
+      gender: Students.gender,
+      className: Classes.name,
+      courseName: Courses.name
+      })
+      .from(Students)
+      .leftJoin(ClassStudents, eq(ClassStudents.studentID, Students.id))
+      .leftJoin(Classes, eq(ClassStudents.classID, Classes.id))
+      .leftJoin(Teachers, eq(Classes.teacherID, Teachers.id)) 
+      .leftJoin(Courses, eq(Classes.courseID, Courses.id))
+      .where(eq(Teachers.id, id)); 
+
+    res.json(students);
+  } catch (err) {
+    res.status(500).send(err.toString());
+  }
+});
 
 expressRouter.get('/:id', async (req, res) => {
   const id = req.params.id

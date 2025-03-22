@@ -2,12 +2,13 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { dateFnsLocalizer, Event, View } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { role } from '@mockData/data';
 import BigCalendar from '@components/common/calendar/BigCalendar';
 import { ExtendedEvent } from '@interfaces';
 import { useTranslation } from 'react-i18next';
 import FormModal from '@components/common/FormModal';
 import useFetchSchedules from 'hooks/useFetchSchedules';
+import { decodeToken } from '@utils/decodeToken ';
+import { useAuth } from 'hooks/useAuth';
 
 const locales = { 'en-US': import('date-fns/locale/en-US') };
 const localizer = dateFnsLocalizer({
@@ -105,10 +106,15 @@ const generateRecurringEvents = (schedule: any): ExtendedEvent[] => {
 
 const Schedule: React.FC = () => {
   const { t } = useTranslation();
+
+  const { token } = useAuth();
+  const decodedToken = decodeToken(token);
+  const role = decodedToken?.role;
+
   const [view, setView] = useState<View>('week');
   const [events, setEvents] = useState<Event[]>([]);
   const [reloadTrigger, setReloadTrigger] = useState(0);
-  const { schedules } = useFetchSchedules(reloadTrigger);
+  const { schedules } = useFetchSchedules(reloadTrigger, role);
 
   // *Khi schedules thay đổi, tạo các event bằng cách "flatMap" qua generateRecurringEvents
   useEffect(() => {
