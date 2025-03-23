@@ -10,6 +10,7 @@ import {
   Students,
   Schedule,
   Attendances,
+  Results,
 } from '../../database/entity';
 import { db } from '../../database/driver';
 import { getTeacherIdByUserId } from '../../helper/getTeacherID';
@@ -115,8 +116,6 @@ expressRouter.get('/:userID', async (req, res) => {
 
   console.log('userID: ' + userID);
   console.log(teacherId);
-  
-  
 
   if (!userID) {
     res.status(400).send('User ID is required');
@@ -135,7 +134,7 @@ expressRouter.get('/:userID', async (req, res) => {
       .from(ClassStudents)
       .groupBy(ClassStudents.classID)
       .as('studentCounts');
-      const userClasses = await db
+    const userClasses = await db
       .select({
         id: Classes.id,
         name: Classes.name,
@@ -155,7 +154,7 @@ expressRouter.get('/:userID', async (req, res) => {
       .leftJoin(Schedule, eq(Schedule.classID, Classes.id))
       .leftJoin(studentCounts, eq(studentCounts.classID, Classes.id))
       .where(eq(Teachers.id, teacherId))
-      .groupBy(Classes.id,) // Nhóm theo lớp học
+      .groupBy(Classes.id) // Nhóm theo lớp học
       .orderBy(desc(Classes.id));
 
     res.send(userClasses);
@@ -223,15 +222,19 @@ expressRouter.post('/add', async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Đặt thời gian về 00:00:00
 
-    const todayString = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().split('T')[0];
+    const todayString = new Date(
+      today.getTime() - today.getTimezoneOffset() * 60000
+    )
+      .toISOString()
+      .split('T')[0];
     for (const studentID of studentIDs) {
       const existingAttendance = await db
         .select()
         .from(Attendances)
         .where(
           and(
-      eq(Attendances.studentID, studentID),
-      sql`DATE(${Attendances.checkInTime}) = ${todayString}`
+            eq(Attendances.studentID, studentID),
+            sql`DATE(${Attendances.checkInTime}) = ${todayString}`
           )
         );
 
@@ -243,8 +246,21 @@ expressRouter.post('/add', async (req, res) => {
           checkInTime: new Date(todayString),
           createdAt: new Date(),
         });
-      } 
+      }
     }
+
+    //* 🔥 Thêm học sinh vào bảng Results
+    await db.insert(Results).values(
+      studentIDs.map((studentID) => ({
+        studentID,
+        MT: 0,
+        FT: 0,
+        score: 0,
+        status: 'failed',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }))
+    );
 
     res.send('Class added');
   } catch (err) {
@@ -328,6 +344,11 @@ expressRouter.post('/edit', async (req, res) => {
                 inArray(ClassStudents.studentID, studentsToRemove)
               )
             );
+
+          // Xóa khỏi Results
+          await db
+            .delete(Results)
+            .where(inArray(Results.studentID, studentsToRemove));
         }
 
         // Add new students to the class
@@ -337,21 +358,37 @@ expressRouter.post('/edit', async (req, res) => {
             studentID: studentID,
           }));
           await db.insert(ClassStudents).values(newClassStudentsData);
+
+          // Thêm vào Results với giá trị mặc định
+          const newResultsData = studentsToAdd.map((studentID) => ({
+            studentID,
+            MT: 0,
+            FT: 0,
+            score: 0,
+            status: 'failed',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          }));
+          await db.insert(Results).values(newResultsData);
         }
 
         // **🔥 Cập nhật ATTENDANCE cho ngày hiện tại nếu chưa có**
         const today = new Date();
         today.setHours(0, 0, 0, 0); // Đặt thời gian về 00:00:00
 
-        const todayString = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().split('T')[0];
+        const todayString = new Date(
+          today.getTime() - today.getTimezoneOffset() * 60000
+        )
+          .toISOString()
+          .split('T')[0];
         for (const studentID of studentIDs) {
           const existingAttendance = await db
             .select()
             .from(Attendances)
             .where(
               and(
-          eq(Attendances.studentID, studentID),
-          sql`DATE(${Attendances.checkInTime}) = ${todayString}`
+                eq(Attendances.studentID, studentID),
+                sql`DATE(${Attendances.checkInTime}) = ${todayString}`
               )
             );
 
@@ -363,7 +400,7 @@ expressRouter.post('/edit', async (req, res) => {
               checkInTime: new Date(todayString),
               createdAt: new Date(),
             });
-          } 
+          }
         }
       } else {
         res.status(400).send('Students must be an array');

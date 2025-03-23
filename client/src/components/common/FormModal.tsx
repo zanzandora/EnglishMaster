@@ -68,7 +68,14 @@ const forms: {
   exam: (type, data, _, onSuccess, setOpen) => (
     <ExamForm type={type} data={data} onSuccess={onSuccess} setOpen={setOpen} />
   ),
-  result: (type, data) => <ResultForm type={type} data={data} />,
+  result: (type, data, _, onSuccess, setOpen) => (
+    <ResultForm
+      type={type}
+      data={data}
+      onSuccess={onSuccess}
+      setOpen={setOpen}
+    />
+  ),
   schedule: (type, data, _, onSuccess, setOpen) => (
     <ScheduleForm
       type={type}

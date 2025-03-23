@@ -3,6 +3,8 @@ import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
 import { role } from '@mockData/mockData';
+import { decodeToken } from '@utils/decodeToken ';
+import { useAuth } from 'hooks/useAuth';
 import useFetchcourses from 'hooks/useFetchCourses';
 import usePagination from 'hooks/usePagination';
 import { useState } from 'react';
@@ -38,6 +40,11 @@ const columns = (t: any) => [
 
 const SubjectListPage = () => {
   const { t } = useTranslation();
+
+  const { token } = useAuth();
+  const decodedToken = decodeToken(token);
+  const role = decodedToken?.role;
+
   const [reloadTrigger, setReloadTrigger] = useState(0); // Triggers a re-render when data is updated
   const { courses, loading, error } = useFetchcourses(reloadTrigger);
 

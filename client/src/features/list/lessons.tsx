@@ -1,11 +1,12 @@
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import { role, mockLessons } from '@mockData/mockData';
 import FormModal from '@components/common/FormModal';
 import { useTranslation } from 'react-i18next';
 import usePagination from 'hooks/usePagination';
 import { useEffect, useState } from 'react';
+import { useAuth } from 'hooks/useAuth';
+import { decodeToken } from '@utils/decodeToken ';
 
 const columns = (t: any) => [
   {
@@ -29,6 +30,10 @@ const columns = (t: any) => [
 
 const LessonListPage = () => {
   const { t } = useTranslation();
+
+  const { token } = useAuth();
+  const decodedToken = decodeToken(token);
+  const role = decodedToken?.role;
 
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -87,16 +92,12 @@ const LessonListPage = () => {
 
         <td>
           <div className='flex items-center gap-2'>
-            {role === 'admin' && (
-              <>
-                <FormModal
-                  table='lesson'
-                  type='delete'
-                  id={item.id}
-                  onSuccess={handleSuccess}
-                />
-              </>
-            )}
+            <FormModal
+              table='lesson'
+              type='delete'
+              id={item.id}
+              onSuccess={handleSuccess}
+            />
           </div>
         </td>
       </tr>
@@ -119,13 +120,8 @@ const LessonListPage = () => {
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/sort.png' alt='' width={14} height={14} />
             </button>
-            {role === 'admin' && (
-              <FormModal
-                table='lesson'
-                type='create'
-                onSuccess={handleSuccess}
-              />
-            )}
+
+            <FormModal table='lesson' type='create' onSuccess={handleSuccess} />
           </div>
         </div>
       </div>
