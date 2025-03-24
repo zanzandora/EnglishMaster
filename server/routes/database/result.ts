@@ -15,8 +15,7 @@ const expressRouter = Router();
 expressRouter.get('/list', async (req, res) => {
   const { teacherID } = req.query;
   try {
-    const teacherId = await getTeacherIdByUserId(Number(teacherID));
-    let allResults =  db
+    let allResults = db
       .select({
         id: Results.id,
         student: {
@@ -38,11 +37,13 @@ expressRouter.get('/list', async (req, res) => {
       .innerJoin(Students, eq(Results.studentID, Students.id))
       .innerJoin(ClassStudents, eq(Results.studentID, ClassStudents.studentID))
       .innerJoin(Classes, eq(ClassStudents.classID, Classes.id));
-      
-      if (teacherID) {
-        allResults = allResults.where(eq(Classes.teacherID, Number(teacherId)));
-      }
-      const results = await allResults;
+
+    if (teacherID) {
+      const teacherId = await getTeacherIdByUserId(Number(teacherID));
+
+      allResults = allResults.where(eq(Classes.teacherID, Number(teacherId)));
+    }
+    const results = await allResults;
     res.send(results);
   } catch (err) {
     res.status(500).send(err.toString());

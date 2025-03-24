@@ -1,7 +1,6 @@
 import Announcements from '@components/admin/Announcements';
 import { useState, useMemo, useEffect } from 'react';
 import FormModal from '@components/common/FormModal';
-import { role } from '@mockData/data';
 import { View, dateFnsLocalizer } from 'react-big-calendar';
 import { Link, useParams } from 'react-router-dom';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
@@ -9,6 +8,8 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import BigCalendar from '@components/common/calendar/BigCalendar';
 import { ExtendedEvent, Student } from '@interfaces';
 import useFetchSchedules from 'hooks/useFetchSchedules';
+import { useAuth } from 'hooks/useAuth';
+import { decodeToken } from '@utils/decodeToken ';
 
 const locales = {
   'en-US': import('date-fns/locale/en-US'),
@@ -67,6 +68,10 @@ const generateRecurringEvents = (schedule: any): ExtendedEvent[] => {
 const SingleStudentPage = () => {
   const { id } = useParams();
   const [reloadTrigger, setReloadTrigger] = useState(0);
+
+  const { token } = useAuth();
+  const decodedToken = decodeToken(token);
+  const role = decodedToken?.role;
 
   const [student, setStudent] = useState<Student | null>(null);
   const [studentClass, setStudentClass] = useState<any>(null);

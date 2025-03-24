@@ -2,7 +2,6 @@ import FormModal from '@components/common/FormModal';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import { role } from '@mockData/mockData';
 import { decodeToken } from '@utils/decodeToken ';
 import ErrorPage from 'features/error/error';
 import { useAuth } from 'hooks/useAuth';
@@ -11,7 +10,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
-const columns = (t: any) => [
+const columns = (t: any, role?: string) => [
   {
     header: 'Title',
     accessor: 'title',
@@ -34,10 +33,14 @@ const columns = (t: any) => [
     className: 'hidden md:table-cell',
   },
 
-  {
-    header: t('table.exams.header.actions'),
-    accessor: 'action',
-  },
+  ...(role === 'admin'
+    ? [
+        {
+          header: t('table.results.header.actions'),
+          accessor: 'action',
+        },
+      ]
+    : []),
 ];
 
 const ExamListPage = () => {
@@ -162,17 +165,21 @@ const ExamListPage = () => {
         </div>
       </div>
       {/* LIST */}
+      {currentData.length === 0 ? (
+        <div className='text-center py-6 text-gray-500'>no exam found</div>
+      ) : (
+        <Table
+          columns={columns(t, role)}
+          renderRow={renderRow}
+          data={currentData}
+        />
+      )}
       {totalPages > 1 && (
         <Pagination
           totalPages={totalPages}
           currentPage={currentPage}
           onPageChange={setCurrentPage}
         />
-      )}
-      {currentData.length === 0 ? (
-        <div className='text-center py-6 text-gray-500'>no exam found</div>
-      ) : (
-        <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
       )}
     </div>
   );

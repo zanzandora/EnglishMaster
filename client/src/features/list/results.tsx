@@ -97,7 +97,7 @@ const ResultListPage = () => {
           }))
         );
       } catch (error) {
-        setError(error);
+        setError(error.message);
       } finally {
         setLoading(false);
       }

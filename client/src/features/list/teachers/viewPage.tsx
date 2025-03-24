@@ -1,7 +1,6 @@
 import Announcements from '@components/admin/Announcements';
 import { useState, useMemo, useEffect } from 'react';
 import FormModal from '@components/common/FormModal';
-import { role } from '@mockData/data';
 import { View, dateFnsLocalizer } from 'react-big-calendar';
 import { Link, useParams } from 'react-router-dom';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
@@ -11,6 +10,9 @@ import 'react-tooltip/dist/react-tooltip.css';
 import { Tooltip } from 'react-tooltip';
 import { ExtendedEvent, Teacher } from '@interfaces';
 import useFetchSchedules from 'hooks/useFetchSchedules';
+import { decodeToken } from '@utils/decodeToken ';
+import { useAuth } from 'hooks/useAuth';
+import { formatDate } from '@utils/dateUtils';
 const locales = {
   'en-US': import('date-fns/locale/en-US'),
 };
@@ -68,6 +70,10 @@ const generateRecurringEvents = (schedule: any): ExtendedEvent[] => {
 const SingleTeacherPage = () => {
   const { userID } = useParams();
   const [reloadTrigger, setReloadTrigger] = useState(0);
+
+  const { token } = useAuth();
+  const decodedToken = decodeToken(token);
+  const role = decodedToken?.role;
 
   const [view, setView] = useState<View>('week');
   const [teacherClass, setTeacherClass] = useState<string>('null');
@@ -133,9 +139,11 @@ const SingleTeacherPage = () => {
     };
 
     fetchTeacher();
-  }, [userID]);
+  }, [userID, reloadTrigger]);
 
-  console.log(teacherClass);
+  const handleSuccess = () => {
+    setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa
+  };
 
   // *Khi schedules thay đổi, tạo các event bằng cách "flatMap" qua generateRecurringEvents
   useEffect(() => {
@@ -179,18 +187,19 @@ const SingleTeacherPage = () => {
                     table='teacher'
                     type='update'
                     data={{
-                      id: teacher.id,
                       username: teacher.username,
+                      password: teacher.password,
                       email: teacher.email,
-                      fullName: teacher.name,
-                      phone: teacher.phoneNumber,
+                      name: teacher.name,
+                      phoneNumber: teacher.phoneNumber,
                       address: teacher.address,
-                      dateOfBirth: teacher.dateOfBirth,
+                      dateOfBirth: formatDate(teacher.dateOfBirth),
                       gender: teacher.gender,
-                      img: teacher.photo,
+                      photo: teacher.photo,
                       experience: teacher.experience,
                       specialization: teacher.specialization,
                     }}
+                    onSuccess={handleSuccess}
                   />
                 )}
               </div>

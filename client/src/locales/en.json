@@ -251,7 +251,8 @@
       "result": "result",
       "attendance": "attendance",
       "event": "event",
-      "announcement": "announcement"
+      "announcement": "announcement",
+      "schedule": "schedule"
     },
     "sections": {
       "personalInformation": "Personal Information",
@@ -286,7 +287,9 @@
       "phone": "Phone",
       "address": "Address",
       "birthday": "Birthday",
-      "sex": "Sex"
+      "sex": "Sex",
+      "specialization": "Specialization",
+      "experience": "Experience"
     },
     "event": {
       "titleAdd":"Create a new Schedule",

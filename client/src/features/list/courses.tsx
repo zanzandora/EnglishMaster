@@ -2,7 +2,6 @@ import FormModal from '@components/common/FormModal';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import { role } from '@mockData/mockData';
 import { decodeToken } from '@utils/decodeToken ';
 import { useAuth } from 'hooks/useAuth';
 import useFetchcourses from 'hooks/useFetchCourses';

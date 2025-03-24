@@ -3,7 +3,7 @@ import { Classes } from './class'
 
 export const Exams = mysqlTable('exams', {
   id: int().autoincrement().primaryKey(),
-  classID: int().references(() => Classes.id).notNull(),
+  classID: int().references(() => Classes.id, ({onDelete: 'cascade'})).notNull(),
   title: varchar({ length: 255 }).notNull(),
   file_url: varchar({ length: 255 }).notNull(),
   file_type: varchar({ length: 255 }).notNull(),

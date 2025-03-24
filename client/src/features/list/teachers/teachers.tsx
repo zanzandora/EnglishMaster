@@ -2,12 +2,13 @@ import FormModal from '@components/common/FormModal';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import { role } from '@mockData/mockData';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import usePagination from 'hooks/usePagination';
 import { useState } from 'react';
 import useFetchTeachers from 'hooks/useFetchTeachers';
+import { useAuth } from 'hooks/useAuth';
+import { decodeToken } from '@utils/decodeToken ';
 
 const columns = (t: any) => [
   {
@@ -42,6 +43,11 @@ const columns = (t: any) => [
 
 const TeacherListPage = () => {
   const { t } = useTranslation();
+
+  const { token } = useAuth();
+  const decodedToken = decodeToken(token);
+  const role = decodedToken?.role;
+
   const [reloadTrigger, setReloadTrigger] = useState(0); // Triggers a re-render when data is updated
   const { teachers, loading, error } = useFetchTeachers(reloadTrigger);
 

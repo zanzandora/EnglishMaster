@@ -247,7 +247,9 @@
       "result": "kết quả",
       "attendance": "điểm danh",
       "event": "sự kiện",
-      "announcement": "thông báo"
+      "announcement": "thông báo",
+      "schedule": "Lịch học"
+
     },
     "sections": {
       "personalInformation": "Thông tin cá nhân",
@@ -282,7 +284,9 @@
       "phone": "Điện thoại",
       "address": "Địa chỉ",
       "birthday": "Ngày sinh",
-      "sex": "Giới tính"
+      "sex": "Giới tính",
+      "specialization": "Chuyên môn",
+      "experience": "Kinh nghiệm"
     },
     "events": {
       "titleAdd":"Thêm lịch",

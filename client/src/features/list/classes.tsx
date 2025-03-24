@@ -163,17 +163,17 @@ const ClassListPage = () => {
         </div>
       </div>
       {/* PAGINATION */}
+      {currentData.length === 0 ? (
+        <div className='text-center py-6 text-gray-500'>no class found</div>
+      ) : (
+        <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
+      )}
       {totalPages > 1 && (
         <Pagination
           totalPages={totalPages}
           currentPage={currentPage}
           onPageChange={setCurrentPage}
         />
-      )}
-      {currentData.length === 0 ? (
-        <div className='text-center py-6 text-gray-500'>no class found</div>
-      ) : (
-        <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
       )}
     </div>
   );

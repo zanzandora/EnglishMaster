@@ -1,7 +1,5 @@
 import Announcements from '@components/admin/Announcements';
 import { useState, useMemo, useEffect } from 'react';
-import FormModal from '@components/common/FormModal';
-import { role } from '@mockData/data';
 import { View, dateFnsLocalizer } from 'react-big-calendar';
 import { Link } from 'react-router-dom';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
@@ -14,6 +12,7 @@ import useFetchSchedules from 'hooks/useFetchSchedules';
 import { decodeToken } from '@utils/decodeToken ';
 import { useAuth } from 'hooks/useAuth';
 import { formatDate } from '@utils/dateUtils';
+import FormModal from '@components/common/FormModal';
 
 const locales = {
   'en-US': import('date-fns/locale/en-US'),
@@ -114,6 +113,7 @@ const SingleTeacherPage = () => {
 
   const decoded = decodeToken(token);
   const userID = decoded?.user_id;
+  const role = decoded?.role;
 
   const filteredEvents = useMemo(() => {
     return normalizedEvents.filter((event) =>
@@ -140,7 +140,7 @@ const SingleTeacherPage = () => {
     };
 
     fetchTeacher();
-  }, [userID]);
+  }, [userID, reloadTrigger]);
 
   console.log(teacherClass);
 
@@ -181,22 +181,29 @@ const SingleTeacherPage = () => {
             <div className='w-2/3 flex flex-col justify-between gap-4'>
               <div className='flex items-center gap-4'>
                 <h1 className='text-xl font-semibold'>{teacher.name}</h1>
-                {role === 'admin' && (
+                {role === 'teacher' && (
                   <FormModal
                     table='teacher'
                     type='update'
                     data={{
-                      id: teacher.id,
+                      userID: teacher.userID,
                       username: teacher.username,
+                      password: teacher.password,
                       email: teacher.email,
                       name: teacher.name,
                       phoneNumber: teacher.phoneNumber,
                       address: teacher.address,
-                      dateOfBirth: format(teacher.dateOfBirth, 'yyyy-MM-dd'),
+                      dateOfBirth: formatDate(
+                        teacher.dateOfBirth,
+                        'yyyy-MM-dd'
+                      ),
                       gender: teacher.gender,
                       photo: teacher.photo,
                       experience: teacher.experience,
                       specialization: teacher.specialization,
+                    }}
+                    onSuccess={() => {
+                      setReloadTrigger((prev) => prev + 1);
                     }}
                   />
                 )}

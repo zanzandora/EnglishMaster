@@ -54,7 +54,7 @@ const LessonListPage = () => {
         const data = await response.json();
         setLessons(data);
       } catch (error) {
-        setError(error);
+        setError(error.message);
       } finally {
         setLoading(false);
       }
