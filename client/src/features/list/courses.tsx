@@ -147,14 +147,14 @@ const SubjectListPage = () => {
           </div>
         </div>
       </div>
+      {/* LIST */}
+      <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
       {/* PAGINATION */}
       <Pagination
         totalPages={totalPages}
         currentPage={currentPage}
         onPageChange={setCurrentPage}
       />
-      {/* LIST */}
-      <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
     </div>
   );
 };

@@ -189,8 +189,8 @@
       }
     },
     "reports":{
-      "learning":{
-        "label": "Học tập",
+      "student":{
+        "label": "Học Viên",
         "id":"Mã học viên",
         "name":"Tên học viên",
         "progress":"Tiến trình",

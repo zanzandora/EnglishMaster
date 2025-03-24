@@ -193,8 +193,8 @@
       }
     },
     "reports": {
-      "learning": {
-        "label": "Learning",
+      "student": {
+        "label": "Student",
         "id": "Student ID",
         "name": "Student Name",
         "progress": "Progress",

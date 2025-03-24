@@ -42,6 +42,7 @@ app.use('/class', authenticateToken, (await import('./routes/database/class')).r
 app.use('/exam', authenticateToken, (await import('./routes/database/exam')).router)
 app.use('/lesson', authenticateToken, (await import('./routes/database/lesson')).router)
 app.use('/result', authenticateToken, (await import('./routes/database/result')).router)
+app.use('/report', authenticateToken, (await import('./routes/database/report')).router)
 
 app.use('*all', async (req, res, next) => {
   if (req.originalUrl.startsWith('/login')) return next()

@@ -3,95 +3,126 @@ import DatePicker from 'react-datepicker';
 import { useTranslation } from 'react-i18next';
 import Table from '@components/common/table/Table';
 import Pagination from '@components/common/Pagination';
+import useFetchreports from 'hooks/useFetchReports';
+import usePagination from 'hooks/usePagination';
+import { formatDate } from '@utils/dateUtils';
+import TableSearch from '@components/common/table/TableSearch';
+import { useFetchClassesOptions } from 'hooks/useFetchOptions';
 
-type ReportData = {
-  learning: { id: number; name: string; progress: string; score: string }[];
-  teacher: { id: number; name: string; rating: string }[];
-  course: {
-    id: number;
-    name: string;
-    completion: string;
-    students: number;
-  }[];
-  finance: { id: number; category: string; amount: string }[];
-};
-
-const data: ReportData = {
-  learning: [
-    { id: 1, name: 'Nguyễn Văn A', progress: '80%', score: '85/100' },
-    { id: 2, name: 'Trần Thị B', progress: '60%', score: '70/100' },
-    { id: 3, name: 'Trần Thị B', progress: '60%', score: '70/100' },
-    { id: 4, name: 'Trần Thị B', progress: '60%', score: '70/100' },
-    { id: 5, name: 'Trần Thị B', progress: '60%', score: '70/100' },
-  ],
-  teacher: [
-    { id: 1, name: 'GV. Lê Văn C', rating: '4.8' },
-    { id: 2, name: 'GV. Phạm Văn D', rating: '4.5 ' },
+const columns = {
+  student: [
+    { header: 'STT', accessor: 'stt' },
+    { header: 'Student Name', accessor: 'studentName' },
+    { header: 'Student ID', accessor: 'studentID' },
+    { header: 'Birth', accessor: 'dateOfBirth' },
+    { header: 'Class', accessor: 'className' },
+    { header: 'Middle Score (MT)', accessor: 'MT' },
+    { header: 'Final Score (FT)', accessor: 'FT' },
+    { header: 'Total Score', accessor: 'totalScore' },
+    { header: 'GPA', accessor: 'GPA' },
+    { header: 'Status', accessor: 'status' },
+    { header: 'Attended', accessor: 'totalCheckins' },
+    { header: 'Absences', accessor: 'totalAbsences' },
   ],
   course: [
-    { id: 1, name: 'Tiếng Anh Cơ Bản', completion: '75%', students: 30 },
-    { id: 2, name: 'Tiếng Anh Giao Tiếp', completion: '85%', students: 25 },
-  ],
-  finance: [
-    { id: 1, category: 'Học phí', amount: '10,000,000 VND' },
-    { id: 2, category: 'Chi phí vận hành', amount: '3,500,000 VND' },
+    { header: 'STT', accessor: 'stt' },
+    { header: 'Course Name', accessor: 'courseName' },
+    { header: 'Classes', accessor: 'className' },
+    { header: 'Teachers', accessor: 'teacherName' },
+    { header: 'Students', accessor: 'studentCount' },
   ],
 };
 
 const ReportPage = () => {
   const { t } = useTranslation();
-  const [selectedReport, setSelectedReport] =
-    useState<keyof ReportData>('learning');
-
-  const columns = Object.keys(data[selectedReport][0] || {}).map((key) => ({
-    header: t(`table.reports.${selectedReport}.${key}`),
-    accessor: key,
-    className: 'p-2 border-b',
-  }));
-
-  const [startDate, setStartDate] = useState(() => {
-    const date = new Date();
-    date.setDate(date.getDate() - 3);
-    return date;
-  });
+  const [selectedReport, setSelectedReport] = useState('student');
+  const [selectedClass, setSelectedClass] = useState<string | undefined>('');
+  const { reports, loading, error } = useFetchreports(
+    0,
+    selectedReport,
+    selectedClass
+  );
+  const { classOptions } = useFetchClassesOptions();
+  const [startDate, setStartDate] = useState(
+    () => new Date(new Date().setDate(new Date().getDate() - 3))
+  );
   const [endDate, setEndDate] = useState(new Date());
 
-  const reports = [
-    { key: 'learning', label: 'Learning' },
-    { key: 'teacher', label: 'Teacher' },
+  const { currentData, currentPage, totalPages, setCurrentPage } =
+    usePagination(reports, 10);
+
+  const reportsList = [
+    { key: 'student', label: 'Student' },
     { key: 'course', label: 'Course' },
-    { key: 'finance', label: 'Finance' },
   ];
 
-  const renderRow = (item: unknown) => {
-    const reportItem = item as (typeof data)[typeof selectedReport][0];
+  // Hàm render chung cho Student và Course
+  const renderRow = (item: any, index: number, selectedReport: string) => {
+    if (selectedReport === 'student') {
+      return (
+        <tr
+          key={item.studentID}
+          className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
+        >
+          <td className='p-4'>{(currentPage - 1) * 10 + index + 1}</td>
+          <td className='p-4'>{item.student?.studentName}</td>
+          <td className='p-4'>{item.student?.studentID}</td>
+          <td className=''>
+            {formatDate(item.student?.dateOfBirth, 'yyyy-MM-dd')}
+          </td>
+          <td className='p-2'>
+            {item.class?.className || 'No class assigned'}
+          </td>
+          <td className='p-4'>{item.score?.MT || 0}/100</td>
+          <td className='p-4'>{item.score?.FT || 0}/100</td>
+          <td className='p-4'>{item.score?.totalScore || 0}/100</td>
+          <td className='p-2'>{getScoreGrade(item.score?.totalScore)}</td>
+          <td className='p-2'>{item.score?.status || '-'}</td>
+          <td className='p-4'>{item.attendance?.totalCheckins}</td>
+          <td className='p-4'>{item.attendance?.totalAbsences}</td>
+        </tr>
+      );
+    }
+
     return (
       <tr
-        key={reportItem.id}
-        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
+        key={index}
+        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavender_fade'
       >
-        {Object.keys(reportItem).map((key) => (
-          <td key={key} className='p-4'>
-            {reportItem[key as keyof typeof reportItem]}
-          </td>
-        ))}
+        <td className='p-4'>{(currentPage - 1) * 10 + index + 1}</td>
+        <td className='p-4'>{item.course?.courseName || 'Dont have course'}</td>
+        <td className='p-4'>{item.stats?.classNames || 'No class assigned'}</td>
+        <td className='p-4'>
+          {item.stats?.teacherNames || 'No teacher assigned'}
+        </td>
+        <td className='p-4'>{item.stats?.totalStudents || '-'}</td>
       </tr>
     );
   };
 
+  // Hàm tính điểm xếp hạng
+  const getScoreGrade = (score: number) => {
+    if (score >= 95) return 'Outstanding';
+    if (score >= 80) return 'Excellent';
+    if (score >= 60) return 'Good';
+    return 'Average';
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+
   return (
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0'>
-      {/* Thanh điều hướng báo cáo */}
       <div className='flex gap-4 mb-5'>
-        {reports.map((report) => (
+        {reportsList.map((report) => (
           <button
             key={report.key}
             className={`px-4 py-2 rounded flex grow text-center justify-center ${
               selectedReport === report.key
-                ? 'bg-primary-redLight_fade font-bold text-orange-900 shadow-[0_1px_3px_rgba(0,0,0,0.5)] active:shadow-[0_0px_1px_rgba(0,0,0,0.5)] active:scale-[0.995]'
-                : 'bg-calendar-toolBar-btn text-sky-800 font-bold hover:opacity-80 shadow-[0_1px_3px_rgba(0,0,0,0.5)] active:shadow-[0_0px_1px_rgba(0,0,0,0.5)] active:scale-[0.995]'
+                ? 'bg-primary-redLight_fade font-bold text-orange-900'
+                : 'bg-calendar-toolBar-btn text-sky-800 font-bold hover:opacity-80'
             }`}
-            onClick={() => setSelectedReport(report.key as keyof ReportData)}
+            onClick={() => setSelectedReport(report.key)}
           >
             {t(`table.reports.${report.key}.label`)}
           </button>
@@ -100,14 +131,19 @@ const ReportPage = () => {
 
       {/* Bộ lọc */}
       <div className='flex gap-4 mb-5'>
-        <div className='hidden md:flex items-center gap-2 text-xs rounded-full ring-[1.5px] ring-gray-300 px-2'>
-          <img src='/search.png' alt='' width={14} height={14} />
-          <input
-            type='text'
-            placeholder='Search...'
-            className='w-[200px] p-2 bg-transparent outline-none'
-          />
-        </div>
+        <TableSearch />
+        <select
+          onChange={(event) => setSelectedClass(event.target.value)}
+          value={selectedClass}
+          className='px-4 py-2 border rounded-full ring-[1.5px] ring-gray-300'
+        >
+          <option value=''>Select Class</option>
+          {classOptions.map((classItem) => (
+            <option key={classItem.id} value={classItem.id}>
+              {classItem.name}
+            </option>
+          ))}
+        </select>
         <DatePicker
           locale={t('calendar.locale')}
           selected={startDate}
@@ -115,8 +151,7 @@ const ReportPage = () => {
           selectsStart
           startDate={startDate}
           endDate={endDate}
-          className={`transition-width duration-300 ease-in-out px-4 py-2 border rounded-full border-primary `}
-          portalId='root'
+          className='transition-width duration-300 ease-in-out px-4 py-2 border rounded-full border-primary'
         />
         <DatePicker
           locale={t('calendar.locale')}
@@ -126,19 +161,27 @@ const ReportPage = () => {
           startDate={startDate}
           endDate={endDate}
           minDate={startDate}
-          className={`transition-width duration-300 ease-in-out px-4 py-2 border rounded-full border-primary `}
-          portalId='root'
+          className='transition-width duration-300 ease-in-out px-4 py-2 border rounded-full border-primary'
         />
       </div>
 
       {/* Bảng dữ liệu */}
       <Table
-        columns={columns}
-        data={data[selectedReport]}
-        renderRow={renderRow}
+        columns={
+          selectedReport === 'student' ? columns.student : columns.course
+        }
+        data={currentData}
+        renderRow={(item, index) => renderRow(item, index, selectedReport)}
       />
+
       {/* Phân trang */}
-      <Pagination />
+      {totalPages > 1 && (
+        <Pagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
+      )}
     </div>
   );
 };
