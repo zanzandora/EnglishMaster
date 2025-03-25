@@ -10,3 +10,4 @@ export { Lessons } from "./lesson"
 export { Exams } from './exam'
 export { Results } from './result'
 export { CourseTeachers } from './courseTeachers'
+export { Notifications } from './notifications'
