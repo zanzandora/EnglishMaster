@@ -149,7 +149,9 @@ expressRouter.post('/add', async (req, res) => {
       dateOfBirth,
       gender,
       address,
-      photo
+      photo,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     })
 
     res.send('Student added')
