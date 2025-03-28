@@ -1,16 +1,12 @@
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/TableSearch';
-import { announcementsData } from '@mockData/data';
-
-type Announcement = {
-  id: number;
-  title: string;
-  class: string;
-  date: string;
-};
+import { useAuth } from 'hooks/useAuth';
+import { decodeToken } from '@utils/decodeToken ';
+import usePagination from 'hooks/usePagination';
+import { useEffect, useState } from 'react';
+import { formatDate } from '@utils/dateUtils';
 
 const columns = (t: any) => [
   {
@@ -18,8 +14,8 @@ const columns = (t: any) => [
     accessor: 'title',
   },
   {
-    header: t('table.announcements.header.class'),
-    accessor: 'class',
+    header: 'Message',
+    accessor: 'message',
   },
   {
     header: t('table.announcements.header.date'),
@@ -27,52 +23,63 @@ const columns = (t: any) => [
     className: 'hidden md:table-cell',
   },
   {
-    header: t('table.announcements.header.actions'),
-    accessor: 'action',
+    header: 'Type',
+    accessor: 'type',
+    className: 'hidden md:table-cell',
   },
 ];
 
 const AnnouncementListPage = () => {
   const { t } = useTranslation();
-  const renderRow = (item: unknown) => {
-    const announcement = item as Announcement;
+
+  const { token } = useAuth();
+  const decodedToken = decodeToken(token);
+  const role = decodedToken?.role;
+
+  const [announcements, setAnnouncements] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const { currentData, currentPage, totalPages, setCurrentPage } =
+    usePagination(announcements, 10);
+
+  useEffect(() => {
+    const fetchLessons = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch('/notification');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setAnnouncements(data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLessons();
+  }, []);
+  const renderRow = (item: any) => {
     return (
       <tr
-        key={announcement.id}
+        key={item.id}
         className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
-        <td className='flex items-center gap-4 p-4'>{announcement.title}</td>
-        <td>{announcement.class}</td>
-        <td className='hidden md:table-cell'>{announcement.date}</td>
-        <td>
-          <div className='flex items-center gap-2'>
-            <Link to={`/list/teachers/${announcement.id}`}>
-              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgEditIcon'>
-                <img
-                  src='/update.png'
-                  alt=''
-                  width={16}
-                  height={16}
-                  className='w-8/12'
-                />
-              </button>
-            </Link>
-            <Link to={`/list/teachers/${announcement.id}`}>
-              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgDeleteIcon'>
-                <img
-                  src='/delete.png'
-                  alt=''
-                  width={16}
-                  height={16}
-                  className='w-8/12'
-                />
-              </button>
-            </Link>
-          </div>
+        <td className='flex items-center gap-4 p-4'>{item.title}</td>
+        <td>{item.message}</td>
+        <td className='hidden md:table-cell'>
+          {formatDate(item.createdAt, 'yyyy-MM-dd HH:MM:SS')}
         </td>
+        <td>{item.relatedEntityType}</td>
       </tr>
     );
   };
+
+  if (loading) return <p>Đang tải dữ liệu...</p>;
+  if (error) return <p>Lỗi: {error}</p>;
 
   return (
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0'>
@@ -98,13 +105,13 @@ const AnnouncementListPage = () => {
         </div>
       </div>
       {/* LIST */}
-      <Table
-        columns={columns(t)}
-        renderRow={renderRow}
-        data={announcementsData}
-      />
+      <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
       {/* PAGINATION */}
-      <Pagination />
+      <Pagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };

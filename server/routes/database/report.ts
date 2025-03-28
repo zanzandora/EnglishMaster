@@ -17,13 +17,68 @@ import { getTeacherIdByUserId } from '../../helper/getTeacherID';
 const expressRouter = Router();
 
 expressRouter.get('/list', async (req, res) => {
-  const { options, classID } = req.query; // Lấy tham số query từ request
+  const { user_id, role } = req.user;
+  const { options, classID } = req.query;
+
+  const teacherID = await getTeacherIdByUserId(Number(user_id));
 
   try {
     let allReports;
 
-    // Logic để chọn loại báo cáo
-    if (options === 'student') {
+    if (role === 'teacher') {
+      // Nếu là admin, trả về tất cả học viên từ tất cả giáo viên
+      if (options === 'student') {
+        allReports = db
+          .select({
+            student: {
+              studentID: ClassStudents.studentID,
+              studentName: Students.name,
+              dateOfBirth: Students.dateOfBirth,
+              email: Students.email,
+            },
+            class: {
+              classID: Classes.id,
+              className: Classes.name,
+            },
+            score: {
+              totalScore: Results.score,
+              MT: Results.MT,
+              FT: Results.FT,
+              status: Results.status,
+            },
+            attendance: {
+              totalCheckins:
+                sql`COALESCE(COUNT(${Attendances.studentID}), 0)`.as(
+                  'totalCheckins'
+                ),
+              totalAbsences:
+                sql`COALESCE(SUM(CASE WHEN ${Attendances.status} = false THEN 1 ELSE 0 END), 0)`.as(
+                  'totalAbsences'
+                ),
+            },
+          })
+          .from(ClassStudents)
+          .innerJoin(Students, eq(ClassStudents.studentID, Students.id))
+          .innerJoin(Classes, eq(ClassStudents.classID, Classes.id))
+          .innerJoin(Results, eq(ClassStudents.studentID, Results.studentID))
+          .leftJoin(
+            Attendances,
+            eq(ClassStudents.studentID, Attendances.studentID)
+          )
+          .where(eq(Classes.teacherID, Number(teacherID)))
+
+          .groupBy(
+            ClassStudents.studentID,
+            ClassStudents.classID,
+            Students.name,
+            Students.dateOfBirth,
+            Students.email,
+            Classes.id,
+            Classes.name
+          )
+          .orderBy(asc(ClassStudents.studentID));
+      }
+    } else if (options === 'student') {
       allReports = db
         .select({
           student: {
@@ -103,7 +158,7 @@ expressRouter.get('/list', async (req, res) => {
     }
 
     if (classID) {
-        allReports = allReports.where(eq(Classes.id, Number(classID)));
+      allReports = allReports.where(eq(Classes.id, Number(classID)));
     }
 
     const results = await allReports;

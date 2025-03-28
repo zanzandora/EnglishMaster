@@ -8,6 +8,8 @@ import usePagination from 'hooks/usePagination';
 import { formatDate } from '@utils/dateUtils';
 import TableSearch from '@components/common/table/TableSearch';
 import { useFetchClassesOptions } from 'hooks/useFetchOptions';
+import { useAuth } from 'hooks/useAuth';
+import { decodeToken } from '@utils/decodeToken ';
 
 const columns = {
   student: [
@@ -35,6 +37,9 @@ const columns = {
 
 const ReportPage = () => {
   const { t } = useTranslation();
+  const { token } = useAuth();
+  const decodedToken = decodeToken(token);
+  const role = decodedToken?.role;
   const [selectedReport, setSelectedReport] = useState('student');
   const [selectedClass, setSelectedClass] = useState<string | undefined>('');
   const { reports, loading, error } = useFetchreports(
@@ -113,21 +118,25 @@ const ReportPage = () => {
 
   return (
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0'>
-      <div className='flex gap-4 mb-5'>
-        {reportsList.map((report) => (
-          <button
-            key={report.key}
-            className={`px-4 py-2 rounded flex grow text-center justify-center ${
-              selectedReport === report.key
-                ? 'bg-primary-redLight_fade font-bold text-orange-900'
-                : 'bg-calendar-toolBar-btn text-sky-800 font-bold hover:opacity-80'
-            }`}
-            onClick={() => setSelectedReport(report.key)}
-          >
-            {t(`table.reports.${report.key}.label`)}
-          </button>
-        ))}
-      </div>
+      {role === 'admin' && (
+        <>
+          <div className='flex gap-4 mb-5'>
+            {reportsList.map((report) => (
+              <button
+                key={report.key}
+                className={`px-4 py-2 rounded flex grow text-center justify-center ${
+                  selectedReport === report.key
+                    ? 'bg-primary-redLight_fade font-bold text-orange-900'
+                    : 'bg-calendar-toolBar-btn text-sky-800 font-bold hover:opacity-80'
+                }`}
+                onClick={() => setSelectedReport(report.key)}
+              >
+                {t(`table.reports.${report.key}.label`)}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Bộ lọc */}
       <div className='flex gap-4 mb-5'>

@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from 'hooks/useAuth';
 import { decodeToken } from '@utils/decodeToken ';
 import { formatDate } from '@utils/dateUtils';
+import DownloadCertificate from '@components/common/DownloadCertificate';
 
 const columns = (t: any, role?: string) => [
   {
@@ -49,14 +50,22 @@ const columns = (t: any, role?: string) => [
     accessor: 'status',
     className: 'hidden md:table-cell',
   },
-  ...(role === 'teacher'
-    ? [
-        {
-          header: t('table.results.header.actions'),
-          accessor: 'action',
-        },
-      ]
-    : []),
+  // ...(role === 'teacher'
+  //   ? [
+  //       {
+  //         header: t('table.results.header.actions'),
+  //         accessor: 'action',
+  //       },
+  //     ]
+  //   : []),
+  {
+    header: 'Dowload Certificate',
+    accessor: 'certificate',
+  },
+  {
+    header: t('table.results.header.actions'),
+    accessor: 'action',
+  },
 ];
 
 const ResultListPage = () => {
@@ -146,9 +155,18 @@ const ResultListPage = () => {
         <td className='hidden md:table-cell'>
           {item.MT > 0 && item.FT > 0 ? item.status : ' '}
         </td>
+        <td className='p-4 pl-14'>
+          {item.status === 'passed' && (
+            <DownloadCertificate
+              studentName={item.student.studentName}
+              courseName={item.courseName}
+              dateToGive={item.updatedAt}
+            />
+          )}
+        </td>
         <td>
           <div className='flex items-center gap-2'>
-            {role === 'teacher' && (
+            {role === 'admin' && (
               <>
                 <FormModal
                   table='result'
@@ -173,20 +191,18 @@ const ResultListPage = () => {
         </h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
           <TableSearch />
-          {role === 'admin' && (
-            <select
-              value={selectedClass}
-              onChange={(e) => setSelectedClass(e.target.value)}
-              className='p-2 border rounded-md bg-white'
-            >
-              <option value='All'>All Classes</option>
-              {uniqueClasses.map((className, index) => (
-                <option key={index} value={className}>
-                  {className}
-                </option>
-              ))}
-            </select>
-          )}
+          <select
+            value={selectedClass}
+            onChange={(e) => setSelectedClass(e.target.value)}
+            className='p-2 border rounded-md bg-white'
+          >
+            <option value='All'>All Classes</option>
+            {uniqueClasses.map((className, index) => (
+              <option key={index} value={className}>
+                {className}
+              </option>
+            ))}
+          </select>
           <div className='flex items-center gap-4 self-end'>
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/filter.png' alt='' width={14} height={14} />

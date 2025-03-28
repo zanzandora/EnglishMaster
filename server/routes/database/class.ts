@@ -96,14 +96,27 @@ expressRouter.get('/list', async (req, res) => {
 });
 
 expressRouter.get('/options', async (req, res) => {
+  const {user_id,role} = req.user;
+  const teacherID = await getTeacherIdByUserId(Number(user_id));
+
   try {
-    const classOptions = await db
+    let classOptions
+    if (role === 'teacher') {
+     classOptions = await db
+      .select({
+        id: Classes.id,
+        name: Classes.name,
+      })
+      .from(Classes)
+      .where(eq(Classes.teacherID, teacherID));
+    } else {
+       classOptions = await db
       .select({
         id: Classes.id,
         name: Classes.name,
       })
       .from(Classes);
-
+    }
     res.send(classOptions);
   } catch (err) {
     res.status(500).send(err.toString());

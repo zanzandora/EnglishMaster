@@ -85,12 +85,12 @@ const getMenuItems = (t: any, role: string) => [
         href: `${basePath[role]}/list/reports`,
         visible: ['admin', 'teacher', 'student'],
       },
-      // {
-      //   icon: '/announcement.png',
-      //   label: t('menu.announcements'),
-      //   href: `${basePath[role]}/list/announcements`,
-      //   visible: ['admin', 'teacher', 'student', 'parent'],
-      // },
+      {
+        icon: '/announcement.png',
+        label: t('menu.announcements'),
+        href: `${basePath[role]}/list/announcements`,
+        visible: ['admin', 'teacher'],
+      },
     ],
   },
 ];

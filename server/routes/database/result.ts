@@ -5,6 +5,7 @@ import { db } from '../../database/driver';
 import {
   Classes,
   ClassStudents,
+  Courses,
   Results,
   Students,
 } from '../../database/entity';
@@ -25,6 +26,7 @@ expressRouter.get('/list', async (req, res) => {
           email: Students.email,
         },
         className: Classes.name,
+        courseName: Courses.name,
         score: Results.score,
         MT: Results.MT,
         FT: Results.FT,
@@ -36,7 +38,8 @@ expressRouter.get('/list', async (req, res) => {
       .orderBy(desc(Classes.id))
       .innerJoin(Students, eq(Results.studentID, Students.id))
       .innerJoin(ClassStudents, eq(Results.studentID, ClassStudents.studentID))
-      .innerJoin(Classes, eq(ClassStudents.classID, Classes.id));
+      .innerJoin(Classes, eq(ClassStudents.classID, Classes.id))
+      .innerJoin(Courses, eq(Classes.courseID, Courses.id))
 
     if (teacherID) {
       const teacherId = await getTeacherIdByUserId(Number(teacherID));
@@ -139,6 +142,7 @@ expressRouter.post('/edit', async (req, res) => {
       FT,
       score,
       status,
+      updatedAt: new Date(),
     };
 
     // Thực hiện cập nhật

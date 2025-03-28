@@ -4,6 +4,8 @@ import 'dotenv/config'
 import fs from 'node:fs/promises'
 import express from 'express'
 import cookieParser from 'cookie-parser'
+import { createServer } from 'node:http';
+import { Server } from 'socket.io';
 
 import type { ViteDevServer } from 'vite'
 import { authenticateToken } from './routes/middleware'
@@ -16,6 +18,35 @@ app.use(express.static('./client/public'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:5173",
+    credentials: true,
+  },
+});
+
+// Kết nối WebSocket
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
+
+  // Thêm phần đăng ký room theo userID
+  socket.on('subscribe', (userId: number) => {
+    socket.join(`user_${userId}`);
+    console.log(`User ${userId} joined notification room`);
+  });
+
+    // // Listen for schedule update event
+    // socket.on('scheduleUpdated', (message) => {
+    //   console.log('Schedule updated:', message);
+    //   // Emit notification to all users (admin and teacher)
+    //   io.emit('newNotification', message);
+    // });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
 let vite: ViteDevServer
 if (!isProduction) {
   const { createServer } = await import('vite')
@@ -31,6 +62,12 @@ else {
   app.use('/', (await import('sirv')).default('./dist/client', { extensions: [] }))
 }
 
+// Middleware để gán io vào request
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
+
 app.post(['/login', '/logout', '/register', '/forgot'], (await import('./routes/login')).router)
 app.use('/student', authenticateToken, (await import('./routes/database/student')).router)
 app.use('/teacher', authenticateToken, (await import('./routes/database/teacher')).router)
@@ -43,6 +80,9 @@ app.use('/exam', authenticateToken, (await import('./routes/database/exam')).rou
 app.use('/lesson', authenticateToken, (await import('./routes/database/lesson')).router)
 app.use('/result', authenticateToken, (await import('./routes/database/result')).router)
 app.use('/report', authenticateToken, (await import('./routes/database/report')).router)
+app.use('/notification', authenticateToken, (await import('./routes/database/notification')).router)
+
+
 
 app.use('*all', async (req, res, next) => {
   if (req.originalUrl.startsWith('/login')) return next()
@@ -66,4 +106,4 @@ app.use('*all', async (req, res) => {
   }
 })
 
-app.listen(5173, () => console.log(`Server started at http://localhost:5173`))
+httpServer.listen(5173, () => console.log(`Server started at http://localhost:5173`));

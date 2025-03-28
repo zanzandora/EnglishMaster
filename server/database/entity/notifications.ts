@@ -1,4 +1,4 @@
-import {  int, text, date, boolean, mysqlTable } from 'drizzle-orm/mysql-core';
+import {  int, text, date, boolean, mysqlTable, datetime } from 'drizzle-orm/mysql-core';
 
 export const Notifications = mysqlTable('notifications', {
   id: int().autoincrement().primaryKey(),
@@ -6,7 +6,6 @@ export const Notifications = mysqlTable('notifications', {
   title: text().notNull(),
   message: text().notNull(),
   isRead: boolean().default(false),
-  createdAt: date().default(new Date()),
-  relatedEntityId: text(), // ID liên quan (vd: schedule_id)
+  createdAt: datetime().default(new Date()),
   relatedEntityType: text(), // Loại entity (vd: 'schedule')
 });

@@ -10,7 +10,7 @@ import ClassListPage from '@list/classes';
 import LessonListPage from '@list/lessons';
 import ExamListPage from '@list/exams';
 import AssignmentListPage from '@list/assignments';
-import ResultListPage from '@list/results';
+import ResultListPage from '@list/result/results';
 import ScheduleListPage from '@list/schedule/schedule';
 import AnnouncementListPage from '@list/announcements';
 import AttendanceListPage from '@list/attendances';

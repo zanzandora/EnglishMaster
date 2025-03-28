@@ -7,6 +7,7 @@ import {
   Users,
   Teachers,
   Courses,
+  Notifications,
 } from '../../database/entity';
 import { db } from '../../database/driver';
 
@@ -144,6 +145,8 @@ expressRouter.get('/by-teacher', authenticateToken, async (req, res) => {
 );
 
 expressRouter.post('/add', async (req, res) => {
+  console.log(req.io);
+  
   const {
     classID,
     type,
@@ -193,6 +196,7 @@ expressRouter.post('/add', async (req, res) => {
 });
 
 expressRouter.post('/edit', async (req, res) => {
+  const userID = req.user.user_id
   const {
     id,
     classID,
@@ -236,6 +240,45 @@ expressRouter.post('/edit', async (req, res) => {
   try {
     if (Object.keys(set).length > 0)
       await db.update(Schedule).set(set).where(eq(Schedule.id, id));
+
+    // Lấy thông tin lớp học và giáo viên
+    const classInfo = await db
+      .select()
+      .from(Classes)
+      .where(eq(Classes.id, classID))
+      .limit(1);
+
+    const teacherInfo = await db
+      .select()
+      .from(Teachers)
+      .where(eq(Teachers.id, classInfo[0].teacherID))
+      .limit(1);
+
+    const userInfo = await db
+      .select()
+      .from(Users)
+      .where(eq(Users.id, teacherInfo[0].userID))
+      .limit(1);
+
+    const teacherUserId = teacherInfo[0].userID;
+     // Emit notification to all users
+     const notificationMessage = `Lịch học của ${userInfo[0].name} đã được cập nhật! Lớp: ${classInfo[0].name}, Thời gian: ${startDate} - ${endDate}`;
+
+     req.io.emit(`send_to_${teacherUserId}`, { 
+      message: notificationMessage,
+      title: 'Your schedule has been updated !',
+      userId: userInfo[0].id, // ID của teacher
+      relatedEntityType: 'schedule',
+    });
+
+     // Store the notification in the database
+    await db.insert(Notifications).values({
+      userId: teacherUserId, // 0 for all users, you can modify this based on the user type
+      title: 'Your schedule has been updated !',
+      message: notificationMessage,
+      createdAt: new Date(),
+      relatedEntityType: 'schedule',
+    });
 
     res.send('Schedule updated');
   } catch (err) {

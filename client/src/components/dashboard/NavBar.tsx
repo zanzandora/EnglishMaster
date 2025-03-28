@@ -47,7 +47,7 @@ const Navbar = () => {
         </button>
 
         <LanguagePopover />
-        <NotificationsPopover />
+        {role === 'teacher' && <NotificationsPopover />}
 
         <div className='flex flex-col text-right'>
           <span className='text-xs font-medium'>{userName}</span>
