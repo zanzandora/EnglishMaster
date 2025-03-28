@@ -50,22 +50,18 @@ const columns = (t: any, role?: string) => [
     accessor: 'status',
     className: 'hidden md:table-cell',
   },
-  // ...(role === 'teacher'
-  //   ? [
-  //       {
-  //         header: t('table.results.header.actions'),
-  //         accessor: 'action',
-  //       },
-  //     ]
-  //   : []),
   {
     header: 'Dowload Certificate',
     accessor: 'certificate',
   },
-  {
-    header: t('table.results.header.actions'),
-    accessor: 'action',
-  },
+  ...(role === 'teacher'
+    ? [
+        {
+          header: t('table.results.header.actions'),
+          accessor: 'action',
+        },
+      ]
+    : []),
 ];
 
 const ResultListPage = () => {
@@ -155,7 +151,7 @@ const ResultListPage = () => {
         <td className='hidden md:table-cell'>
           {item.MT > 0 && item.FT > 0 ? item.status : ' '}
         </td>
-        <td className='p-4 pl-14'>
+        <td className=' pl-14'>
           {item.status === 'passed' && (
             <DownloadCertificate
               studentName={item.student.studentName}
@@ -166,7 +162,7 @@ const ResultListPage = () => {
         </td>
         <td>
           <div className='flex items-center gap-2'>
-            {role === 'admin' && (
+            {role === 'teacher' && (
               <>
                 <FormModal
                   table='result'
