@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface SearchResultSectionProps {
-  title: string;
+  title?: string;
   items: any[];
   renderItem: (item: any) => React.ReactNode;
   maxItems?: number;

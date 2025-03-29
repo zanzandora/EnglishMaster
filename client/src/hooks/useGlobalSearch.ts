@@ -1,6 +1,7 @@
 // hooks/useGlobalSearch.ts
 import { useState, useEffect } from 'react';
 import { debounce } from 'lodash';
+
 interface SearchResult {
   students: any[];
   teachers: any[];
@@ -12,6 +13,7 @@ const useGlobalSearch = () => {
   const [results, setResults] = useState<SearchResult>({ students: [], teachers: [], classes: [], courses: [] });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const search = debounce(async (query: string) => {
     if (!query.trim()) {
@@ -26,6 +28,7 @@ const useGlobalSearch = () => {
       console.log(data);
       
       setResults(data.results);
+      setSearchQuery(query);
     } catch (err) {
       setError(err.message || 'Search failed');
     } finally {
@@ -37,7 +40,7 @@ const useGlobalSearch = () => {
     return () => search.cancel();
   }, []);
 
-  return { results, loading, error, search };
+  return { results, loading, error, search, searchQuery };
 };
 
 export default useGlobalSearch;

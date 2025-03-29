@@ -1,5 +1,3 @@
-// utils/utils.ts
-
 /**
  * Hàm giải mã JWT token
  * @param token - JWT token cần giải mã

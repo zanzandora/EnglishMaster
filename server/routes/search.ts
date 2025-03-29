@@ -179,4 +179,45 @@ expressRouter.get('/global', async (req, res) => {
   }
 });
 
+expressRouter.get('/students', async (req, res) => {
+    const { q: searchQuery, page = 1, limit = 10 } = req.query;
+    const offset = (Number(page) - 1) * Number(limit);
+    
+    try {
+        if (!searchQuery || typeof searchQuery !== 'string') {
+        return res.status(400).json({ error: 'Invalid search query' });
+        }
+    
+        const searchPattern = `%${searchQuery}%`;
+    
+        const students = await db
+        .select()
+        .from(Students)
+        .where(
+            or(
+            like(Students.id, searchPattern),
+            like(Students.name, searchPattern),
+            like(Students.email, searchPattern)
+            )
+        )
+        .limit(Number(limit))
+        .offset(offset);
+    
+        res.json({
+        meta: {
+            page,
+            limit,
+            total: students.length,
+        },
+        results: students,
+        });
+    } catch (err) {
+        console.error('Student search error:', err);
+        res.status(500).json({
+        error: 'Internal server error',
+        details: process.env.NODE_ENV === 'development' ? err.message : null,
+        });
+    }
+});
+
 export const router = expressRouter;
