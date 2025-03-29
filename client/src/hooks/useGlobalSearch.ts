@@ -15,6 +15,7 @@ const useGlobalSearch = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // *debounce để tránh gọi API liên tục mỗi khi người dùng gõ phím.
   const search = debounce(async (query: string) => {
     if (!query.trim()) {
       setResults({ students: [], teachers: [], classes: [], courses: [] });
@@ -25,7 +26,6 @@ const useGlobalSearch = () => {
       setLoading(true);
       const response = await fetch(`/search/global?q=${encodeURIComponent(query)}`);
       const data = await response.json();
-      console.log(data);
       
       setResults(data.results);
       setSearchQuery(query);

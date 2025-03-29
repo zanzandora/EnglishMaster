@@ -6,7 +6,7 @@ import TableSearch from '@components/common/table/searchs/TableSearch';
 import FormModal from '@components/common/FormModal';
 import { useTranslation } from 'react-i18next';
 import usePagination from 'hooks/usePagination';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import useFetchStudents from 'hooks/useFetchStudents';
 import { decodeToken } from '@utils/decodeToken ';
 import { useAuth } from 'hooks/useAuth';
@@ -50,14 +50,32 @@ const StudentListPage = () => {
   const role = decodedToken?.role;
 
   const [reloadTrigger, setReloadTrigger] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
   const { students, loading, error } = useFetchStudents(reloadTrigger, role);
+
+  // Hàm lọc dữ liệu client-side
+  const filteredStudents = useMemo(() => {
+    if (!searchQuery) return students;
+
+    const lowerQuery = searchQuery.toLowerCase();
+    return students.filter((student) => {
+      return (
+        student.name.toLowerCase().includes(lowerQuery) ||
+        student.email.toLowerCase().includes(lowerQuery) ||
+        String(student.id).toLowerCase().includes(lowerQuery) || // Giả sử id là string
+        (student.phoneNumber?.toLowerCase()?.includes(lowerQuery) ?? false) ||
+        (student.address?.toLowerCase()?.includes(lowerQuery) ?? false) ||
+        (student.className?.toLowerCase()?.includes(lowerQuery) ?? false)
+      );
+    });
+  }, [students, searchQuery]);
 
   const handleSuccess = () => {
     setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa
   };
 
   const { currentData, currentPage, totalPages, setCurrentPage } =
-    usePagination(students, 10);
+    usePagination(filteredStudents, 10);
 
   if (loading) return <p>Đang tải dữ liệu...</p>;
   if (error) return <p>Lỗi: {error}</p>;
@@ -130,7 +148,11 @@ const StudentListPage = () => {
           {t('table.students.title')}
         </h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
-          <TableSearch />
+          <TableSearch
+            searchType='student'
+            onSearch={setSearchQuery}
+            placeholder={t('search.placeholder')}
+          />
           <div className='flex items-center gap-4 self-end'>
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/filter.png' alt='' width={14} height={14} />
@@ -149,13 +171,18 @@ const StudentListPage = () => {
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
-      {/* PAGINATION */}
-      <Pagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-      />
+      {currentData.length === 0 ? (
+        <div className='text-center py-6 text-gray-500'>no student found</div>
+      ) : (
+        <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
+      )}
+      {totalPages > 1 && (
+        <Pagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
+      )}
     </div>
   );
 };

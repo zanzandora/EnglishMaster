@@ -31,24 +31,23 @@ const SearchResults = ({ results, searchQuery, className = '' }) => {
           title={t('search.students')}
           items={results.students}
           renderItem={(student) => (
-            <div className='flex items-center gap-3'>
-              <div className='w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center'>
-                <span className='text-blue-600 text-sm'>S</span>
-              </div>
-              <div>
-                <Link
-                  to={`/${role}/list/students/${student.id}`}
-                  className='flex flex-col'
-                >
-                  <h4 className='font-medium'>
-                    {renderHighlightedItem(student.name)}
-                  </h4>
-                  <p className='text-sm text-gray-500'>
-                    {renderHighlightedItem(student.email)}
-                  </p>
-                </Link>
-              </div>
-            </div>
+            <>
+              <Link to={`/${role}/list/students/${student.id}`}>
+                <div className='flex items-center gap-3'>
+                  <div className='w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center'>
+                    <span className='text-blue-600 text-sm'>S</span>
+                  </div>
+                  <div>
+                    <h4 className='font-medium'>
+                      {renderHighlightedItem(student.name)}
+                    </h4>
+                    <p className='text-sm text-gray-500'>
+                      {renderHighlightedItem(student.email)}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            </>
           )}
         />
       )}
@@ -58,19 +57,23 @@ const SearchResults = ({ results, searchQuery, className = '' }) => {
           title={t('search.teachers')}
           items={results.teachers}
           renderItem={(teacher) => (
-            <div className='flex items-center gap-3'>
-              <div className='w-8 h-8 rounded-full bg-green-100 flex items-center justify-center'>
-                <span className='text-green-600 text-sm'>T</span>
-              </div>
-              <div>
-                <h4 className='font-medium'>
-                  {renderHighlightedItem(teacher.user.name)}
-                </h4>
-                <p className='text-sm text-gray-500'>
-                  {renderHighlightedItem(teacher.teacher.specialization)}
-                </p>
-              </div>
-            </div>
+            <>
+              <Link to={`/${role}/list/teachers/${teacher.teacher.userID}`}>
+                <div className='flex items-center gap-3'>
+                  <div className='w-8 h-8 rounded-full bg-green-100 flex items-center justify-center'>
+                    <span className='text-green-600 text-sm'>T</span>
+                  </div>
+                  <div>
+                    <h4 className='font-medium'>
+                      {renderHighlightedItem(teacher.user.name)}
+                    </h4>
+                    <p className='text-sm text-gray-500'>
+                      {renderHighlightedItem(teacher.user.email)}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            </>
           )}
         />
       )}
