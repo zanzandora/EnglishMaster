@@ -11,57 +11,6 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useMonthlyGrowth } from 'hooks/useFetchDatas';
 
-const data = [
-  {
-    name: 'Jan',
-    growth: 30,
-  },
-  {
-    name: 'Feb',
-    growth: 50,
-  },
-  {
-    name: 'Mar',
-    growth: 70,
-  },
-  {
-    name: 'Apr',
-    growth: 90,
-  },
-  {
-    name: 'May',
-    growth: 110,
-  },
-  {
-    name: 'Jun',
-    growth: 130,
-  },
-  {
-    name: 'Jul',
-    growth: 219,
-  },
-  {
-    name: 'Aug',
-    growth: 170,
-  },
-  {
-    name: 'Sep',
-    growth: 190,
-  },
-  {
-    name: 'Oct',
-    growth: 210,
-  },
-  {
-    name: 'Nov',
-    growth: 230,
-  },
-  {
-    name: 'Dec',
-    growth: 20,
-  },
-];
-
 const StudentGrowthChart = () => {
   const { t } = useTranslation();
   const { data, loading, error } = useMonthlyGrowth();

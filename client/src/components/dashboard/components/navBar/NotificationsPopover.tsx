@@ -4,6 +4,7 @@ import { Notification } from '@interfaces';
 import { useAuth } from 'hooks/useAuth';
 import { decodeToken } from '@utils/decodeToken ';
 import { useNavigate } from 'react-router-dom';
+import { formatDate } from '@utils/dateUtils';
 
 const socket = io('http://localhost:5173');
 
@@ -26,7 +27,7 @@ const formatTime = (createdAt: Date) => {
   if (days === 1) {
     return 'Yesterday ' + formatDate(createdAt, 'HH:mm');
   }
-  return formatDate(createdAt, 'yyyy-MM-dd HH:mm');
+  return formatDate(createdAt, 'HH:mm yyyy-MM-dd');
 };
 
 const NotificationsPopover = () => {

@@ -299,5 +299,15 @@
       "startDate": "Start Date",
       "endDate": "End Date"
     }
+  },
+  "search":{
+    "students": "Students",
+    "teachers": "Teachers",
+    "classes": "Classes",
+    "courses": "Courses",
+    "results": "results",
+    "showMore": "Show {{count}} more",
+    "showLess": "Show less",
+    "noResults": "No results found"
   }
 }

@@ -3,8 +3,9 @@ import { saveAs } from 'file-saver';
 import fontkit from '@pdf-lib/fontkit';
 import { format } from 'date-fns';
 
-const DownloadCertificate = ({ studentName, courseName, dateToGive }: any) => {
+const DownloadCertificate = ({ studentName, courseName }: any) => {
   const generateCertificatePDF = async () => {
+    const dateToGive = new Date();
     try {
       const formattedDate = format(new Date(dateToGive), 'd MMMM, yyyy');
       // URL của mẫu chứng chỉ PDF có sẵn
@@ -51,7 +52,7 @@ const DownloadCertificate = ({ studentName, courseName, dateToGive }: any) => {
         font: great_vibes,
       });
       const contentLines = [
-        `Has successful completed a ${courseName}`,
+        `Has successful completed a ${courseName} course`,
         `give this ${formattedDate}.`,
       ];
 

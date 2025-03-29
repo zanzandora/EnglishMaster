@@ -82,6 +82,7 @@ app.use('/result', authenticateToken, (await import('./routes/database/result'))
 app.use('/report', authenticateToken, (await import('./routes/database/report')).router)
 app.use('/notification', authenticateToken, (await import('./routes/database/notification')).router)
 app.use('/analytics', authenticateToken, (await import('./routes/analytics')).router)
+app.use('/search', authenticateToken, (await import('./routes/search')).router)
 
 
 

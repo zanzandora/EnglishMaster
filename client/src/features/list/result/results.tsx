@@ -1,6 +1,6 @@
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
-import TableSearch from '@components/common/table/TableSearch';
+import TableSearch from '@components/common/table/searchs/TableSearch';
 import { useTranslation } from 'react-i18next';
 import FormModal from '@components/common/FormModal';
 import usePagination from 'hooks/usePagination';
@@ -156,7 +156,6 @@ const ResultListPage = () => {
             <DownloadCertificate
               studentName={item.student.studentName}
               courseName={item.courseName}
-              dateToGive={item.updatedAt}
             />
           )}
         </td>

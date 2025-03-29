@@ -1,6 +1,6 @@
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
-import TableSearch from '@components/common/table/TableSearch';
+import TableSearch from '@components/common/table/searchs/TableSearch';
 import FormModal from '@components/common/FormModal';
 import { useTranslation } from 'react-i18next';
 import usePagination from 'hooks/usePagination';

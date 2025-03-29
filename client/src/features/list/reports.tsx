@@ -6,7 +6,7 @@ import Pagination from '@components/common/Pagination';
 import useFetchreports from 'hooks/useFetchReports';
 import usePagination from 'hooks/usePagination';
 import { formatDate } from '@utils/dateUtils';
-import TableSearch from '@components/common/table/TableSearch';
+import TableSearch from '@components/common/table/searchs/TableSearch';
 import { useFetchClassesOptions } from 'hooks/useFetchOptions';
 import { useAuth } from 'hooks/useAuth';
 import { decodeToken } from '@utils/decodeToken ';

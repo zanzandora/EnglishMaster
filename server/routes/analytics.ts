@@ -12,7 +12,6 @@ import {
   Teachers,
   Users,
 } from '../database/entity';
-import { startOfYear, endOfYear, eachMonthOfInterval } from 'date-fns';
 import { getMonthlyGrowth } from '../service/student.service';
 import { calculateGrowthRate } from '../helper/calculateGrowthRate';
 
@@ -66,6 +65,22 @@ expressRouter.get('/monthly-growth', async (req, res) => {
       success: false,
       error: error.message,
     });
+  }
+});
+
+expressRouter.get('/totalUser', async (req, res) => {
+  try {
+    const [students, teachers] = await Promise.all([
+      db.select({ count: count() }).from(Students),
+      db.select({ count: count() }).from(Teachers),
+    ]);
+
+    res.json({
+      students: students[0]?.count || 0,
+      teachers: teachers[0]?.count || 0,
+    });
+  } catch (err) {
+    res.status(500).send(err.toString());
   }
 });
 

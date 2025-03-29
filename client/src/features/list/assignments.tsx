@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
-import TableSearch from '@components/common/table/TableSearch';
+import TableSearch from '@components/common/table/searchs/TableSearch';
 import { assignmentsData } from '@mockData/data';
 
 type Assignment = {
