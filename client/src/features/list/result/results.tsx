@@ -96,6 +96,8 @@ const ResultListPage = () => {
           String(item.student?.studentID),
           item.className,
           item.courseName,
+          item.MT.toString(),
+          item.FT.toString(),
         ].some((field) =>
           field?.toLowerCase().includes(searchQuery.toLowerCase())
         );
@@ -182,8 +184,12 @@ const ResultListPage = () => {
           {renderHighlightedItem(item.className) || 'No class assigned'}
         </td>
 
-        <td className='hidden md:table-cell p-4'>{item.MT}/100</td>
-        <td className='hidden md:table-cell p-4'>{item.FT}/100</td>
+        <td className='hidden md:table-cell p-4'>
+          {renderHighlightedItem(String(item.MT))}/100
+        </td>
+        <td className='hidden md:table-cell p-4'>
+          {renderHighlightedItem(String(item.FT))}/100
+        </td>
         <td className='hidden md:table-cell p-3'>
           {item.MT > 0 && item.FT > 0 ? `${item.score}/100` : '-'}
         </td>
@@ -227,7 +233,7 @@ const ResultListPage = () => {
           <TableSearch
             searchType='result'
             onSearch={setSearchQuery}
-            placeholder='Search students, classes, scores...'
+            placeholder='Search students, classes, '
           />
           <select
             value={selectedClass}

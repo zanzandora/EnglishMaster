@@ -1,4 +1,3 @@
-// import FormModal from '@/components/FormModal';
 import { Link } from 'react-router-dom';
 import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
@@ -12,6 +11,8 @@ import { decodeToken } from '@utils/decodeToken ';
 import { useAuth } from 'hooks/useAuth';
 import { highlightText } from '@utils/highlight';
 import React from 'react';
+import { useSort } from 'hooks/useSort';
+import { sortByField } from '@utils/sortUtils';
 
 const columns = (t: any) => [
   {
@@ -53,24 +54,46 @@ const StudentListPage = () => {
 
   const [reloadTrigger, setReloadTrigger] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const { sortConfig, handleSort, getSortIcon } = useSort('id');
   const { students, loading, error } = useFetchStudents(reloadTrigger, role);
 
   // Hàm lọc dữ liệu client-side
   const filteredStudents = useMemo(() => {
-    if (!searchQuery) return students;
+    let result = [...(students || [])];
 
-    const lowerQuery = searchQuery.toLowerCase();
-    return students.filter((student) => {
-      return (
-        student.name.toLowerCase().includes(lowerQuery) ||
-        student.email.toLowerCase().includes(lowerQuery) ||
-        String(student.id).includes(lowerQuery) || // Giả sử id là string
-        (student.phoneNumber?.toLowerCase()?.includes(lowerQuery) ?? false) ||
-        (student.address?.toLowerCase()?.includes(lowerQuery) ?? false) ||
-        (student.className?.toLowerCase()?.includes(lowerQuery) ?? false)
-      );
-    });
-  }, [students, searchQuery]);
+    //* search logic
+    if (searchQuery) {
+      const lowerQuery = searchQuery.toLowerCase();
+      result = result.filter((student) => {
+        const searchFields = [
+          student.name,
+          student.email,
+          String(student.id),
+          student.phoneNumber,
+          student.address,
+          student.className,
+        ];
+        return searchFields.some((field) =>
+          field?.toLowerCase().includes(lowerQuery)
+        );
+      });
+    }
+
+    //* sort logic
+    if (sortConfig.order) {
+      result.sort((a, b) => {
+        const aValue = String(a[sortConfig.field]);
+        const bValue = String(b[sortConfig.field]);
+
+        if (sortConfig.order === 'asc') {
+          return aValue.localeCompare(bValue, undefined, { numeric: true });
+        }
+        return bValue.localeCompare(aValue, undefined, { numeric: true });
+      });
+    }
+
+    return result;
+  }, [students, searchQuery, sortConfig]);
 
   // Render item với highlight
   const renderHighlightedItem = (text: string) => {
@@ -84,7 +107,7 @@ const StudentListPage = () => {
   };
 
   const { currentData, currentPage, totalPages, setCurrentPage } =
-    usePagination(filteredStudents, 10);
+    usePagination(filteredStudents || [], 10);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -184,8 +207,11 @@ const StudentListPage = () => {
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/filter.png' alt='' width={14} height={14} />
             </button>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
-              <img src='/sort.png' alt='' width={14} height={14} />
+            <button
+              onClick={() => handleSort('id')}
+              className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'
+            >
+              <img src={getSortIcon()} alt='' width={14} height={14} />
             </button>
             {role === 'admin' && (
               <FormModal
