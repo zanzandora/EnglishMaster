@@ -2,7 +2,15 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { debounce } from 'lodash';
 
 interface TableSearchProps {
-  searchType: 'student' | 'teacher' | 'course' | 'class';
+  searchType:
+    | 'student'
+    | 'teacher'
+    | 'course'
+    | 'class'
+    | 'lesson'
+    | 'exam'
+    | 'result'
+    | 'anouncement';
   onSearch: (query: string) => void;
   placeholder?: string;
   debounceTime?: number;
@@ -47,6 +55,14 @@ const TableSearch = ({
         return `${baseText} courses...`;
       case 'class':
         return `${baseText} classes...`;
+      case 'lesson':
+        return `${baseText} lessons...`;
+      case 'exam':
+        return `${baseText} exams...`;
+      case 'result':
+        return `${baseText} results...`;
+      case 'anouncement':
+        return `${baseText} announcements...`;
       default:
         return placeholder;
     }

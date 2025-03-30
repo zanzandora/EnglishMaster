@@ -3,9 +3,11 @@ import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/searchs/TableSearch';
 import { decodeToken } from '@utils/decodeToken ';
+import { highlightText } from '@utils/highlight';
 import ErrorPage from 'features/error/error';
 import { useAuth } from 'hooks/useAuth';
 import usePagination from 'hooks/usePagination';
+import React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -57,6 +59,7 @@ const ExamListPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reloadTrigger, setReloadTrigger] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const targetUserID = useMemo(() => {
     if (role === 'teacher') {
@@ -67,6 +70,35 @@ const ExamListPage = () => {
     }
     return undefined; // Admin xem tất cả
   }, [role, tokenUserID, urlUserID]);
+
+  // Hàm lọc dữ liệu client-side
+  const filteredExams = useMemo(() => {
+    if (!searchQuery) return exams;
+
+    const lowerQuery = searchQuery.toLowerCase();
+    return exams.filter((exam) => {
+      return (
+        exam.title.toLowerCase().includes(lowerQuery) ||
+        exam.course?.toLowerCase().includes(lowerQuery) ||
+        exam.class?.toLowerCase().includes(lowerQuery) ||
+        exam.teacher?.toLowerCase().includes(lowerQuery)
+      );
+    });
+  }, [exams, searchQuery]);
+
+  // Render item với highlight
+  const renderHighlightedItem = (text: string) => {
+    return (
+      <span>
+        {highlightText(text, searchQuery).map((part, index) => (
+          <React.Fragment key={index}>{part}</React.Fragment>
+        ))}
+      </span>
+    );
+  };
+
+  const { currentData, currentPage, totalPages, setCurrentPage } =
+    usePagination(filteredExams, 10);
 
   useEffect(() => {
     setReloadTrigger(0); // Reset trigger mỗi khi component được mount lại
@@ -98,8 +130,9 @@ const ExamListPage = () => {
     setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa
   };
 
-  const { currentData, currentPage, totalPages, setCurrentPage } =
-    usePagination(exams, 10);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, setCurrentPage]);
 
   if (loading) return <p>Đang tải dữ liệu...</p>;
   // if (error) return <ErrorPage message={error} />;
@@ -110,18 +143,20 @@ const ExamListPage = () => {
         key={index}
         className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
-        <td className='flex items-center gap-4 p-4  w-[200px]'>{item.title}</td>
+        <td className='flex items-center gap-4 p-4  w-[200px]'>
+          {renderHighlightedItem(item.title)}
+        </td>
         <td className='hidden md:table-cell'>
           <p className='truncate w-[200px]'>{item.source}</p>
         </td>
         <td className='hidden md:table-cell'>
-          {item.course || 'No course assigned'}
+          {renderHighlightedItem(item.course) || 'No course assigned'}
         </td>
         <td className='hidden md:table-cell'>
-          {item.class || 'No class assigned'}
+          {renderHighlightedItem(item.class) || 'No class assigned'}
         </td>
         <td className='hidden md:table-cell'>
-          {item.teacher || 'No teacher assigned'}
+          {renderHighlightedItem(item.teacher) || 'No teacher assigned'}
         </td>
         <td>
           <div className='flex items-center gap-2'>
@@ -150,7 +185,11 @@ const ExamListPage = () => {
           {t('table.exams.title')}
         </h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
-          <TableSearch />
+          <TableSearch
+            searchType='exam'
+            onSearch={setSearchQuery}
+            placeholder={t('search.placeholder')}
+          />
           <div className='flex items-center gap-4 self-end'>
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/filter.png' alt='' width={14} height={14} />

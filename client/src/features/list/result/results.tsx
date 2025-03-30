@@ -4,11 +4,13 @@ import TableSearch from '@components/common/table/searchs/TableSearch';
 import { useTranslation } from 'react-i18next';
 import FormModal from '@components/common/FormModal';
 import usePagination from 'hooks/usePagination';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from 'hooks/useAuth';
 import { decodeToken } from '@utils/decodeToken ';
 import { formatDate } from '@utils/dateUtils';
 import DownloadCertificate from '@components/common/DownloadCertificate';
+import { highlightText } from '@utils/highlight';
+import React from 'react';
 
 const columns = (t: any, role?: string) => [
   {
@@ -78,6 +80,51 @@ const ResultListPage = () => {
   const [reloadTrigger, setReloadTrigger] = useState(0);
 
   const [selectedClass, setSelectedClass] = useState<string>('All');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredResults = useMemo(() => {
+    return results.filter((item: any) => {
+      // Điều kiện lọc lớp
+      const classCondition =
+        selectedClass === 'All' || item.className === selectedClass;
+
+      // Điều kiện tìm kiếm
+      const searchCondition =
+        !searchQuery ||
+        [
+          item.student?.studentName,
+          String(item.student?.studentID),
+          item.className,
+          item.courseName,
+        ].some((field) =>
+          field?.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+
+      return classCondition && searchCondition;
+    });
+  }, [results, selectedClass, searchQuery]);
+
+  // Render item với highlight
+  const renderHighlightedItem = (text: string) => {
+    return (
+      <span>
+        {highlightText(text, searchQuery).map((part, index) => (
+          <React.Fragment key={index}>{part}</React.Fragment>
+        ))}
+      </span>
+    );
+  };
+
+  const uniqueClasses = Array.from(
+    new Set(results.map((item: any) => item.className))
+  ).filter(Boolean);
+
+  const { currentData, currentPage, totalPages, setCurrentPage } =
+    usePagination(filteredResults, 10);
+
+  const handleSuccess = () => {
+    setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa
+  };
 
   useEffect(() => {
     const fetchLessons = async () => {
@@ -111,20 +158,9 @@ const ResultListPage = () => {
     fetchLessons();
   }, [reloadTrigger, role, teacherID]);
 
-  const filteredResults = results.filter(
-    (item: any) => selectedClass === 'All' || item.className === selectedClass
-  );
-
-  const uniqueClasses = Array.from(
-    new Set(results.map((item: any) => item.className))
-  ).filter(Boolean);
-
-  const { currentData, currentPage, totalPages, setCurrentPage } =
-    usePagination(filteredResults, 10);
-
-  const handleSuccess = () => {
-    setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa
-  };
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, setCurrentPage]);
 
   if (loading) return <p>Đang tải dữ liệu...</p>;
   if (error) return <p>Lỗi: {error}</p>;
@@ -136,11 +172,14 @@ const ResultListPage = () => {
         className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
         <td className='flex items-center gap-4 p-4 w-[200px]'>
-          {item.student.studentName || 'No Student was found'}
+          {renderHighlightedItem(item.student?.studentName) ||
+            'No Student was found'}
         </td>
-        <td className='hidden md:table-cell'>{item.student.studentID}</td>
         <td className='hidden md:table-cell'>
-          {item.className || 'No class assigned'}
+          {renderHighlightedItem(String(item.student.studentID))}
+        </td>
+        <td className='hidden md:table-cell'>
+          {renderHighlightedItem(item.className) || 'No class assigned'}
         </td>
 
         <td className='hidden md:table-cell p-4'>{item.MT}/100</td>
@@ -185,7 +224,11 @@ const ResultListPage = () => {
           {t('table.results.title')}
         </h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
-          <TableSearch />
+          <TableSearch
+            searchType='result'
+            onSearch={setSearchQuery}
+            placeholder='Search students, classes, scores...'
+          />
           <select
             value={selectedClass}
             onChange={(e) => setSelectedClass(e.target.value)}
@@ -205,28 +248,26 @@ const ResultListPage = () => {
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/sort.png' alt='' width={14} height={14} />
             </button>
-            {/* {role === 'admin' && (
-              <FormModal
-                table='result'
-                type='create'
-                onSuccess={handleSuccess}
-              />
-            )} */}
           </div>
         </div>
       </div>
       {/* LIST */}
-      <Table
-        columns={columns(t, role)}
-        renderRow={renderRow}
-        data={currentData}
-      />
-      {/* PAGINATION */}
-      <Pagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-      />
+      {currentData.length === 0 ? (
+        <div className='text-center py-6 text-gray-500'>no result found</div>
+      ) : (
+        <Table
+          columns={columns(t, role)}
+          renderRow={renderRow}
+          data={currentData}
+        />
+      )}
+      {totalPages > 1 && (
+        <Pagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
+      )}
     </div>
   );
 };

@@ -9,10 +9,15 @@ const TableSearchGlobal = () => {
   const wrapperRef = useOutsideClick(() => setShowResults(false));
   const { results, loading, error, search, searchQuery } = useGlobalSearch();
 
+  // Hàm chuẩn hóa chuỗi (loại bỏ khoảng trắng dư thừa)
+  const normalizeSearchString = (str: string): string => {
+    return str.trim().replace(/\s+/g, ' '); // Loại bỏ khoảng trắng thừa
+  };
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setQuery(value);
-    search(value);
+    search(normalizeSearchString(value));
     setShowResults(!!value.trim());
   };
 

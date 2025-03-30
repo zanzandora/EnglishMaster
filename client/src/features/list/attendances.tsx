@@ -351,8 +351,9 @@ const AttendancePage = () => {
           </select>
           {role === 'teacher' && (
             <DatePicker
+              readOnly
+              disabled
               todayButton='TODAY'
-              isClearable
               selected={selectedDate}
               onChange={handleDateChange}
               className='border rounded-md p-2'

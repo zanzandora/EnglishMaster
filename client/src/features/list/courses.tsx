@@ -3,10 +3,12 @@ import Pagination from '@components/common/Pagination';
 import Table from '@components/common/table/Table';
 import TableSearch from '@components/common/table/searchs/TableSearch';
 import { decodeToken } from '@utils/decodeToken ';
+import { highlightText } from '@utils/highlight';
 import { useAuth } from 'hooks/useAuth';
 import useFetchcourses from 'hooks/useFetchCourses';
 import usePagination from 'hooks/usePagination';
-import { useState } from 'react';
+import React, { useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -45,16 +47,50 @@ const SubjectListPage = () => {
   const role = decodedToken?.role;
 
   const [reloadTrigger, setReloadTrigger] = useState(0); // Triggers a re-render when data is updated
+  const [searchQuery, setSearchQuery] = useState('');
   const { courses, loading, error } = useFetchcourses(reloadTrigger);
+
+  // Hàm lọc dữ liệu client-side
+  const filteredCourses = useMemo(() => {
+    if (!searchQuery) return courses;
+
+    const lowerQuery = searchQuery.toLowerCase();
+    return courses.filter((course) => {
+      // Kiểm tra tồn tại trước khi truy cập
+      const teacherNames = course.teachers
+        ? course.teachers.map((t: any) => t.teacherName?.toLowerCase() || '')
+        : [];
+
+      return (
+        course.name.toLowerCase().includes(lowerQuery) ||
+        teacherNames.some((name: string) => name.includes(lowerQuery)) ||
+        String(course.fee).toLowerCase().includes(lowerQuery) ||
+        String(course.duraion).toLowerCase().includes(lowerQuery)
+      );
+    });
+  }, [courses, searchQuery]);
+
+  // Render item với highlight
+  const renderHighlightedItem = (text: string) => {
+    return (
+      <span>
+        {highlightText(text, searchQuery).map((part, index) => (
+          <React.Fragment key={index}>{part}</React.Fragment>
+        ))}
+      </span>
+    );
+  };
+
+  const { currentData, currentPage, totalPages, setCurrentPage } =
+    usePagination(filteredCourses, 10);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, setCurrentPage]);
 
   const handleSuccess = () => {
     setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa
   };
-
-  const { currentData, currentPage, totalPages, setCurrentPage } =
-    usePagination(courses, 10);
-  console.log(courses.teachers);
-
   if (loading) return <p>Đang tải dữ liệu...</p>;
   if (error) return <p>Lỗi: {error}</p>;
 
@@ -66,13 +102,17 @@ const SubjectListPage = () => {
       >
         <td className='flex items-center gap-4 p-4'>
           <div className='flex flex-col'>
-            <h3 className='font-semibold '>{item.name}</h3>
+            <h3 className='font-semibold '>
+              {renderHighlightedItem(item.name)}
+            </h3>
             <p className='text-xs text-gray-500 ml-2 line-clamp-custom w-[200px]'>
               {item.description}
             </p>
           </div>
         </td>
-        <td className='hidden md:table-cell '>{item.duration} month</td>
+        <td className='hidden md:table-cell '>
+          {renderHighlightedItem(String(item.duration))} month
+        </td>
         <td className='hidden md:table-cell'>
           {Array.isArray(item.teachers) && item.teachers.length > 0 ? (
             <ul className='list-disc pl-4'>
@@ -82,7 +122,7 @@ const SubjectListPage = () => {
                     to={`/admin/list/teachers/${teacher.userID}`}
                     className='text-blue-600 hover:underline'
                   >
-                    {teacher.teacherName}
+                    {renderHighlightedItem(teacher.teacherName)}
                   </Link>
                 </li>
               ))}
@@ -92,10 +132,14 @@ const SubjectListPage = () => {
           )}
         </td>
         <td className='hidden md:table-cell'>
-          {item.fee.toLocaleString('vi-VN', {
-            style: 'currency',
-            currency: 'VND',
-          })}
+          {renderHighlightedItem(
+            String(
+              item.fee.toLocaleString('vi-VN', {
+                style: 'currency',
+                currency: 'VND',
+              })
+            )
+          )}
         </td>
         <td>
           <div className='flex items-center gap-2'>
@@ -129,7 +173,11 @@ const SubjectListPage = () => {
           {t('table.courses.title')}
         </h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
-          <TableSearch />
+          <TableSearch
+            searchType='course'
+            onSearch={setSearchQuery}
+            placeholder={t('search.placeholder')}
+          />
           <div className='flex items-center gap-4 self-end'>
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/filter.png' alt='' width={14} height={14} />
@@ -148,13 +196,18 @@ const SubjectListPage = () => {
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
-      {/* PAGINATION */}
-      <Pagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-      />
+      {currentData.length === 0 ? (
+        <div className='text-center py-6 text-gray-500'>no course found</div>
+      ) : (
+        <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
+      )}
+      {totalPages > 1 && (
+        <Pagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
+      )}
     </div>
   );
 };

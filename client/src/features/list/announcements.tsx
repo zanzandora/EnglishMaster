@@ -5,8 +5,10 @@ import TableSearch from '@components/common/table/searchs/TableSearch';
 import { useAuth } from 'hooks/useAuth';
 import { decodeToken } from '@utils/decodeToken ';
 import usePagination from 'hooks/usePagination';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { formatDate } from '@utils/dateUtils';
+import { highlightText } from '@utils/highlight';
+import React from 'react';
 
 const columns = (t: any) => [
   {
@@ -39,9 +41,36 @@ const AnnouncementListPage = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Hàm lọc dữ liệu client-side
+  const filteredAnnouncements = useMemo(() => {
+    if (!searchQuery) return announcements;
+
+    const lowerQuery = searchQuery.toLowerCase();
+    return announcements.filter((announcement) => {
+      return (
+        announcement.title.toLowerCase().includes(lowerQuery) ||
+        announcement.message.toLowerCase().includes(lowerQuery) ||
+        announcement.relatedEntityType.toLowerCase().includes(lowerQuery) ||
+        String(announcement.createdAt).includes(lowerQuery)
+      );
+    });
+  }, [announcements, searchQuery]);
+
+  // Render item với highlight
+  const renderHighlightedItem = (text: string) => {
+    return (
+      <span>
+        {highlightText(text, searchQuery).map((part, index) => (
+          <React.Fragment key={index}>{part}</React.Fragment>
+        ))}
+      </span>
+    );
+  };
 
   const { currentData, currentPage, totalPages, setCurrentPage } =
-    usePagination(announcements, 10);
+    usePagination(filteredAnnouncements, 10);
 
   useEffect(() => {
     const fetchLessons = async () => {
@@ -68,12 +97,16 @@ const AnnouncementListPage = () => {
         key={item.id}
         className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
-        <td className='flex items-center gap-4 p-4'>{item.title}</td>
-        <td>{item.message}</td>
-        <td className='hidden md:table-cell'>
-          {formatDate(item.createdAt, 'yyyy-MM-dd HH:MM:SS')}
+        <td className='flex items-center gap-4 p-4'>
+          {renderHighlightedItem(item.title)}
         </td>
-        <td>{item.relatedEntityType}</td>
+        <td>{renderHighlightedItem(item.message)}</td>
+        <td className='hidden md:table-cell'>
+          {renderHighlightedItem(
+            String(formatDate(item.createdAt, 'yyyy-MM-dd HH:MM:SS'))
+          )}
+        </td>
+        <td>{renderHighlightedItem(item.relatedEntityType)}</td>
       </tr>
     );
   };
@@ -89,7 +122,11 @@ const AnnouncementListPage = () => {
           {t('table.announcements.title')}
         </h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
-          <TableSearch />
+          <TableSearch
+            searchType='anouncement'
+            onSearch={setSearchQuery}
+            placeholder={t('search.placeholder')}
+          />
           <div className='flex items-center gap-4 self-end'>
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/filter.png' alt='' width={14} height={14} />
@@ -104,14 +141,20 @@ const AnnouncementListPage = () => {
           </div>
         </div>
       </div>
-      {/* LIST */}
-      <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
-      {/* PAGINATION */}
-      <Pagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-      />
+      {currentData.length === 0 ? (
+        <div className='text-center py-6 text-gray-500'>
+          no anouncement found
+        </div>
+      ) : (
+        <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
+      )}
+      {totalPages > 1 && (
+        <Pagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
+      )}
     </div>
   );
 };

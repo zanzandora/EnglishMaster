@@ -6,10 +6,12 @@ import TableSearch from '@components/common/table/searchs/TableSearch';
 import FormModal from '@components/common/FormModal';
 import { useTranslation } from 'react-i18next';
 import usePagination from 'hooks/usePagination';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import useFetchStudents from 'hooks/useFetchStudents';
 import { decodeToken } from '@utils/decodeToken ';
 import { useAuth } from 'hooks/useAuth';
+import { highlightText } from '@utils/highlight';
+import React from 'react';
 
 const columns = (t: any) => [
   {
@@ -62,7 +64,7 @@ const StudentListPage = () => {
       return (
         student.name.toLowerCase().includes(lowerQuery) ||
         student.email.toLowerCase().includes(lowerQuery) ||
-        String(student.id).toLowerCase().includes(lowerQuery) || // Giả sử id là string
+        String(student.id).includes(lowerQuery) || // Giả sử id là string
         (student.phoneNumber?.toLowerCase()?.includes(lowerQuery) ?? false) ||
         (student.address?.toLowerCase()?.includes(lowerQuery) ?? false) ||
         (student.className?.toLowerCase()?.includes(lowerQuery) ?? false)
@@ -70,12 +72,27 @@ const StudentListPage = () => {
     });
   }, [students, searchQuery]);
 
-  const handleSuccess = () => {
-    setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa
+  // Render item với highlight
+  const renderHighlightedItem = (text: string) => {
+    return (
+      <span>
+        {highlightText(text, searchQuery).map((part, index) => (
+          <React.Fragment key={index}>{part}</React.Fragment>
+        ))}
+      </span>
+    );
   };
 
   const { currentData, currentPage, totalPages, setCurrentPage } =
     usePagination(filteredStudents, 10);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, setCurrentPage]);
+
+  const handleSuccess = () => {
+    setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa
+  };
 
   if (loading) return <p>Đang tải dữ liệu...</p>;
   if (error) return <p>Lỗi: {error}</p>;
@@ -95,16 +112,26 @@ const StudentListPage = () => {
             className='md:hidden xl:block w-10 h-10 rounded-full object-cover'
           />
           <div className='flex flex-col'>
-            <h3 className='font-semibold'>{item.name}</h3>
-            <p className='text-xs text-gray-500'>{item.email}</p>
+            <h3 className='font-semibold'>
+              {renderHighlightedItem(item.name)}
+            </h3>
+            <p className='text-xs text-gray-500'>
+              {renderHighlightedItem(item.email)}
+            </p>
           </div>
         </td>
-        <td className='hidden md:table-cell'>{item.id}</td>
         <td className='hidden md:table-cell'>
-          {item.className || 'No class assigned'}
+          {renderHighlightedItem(String(item.id))}
         </td>
-        <td className='hidden md:table-cell'>{item.phoneNumber}</td>
-        <td className='hidden md:table-cell'>{item.address}</td>
+        <td className='hidden md:table-cell'>
+          {renderHighlightedItem(item.className) || 'No class assigned'}
+        </td>
+        <td className='hidden md:table-cell'>
+          {renderHighlightedItem(item.phoneNumber)}
+        </td>
+        <td className='hidden md:table-cell'>
+          {renderHighlightedItem(item.address)}
+        </td>
         <td>
           <div className='flex items-center gap-2'>
             <Link to={`/${role}/list/students/${item.id}`}>

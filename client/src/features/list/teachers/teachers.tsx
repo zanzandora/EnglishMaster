@@ -5,10 +5,12 @@ import TableSearch from '@components/common/table/searchs/TableSearch';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import usePagination from 'hooks/usePagination';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import useFetchTeachers from 'hooks/useFetchTeachers';
 import { useAuth } from 'hooks/useAuth';
 import { decodeToken } from '@utils/decodeToken ';
+import { highlightText } from '@utils/highlight';
+import React from 'react';
 
 const columns = (t: any) => [
   {
@@ -49,13 +51,46 @@ const TeacherListPage = () => {
   const role = decodedToken?.role;
 
   const [reloadTrigger, setReloadTrigger] = useState(0); // Triggers a re-render when data is updated
+  const [searchQuery, setSearchQuery] = useState('');
   const { teachers, loading, error } = useFetchTeachers(reloadTrigger);
+
+  // Hàm lọc dữ liệu client-side
+  const filteredTeachers = useMemo(() => {
+    if (!searchQuery) return teachers;
+
+    const lowerQuery = searchQuery.toLowerCase();
+    return teachers.filter((teacher) => {
+      return (
+        teacher.name.toLowerCase().includes(lowerQuery) ||
+        teacher.email.toLowerCase().includes(lowerQuery) ||
+        teacher.userName.toLowerCase().includes(lowerQuery) ||
+        String(teacher.userID).includes(lowerQuery) ||
+        (teacher.phoneNumber?.toLowerCase()?.includes(lowerQuery) ?? false) ||
+        (teacher.address?.toLowerCase()?.includes(lowerQuery) ?? false)
+      );
+    });
+  }, [teachers, searchQuery]);
+
+  // Render item với highlight
+  const renderHighlightedItem = (text: string) => {
+    return (
+      <span>
+        {highlightText(text, searchQuery).map((part, index) => (
+          <React.Fragment key={index}>{part}</React.Fragment>
+        ))}
+      </span>
+    );
+  };
 
   const handleSuccess = () => {
     setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa
   };
   const { currentData, currentPage, totalPages, setCurrentPage } =
-    usePagination(teachers, 10);
+    usePagination(filteredTeachers, 10);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, setCurrentPage]);
 
   if (loading) return <p>Đang tải dữ liệu...</p>;
   if (error) return <p>Lỗi: {error}</p>;
@@ -76,14 +111,26 @@ const TeacherListPage = () => {
               className='md:hidden xl:block w-10 h-10 rounded-full object-cover'
             />
             <div className='flex flex-col'>
-              <h3 className='font-semibold'>{item.name}</h3>
-              <p className='text-xs text-gray-500'>{item.email}</p>
+              <h3 className='font-semibold'>
+                {renderHighlightedItem(item.name)}
+              </h3>
+              <p className='text-xs text-gray-500'>
+                {renderHighlightedItem(item.email)}
+              </p>
             </div>
           </td>
-          <td className='hidden md:table-cell'>{item.userID}</td>
-          <td className='hidden md:table-cell'>{item.userName}</td>
-          <td className='hidden md:table-cell'>{item.phoneNumber}</td>
-          <td className='hidden lg:table-cell'>{item.address}</td>
+          <td className='hidden md:table-cell'>
+            {renderHighlightedItem(String(item.userID))}
+          </td>
+          <td className='hidden md:table-cell'>
+            {renderHighlightedItem(item.userName)}
+          </td>
+          <td className='hidden md:table-cell'>
+            {renderHighlightedItem(item.phoneNumber)}
+          </td>
+          <td className='hidden lg:table-cell'>
+            {renderHighlightedItem(item.address)}
+          </td>
           <td>
             <div className='flex teachers-center gap-2'>
               <Link to={`/${role}/list/teachers/${item.userID}`}>
@@ -128,7 +175,11 @@ const TeacherListPage = () => {
           {t('table.teachers.title')}
         </h1>
         <div className='flex flex-col md:flex-row teachers-center gap-4 w-full md:w-auto'>
-          <TableSearch />
+          <TableSearch
+            searchType='teacher'
+            onSearch={setSearchQuery}
+            placeholder={t('search.placeholder')}
+          />
           <div className='flex teachers-center gap-4 self-end'>
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/filter.png' alt='' width={14} height={14} />
@@ -147,13 +198,18 @@ const TeacherListPage = () => {
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
-      {/* PAGINATION */}
-      <Pagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-      />
+      {currentData.length === 0 ? (
+        <div className='text-center py-6 text-gray-500'>no teacher found</div>
+      ) : (
+        <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
+      )}
+      {totalPages > 1 && (
+        <Pagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
+      )}
     </div>
   );
 };

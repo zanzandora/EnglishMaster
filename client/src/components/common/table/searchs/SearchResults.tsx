@@ -22,7 +22,6 @@ const SearchResults = ({ results, searchQuery, className = '' }) => {
       </span>
     );
   };
-  console.log('query:', searchQuery);
 
   return (
     <div className={`p-4 max-h-[70vh] overflow-y-auto ${className}`}>

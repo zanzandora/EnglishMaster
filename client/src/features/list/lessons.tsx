@@ -4,9 +4,11 @@ import TableSearch from '@components/common/table/searchs/TableSearch';
 import FormModal from '@components/common/FormModal';
 import { useTranslation } from 'react-i18next';
 import usePagination from 'hooks/usePagination';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from 'hooks/useAuth';
 import { decodeToken } from '@utils/decodeToken ';
+import { highlightText } from '@utils/highlight';
+import React from 'react';
 
 const columns = (t: any) => [
   {
@@ -39,9 +41,34 @@ const LessonListPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reloadTrigger, setReloadTrigger] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Hàm lọc dữ liệu client-side
+  const filteredLessons = useMemo(() => {
+    if (!searchQuery) return lessons;
+
+    const lowerQuery = searchQuery.toLowerCase();
+    return lessons.filter((lesson) => {
+      return (
+        lesson.title.toLowerCase().includes(lowerQuery) ||
+        lesson.type.toLowerCase().includes(lowerQuery)
+      );
+    });
+  }, [lessons, searchQuery]);
+
+  // Render item với highlight
+  const renderHighlightedItem = (text: string) => {
+    return (
+      <span>
+        {highlightText(text, searchQuery).map((part, index) => (
+          <React.Fragment key={index}>{part}</React.Fragment>
+        ))}
+      </span>
+    );
+  };
 
   const { currentData, currentPage, totalPages, setCurrentPage } =
-    usePagination(lessons, 10);
+    usePagination(filteredLessons, 10);
 
   useEffect(() => {
     const fetchLessons = async () => {
@@ -63,6 +90,10 @@ const LessonListPage = () => {
     fetchLessons();
   }, [reloadTrigger]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, setCurrentPage]);
+
   const handleSuccess = () => {
     setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa
   };
@@ -78,7 +109,9 @@ const LessonListPage = () => {
       >
         <td className='flex items-center gap-4 p-4'>
           <div className='flex flex-col'>
-            <h3 className='font-semibold'>{item.title}</h3>
+            <h3 className='font-semibold'>
+              {renderHighlightedItem(item.title)}
+            </h3>
             <p className='text-xs text-gray-500 w-[200px] line-clamp-custom'>
               {item.description}
             </p>
@@ -88,7 +121,9 @@ const LessonListPage = () => {
         <td className='hidden md:table-cell '>
           <p className='truncate w-[250px]'>{item.file_url}</p>
         </td>
-        <td className='hidden md:table-cell'>{item.type}</td>
+        <td className='hidden md:table-cell'>
+          {renderHighlightedItem(item.type)}
+        </td>
 
         <td>
           <div className='flex items-center gap-2'>
@@ -112,7 +147,11 @@ const LessonListPage = () => {
           {t('table.lessons.title')}
         </h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
-          <TableSearch />
+          <TableSearch
+            searchType='lesson'
+            onSearch={setSearchQuery}
+            placeholder={t('search.placeholder')}
+          />
           <div className='flex items-center gap-4 self-end'>
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/filter.png' alt='' width={14} height={14} />
@@ -125,14 +164,19 @@ const LessonListPage = () => {
           </div>
         </div>
       </div>
-      {/* LIST */}
-      <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
       {/* PAGINATION */}
-      <Pagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-      />
+      {currentData.length === 0 ? (
+        <div className='text-center py-6 text-gray-500'>no lesson found</div>
+      ) : (
+        <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
+      )}
+      {totalPages > 1 && (
+        <Pagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
+      )}
     </div>
   );
 };

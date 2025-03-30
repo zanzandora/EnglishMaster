@@ -9,6 +9,8 @@ import useFetchClasses from 'hooks/useFetchClasses';
 import { useParams } from 'react-router-dom';
 import { useAuth } from 'hooks/useAuth';
 import { decodeToken } from '@utils/decodeToken ';
+import { highlightText } from '@utils/highlight';
+import React from 'react';
 
 const columns = (t: any) => [
   {
@@ -52,13 +54,14 @@ const ClassListPage = () => {
 
   const { userID: urlUserID } = useParams();
   const [reloadTrigger, setReloadTrigger] = useState(0); // Triggers a re-render when data is updated
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Xác định userID dựa trên role
   const targetUserID = useMemo(() => {
     if (role === 'teacher') {
       return parseInt(tokenUserID); // Teacher luôn dùng userID từ token
     } else if (urlUserID) {
-      // Admin truy cập qua URL /admin/teachers/{userID}/classes
+      // Admin truy cập qua URL /admin/classes/{userID}/classes
       return parseInt(urlUserID);
     }
     return undefined; // Admin xem tất cả
@@ -73,12 +76,41 @@ const ClassListPage = () => {
     targetUserID
   );
 
+  // Hàm lọc dữ liệu client-side
+  const filteredClasses = useMemo(() => {
+    if (!searchQuery) return classes;
+
+    const lowerQuery = searchQuery.toLowerCase();
+    return classes.filter((classItem) => {
+      return (
+        classItem.name.toLowerCase().includes(lowerQuery) ||
+        classItem.teacherName.toLowerCase().includes(lowerQuery) ||
+        classItem.courseName.toLowerCase().includes(lowerQuery)
+      );
+    });
+  }, [classes, searchQuery]);
+
+  // Render item với highlight
+  const renderHighlightedItem = (text: string) => {
+    return (
+      <span>
+        {highlightText(text, searchQuery).map((part, index) => (
+          <React.Fragment key={index}>{part}</React.Fragment>
+        ))}
+      </span>
+    );
+  };
+
   const handleSuccess = () => {
     setReloadTrigger((prev) => prev + 1); // Gọi lại danh sách sau khi xóa
   };
 
   const { currentData, currentPage, totalPages, setCurrentPage } =
-    usePagination(classes, 10);
+    usePagination(filteredClasses, 10);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, setCurrentPage]);
 
   if (loading) return <p>Đang tải dữ liệu...</p>;
   if (error) return <p>Lỗi: {error}</p>;
@@ -92,7 +124,9 @@ const ClassListPage = () => {
         >
           <td className='flex items-center gap-4 p-4'>
             <div className='flex flex-col'>
-              <h3 className='font-semibold'>{item.name}</h3>
+              <h3 className='font-semibold'>
+                {renderHighlightedItem(item.name)}
+              </h3>
               <p className='text-xs text-gray-500'>
                 {item.startDate} - {item.endDate}
               </p>
@@ -104,10 +138,10 @@ const ClassListPage = () => {
             {item.totalStudents ? item.totalStudents : 0}
           </td>
           <td className='hidden md:table-cell'>
-            {item.courseName || 'No course assigned'}
+            {renderHighlightedItem(item.courseName) || 'No course assigned'}
           </td>
           <td className='hidden md:table-cell'>
-            {item.teacherName || 'No teacher assigned'}
+            {renderHighlightedItem(item.teacherName) || 'No teacher assigned'}
           </td>
           <td>
             <div className='flex items-center gap-2'>
@@ -144,7 +178,11 @@ const ClassListPage = () => {
           {t('table.classes.title')}
         </h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
-          <TableSearch />
+          <TableSearch
+            searchType='class'
+            onSearch={setSearchQuery}
+            placeholder={t('search.placeholder')}
+          />
           <div className='flex items-center gap-4 self-end'>
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/filter.png' alt='' width={14} height={14} />

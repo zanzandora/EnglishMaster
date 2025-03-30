@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import { useTranslation } from 'react-i18next';
 import Table from '@components/common/table/Table';
@@ -10,6 +10,8 @@ import TableSearch from '@components/common/table/searchs/TableSearch';
 import { useFetchClassesOptions } from 'hooks/useFetchOptions';
 import { useAuth } from 'hooks/useAuth';
 import { decodeToken } from '@utils/decodeToken ';
+import { highlightText } from '@utils/highlight';
+import React from 'react';
 
 const columns = {
   student: [
@@ -48,18 +50,71 @@ const ReportPage = () => {
     selectedClass
   );
   const { classOptions } = useFetchClassesOptions();
-  const [startDate, setStartDate] = useState(
-    () => new Date(new Date().setDate(new Date().getDate() - 3))
-  );
-  const [endDate, setEndDate] = useState(new Date());
+  const [searchQuery, setSearchQuery] = useState('');
+  // const [startDate, setStartDate] = useState(
+  //   () => new Date(new Date().setDate(new Date().getDate() - 3))
+  // );
+  // const [endDate, setEndDate] = useState(new Date());
+
+  const filteredReports = useMemo(() => {
+    return reports.filter((item: any) => {
+      // Điều kiện lọc lớp
+      const classCondition = !selectedClass || item.class?.id === selectedClass;
+
+      // Điều kiện tìm kiếm theo loại báo cáo
+      let searchCondition = true;
+      if (searchQuery) {
+        const lowerQuery = searchQuery.toLowerCase();
+
+        if (selectedReport === 'student') {
+          searchCondition = [
+            item.student?.studentName,
+            String(item.student?.studentID),
+            item.class?.className,
+          ].some((field) => field?.toLowerCase().includes(lowerQuery));
+        } else if (selectedReport === 'course') {
+          searchCondition = [
+            item.course?.courseName,
+            item.stats?.teacherNames,
+            item.stats?.classNames,
+            item.stats?.totalStudents?.toString(),
+          ].some((field) => field?.toLowerCase().includes(lowerQuery));
+        }
+      }
+
+      return classCondition && searchCondition;
+    });
+  }, [reports, selectedClass, searchQuery, selectedReport]);
+
+  // Render item với highlight
+  const renderHighlightedItem = (text: string) => {
+    return (
+      <span>
+        {highlightText(text, searchQuery).map((part, index) => (
+          <React.Fragment key={index}>{part}</React.Fragment>
+        ))}
+      </span>
+    );
+  };
 
   const { currentData, currentPage, totalPages, setCurrentPage } =
-    usePagination(reports, 10);
+    usePagination(filteredReports, 10);
 
   const reportsList = [
     { key: 'student', label: 'Student' },
     { key: 'course', label: 'Course' },
   ];
+
+  // Reset search khi chuyển loại báo cáo
+  useEffect(() => {
+    setSearchQuery('');
+    setCurrentPage(1);
+  }, [selectedReport, setCurrentPage]);
+
+  // Reset page khi chuyển loại báo cáo
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, setCurrentPage]);
 
   // Hàm render chung cho Student và Course
   const renderRow = (item: any, index: number, selectedReport: string) => {
@@ -70,13 +125,18 @@ const ReportPage = () => {
           className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
         >
           <td className='p-4'>{(currentPage - 1) * 10 + index + 1}</td>
-          <td className='p-4'>{item.student?.studentName}</td>
-          <td className='p-4'>{item.student?.studentID}</td>
+          <td className='p-4'>
+            {renderHighlightedItem(item.student?.studentName)}
+          </td>
+          <td className='p-4'>
+            {renderHighlightedItem(String(item.student?.studentID))}
+          </td>
           <td className=''>
             {formatDate(item.student?.dateOfBirth, 'yyyy-MM-dd')}
           </td>
           <td className='p-2'>
-            {item.class?.className || 'No class assigned'}
+            {renderHighlightedItem(item.class?.className) ||
+              'No class assigned'}
           </td>
           <td className='p-4'>{item.score?.MT || 0}/100</td>
           <td className='p-4'>{item.score?.FT || 0}/100</td>
@@ -95,12 +155,19 @@ const ReportPage = () => {
         className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavender_fade'
       >
         <td className='p-4'>{(currentPage - 1) * 10 + index + 1}</td>
-        <td className='p-4'>{item.course?.courseName || 'Dont have course'}</td>
-        <td className='p-4'>{item.stats?.classNames || 'No class assigned'}</td>
         <td className='p-4'>
-          {item.stats?.teacherNames || 'No teacher assigned'}
+          {renderHighlightedItem(item.course?.courseName) || 'Dont have course'}
         </td>
-        <td className='p-4'>{item.stats?.totalStudents || '-'}</td>
+        <td className='p-4'>
+          {renderHighlightedItem(item.stats?.classNames) || 'No class assigned'}
+        </td>
+        <td className='p-4'>
+          {renderHighlightedItem(item.stats?.teacherNames) ||
+            'No teacher assigned'}
+        </td>
+        <td className='p-4'>
+          {renderHighlightedItem(String(item.stats?.totalStudents)) || '-'}
+        </td>
       </tr>
     );
   };
@@ -139,8 +206,12 @@ const ReportPage = () => {
       )}
 
       {/* Bộ lọc */}
-      <div className='flex gap-4 mb-5'>
-        <TableSearch />
+      <div className='flex justify-end gap-4 mb-5'>
+        <TableSearch
+          searchType={selectedReport as 'student' | 'course'}
+          onSearch={setSearchQuery}
+          placeholder={t('search.placeholder')}
+        />
         <select
           onChange={(event) => setSelectedClass(event.target.value)}
           value={selectedClass}
@@ -153,7 +224,7 @@ const ReportPage = () => {
             </option>
           ))}
         </select>
-        <DatePicker
+        {/* <DatePicker
           locale={t('calendar.locale')}
           selected={startDate}
           onChange={(date) => setStartDate(date || new Date())}
@@ -171,17 +242,21 @@ const ReportPage = () => {
           endDate={endDate}
           minDate={startDate}
           className='transition-width duration-300 ease-in-out px-4 py-2 border rounded-full border-primary'
-        />
+        /> */}
       </div>
 
       {/* Bảng dữ liệu */}
-      <Table
-        columns={
-          selectedReport === 'student' ? columns.student : columns.course
-        }
-        data={currentData}
-        renderRow={(item, index) => renderRow(item, index, selectedReport)}
-      />
+      {currentData.length === 0 ? (
+        <div className='text-center py-6 text-gray-500'>no report found</div>
+      ) : (
+        <Table
+          columns={
+            selectedReport === 'student' ? columns.student : columns.course
+          }
+          data={currentData}
+          renderRow={(item, index) => renderRow(item, index, selectedReport)}
+        />
+      )}
 
       {/* Phân trang */}
       {totalPages > 1 && (
