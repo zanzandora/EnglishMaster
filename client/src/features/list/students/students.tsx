@@ -13,6 +13,7 @@ import { highlightText } from '@utils/highlight';
 import React from 'react';
 import { useSort } from 'hooks/useSort';
 import { sortByField } from '@utils/sortUtils';
+import { Student } from '@interfaces';
 
 const columns = (t: any) => [
   {
@@ -54,7 +55,7 @@ const StudentListPage = () => {
 
   const [reloadTrigger, setReloadTrigger] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
-  const { sortConfig, handleSort, getSortIcon } = useSort('id');
+  const { sortConfig, handleSort, getSortIcon } = useSort<keyof Student>('id');
   const { students, loading, error } = useFetchStudents(reloadTrigger, role);
 
   // Hàm lọc dữ liệu client-side
@@ -80,19 +81,7 @@ const StudentListPage = () => {
     }
 
     //* sort logic
-    if (sortConfig.order) {
-      result.sort((a, b) => {
-        const aValue = String(a[sortConfig.field]);
-        const bValue = String(b[sortConfig.field]);
-
-        if (sortConfig.order === 'asc') {
-          return aValue.localeCompare(bValue, undefined, { numeric: true });
-        }
-        return bValue.localeCompare(aValue, undefined, { numeric: true });
-      });
-    }
-
-    return result;
+    return sortByField(result, sortConfig.field, sortConfig.order);
   }, [students, searchQuery, sortConfig]);
 
   // Render item với highlight
@@ -204,9 +193,9 @@ const StudentListPage = () => {
             placeholder={t('search.placeholder')}
           />
           <div className='flex items-center gap-4 self-end'>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
+            {/* <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/filter.png' alt='' width={14} height={14} />
-            </button>
+            </button> */}
             <button
               onClick={() => handleSort('id')}
               className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'

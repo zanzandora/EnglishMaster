@@ -8,6 +8,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from 'hooks/useAuth';
 import { decodeToken } from '@utils/decodeToken ';
 import { highlightText } from '@utils/highlight';
+import { useSort } from 'hooks/useSort';
+import { sortByField } from '@utils/sortUtils';
 import React from 'react';
 
 const columns = (t: any) => [
@@ -42,19 +44,24 @@ const LessonListPage = () => {
   const [error, setError] = useState(null);
   const [reloadTrigger, setReloadTrigger] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const { sortConfig, handleSort, getSortIcon } = useSort('id');
 
   // Hàm lọc dữ liệu client-side
   const filteredLessons = useMemo(() => {
-    if (!searchQuery) return lessons;
+    let result = [...(lessons || [])];
 
-    const lowerQuery = searchQuery.toLowerCase();
-    return lessons.filter((lesson) => {
-      return (
-        lesson.title.toLowerCase().includes(lowerQuery) ||
-        lesson.type.toLowerCase().includes(lowerQuery)
-      );
-    });
-  }, [lessons, searchQuery]);
+    if (searchQuery) {
+      result = result.filter((lesson) => {
+        return (
+          lesson.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          lesson.type.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      });
+    }
+
+    //* sort logic
+    return sortByField(result, sortConfig.field, sortConfig.order);
+  }, [lessons, searchQuery, sortConfig]);
 
   // Render item với highlight
   const renderHighlightedItem = (text: string) => {
@@ -153,11 +160,14 @@ const LessonListPage = () => {
             placeholder={t('search.placeholder')}
           />
           <div className='flex items-center gap-4 self-end'>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
+            {/* <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/filter.png' alt='' width={14} height={14} />
-            </button>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
-              <img src='/sort.png' alt='' width={14} height={14} />
+            </button> */}
+            <button
+              onClick={() => handleSort('id')}
+              className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'
+            >
+              <img src={getSortIcon()} alt='' width={14} height={14} />
             </button>
 
             <FormModal table='lesson' type='create' onSuccess={handleSuccess} />

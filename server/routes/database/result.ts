@@ -35,7 +35,6 @@ expressRouter.get('/list', async (req, res) => {
         updatedAt: Results.updatedAt,
       })
       .from(Results)
-      .orderBy(desc(Classes.id))
       .innerJoin(Students, eq(Results.studentID, Students.id))
       .innerJoin(ClassStudents, eq(Results.studentID, ClassStudents.studentID))
       .innerJoin(Classes, eq(ClassStudents.classID, Classes.id))

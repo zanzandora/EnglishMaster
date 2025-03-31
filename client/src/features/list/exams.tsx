@@ -11,6 +11,8 @@ import React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
+import { useSort } from 'hooks/useSort';
+import { sortByField } from '@utils/sortUtils';
 
 const columns = (t: any, role?: string) => [
   {
@@ -60,6 +62,7 @@ const ExamListPage = () => {
   const [error, setError] = useState(null);
   const [reloadTrigger, setReloadTrigger] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const { sortConfig, handleSort, getSortIcon } = useSort('id');
 
   const targetUserID = useMemo(() => {
     if (role === 'teacher') {
@@ -73,18 +76,23 @@ const ExamListPage = () => {
 
   // Hàm lọc dữ liệu client-side
   const filteredExams = useMemo(() => {
-    if (!searchQuery) return exams;
+    let result = [...(exams || [])];
 
-    const lowerQuery = searchQuery.toLowerCase();
-    return exams.filter((exam) => {
-      return (
-        exam.title.toLowerCase().includes(lowerQuery) ||
-        exam.course?.toLowerCase().includes(lowerQuery) ||
-        exam.class?.toLowerCase().includes(lowerQuery) ||
-        exam.teacher?.toLowerCase().includes(lowerQuery)
-      );
-    });
-  }, [exams, searchQuery]);
+    if (searchQuery) {
+      const lowerQuery = searchQuery.toLowerCase();
+      result = result.filter((exam) => {
+        return (
+          exam.title.toLowerCase().includes(lowerQuery) ||
+          exam.course?.toLowerCase().includes(lowerQuery) ||
+          exam.class?.toLowerCase().includes(lowerQuery) ||
+          exam.teacher?.toLowerCase().includes(lowerQuery)
+        );
+      });
+    }
+
+    //* sort logic
+    return sortByField(result, sortConfig.field, sortConfig.order);
+  }, [exams, searchQuery, sortConfig]);
 
   // Render item với highlight
   const renderHighlightedItem = (text: string) => {
@@ -191,11 +199,14 @@ const ExamListPage = () => {
             placeholder={t('search.placeholder')}
           />
           <div className='flex items-center gap-4 self-end'>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
+            {/* <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/filter.png' alt='' width={14} height={14} />
-            </button>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
-              <img src='/sort.png' alt='' width={14} height={14} />
+            </button> */}
+            <button
+              onClick={() => handleSort('id')}
+              className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'
+            >
+              <img src={getSortIcon()} alt='' width={14} height={14} />
             </button>
             {role === 'admin' && !targetUserID && (
               <FormModal table='exam' type='create' onSuccess={handleSuccess} />

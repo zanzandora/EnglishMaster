@@ -11,6 +11,8 @@ import React, { useEffect } from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { useSort } from 'hooks/useSort';
+import { sortByField } from '@utils/sortUtils';
 
 const columns = (t: any) => [
   {
@@ -48,27 +50,38 @@ const SubjectListPage = () => {
 
   const [reloadTrigger, setReloadTrigger] = useState(0); // Triggers a re-render when data is updated
   const [searchQuery, setSearchQuery] = useState('');
+  const { sortConfig, handleSort, getSortIcon } = useSort('fee');
   const { courses, loading, error } = useFetchcourses(reloadTrigger);
 
   // Hàm lọc dữ liệu client-side
   const filteredCourses = useMemo(() => {
-    if (!searchQuery) return courses;
+    let result = [...(courses || [])];
 
-    const lowerQuery = searchQuery.toLowerCase();
-    return courses.filter((course) => {
-      // Kiểm tra tồn tại trước khi truy cập
-      const teacherNames = course.teachers
-        ? course.teachers.map((t: any) => t.teacherName?.toLowerCase() || '')
-        : [];
+    if (searchQuery) {
+      const lowerQuery = searchQuery.toLowerCase();
+      result = result.filter((course) => {
+        // Kiểm tra tồn tại trước khi truy cập
+        const teacherNames =
+          course.teachers
+            ?.map((t: any) => t.teacherName?.toLowerCase())
+            ?.filter(Boolean) || [];
 
-      return (
-        course.name.toLowerCase().includes(lowerQuery) ||
-        teacherNames.some((name: string) => name.includes(lowerQuery)) ||
-        String(course.fee).toLowerCase().includes(lowerQuery) ||
-        String(course.duraion).toLowerCase().includes(lowerQuery)
-      );
-    });
-  }, [courses, searchQuery]);
+        const searchFields = [
+          course.name,
+          course.description,
+          String(course.fee),
+          String(course.duration),
+          ...teacherNames,
+        ];
+        return searchFields.some((field) =>
+          field?.toLowerCase().includes(lowerQuery)
+        );
+      });
+    }
+
+    //* sort logic
+    return sortByField(result, sortConfig.field, sortConfig.order);
+  }, [courses, searchQuery, sortConfig]);
 
   // Render item với highlight
   const renderHighlightedItem = (text: string) => {
@@ -179,11 +192,14 @@ const SubjectListPage = () => {
             placeholder={t('search.placeholder')}
           />
           <div className='flex items-center gap-4 self-end'>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
+            {/* <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/filter.png' alt='' width={14} height={14} />
-            </button>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
-              <img src='/sort.png' alt='' width={14} height={14} />
+            </button> */}
+            <button
+              onClick={() => handleSort('fee')}
+              className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'
+            >
+              <img src={getSortIcon()} alt='' width={14} height={14} />
             </button>
             {role === 'admin' && (
               <FormModal

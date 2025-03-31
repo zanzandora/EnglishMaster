@@ -11,6 +11,8 @@ import { useFetchClassesOptions } from 'hooks/useFetchOptions';
 import { useAuth } from 'hooks/useAuth';
 import { decodeToken } from '@utils/decodeToken ';
 import { highlightText } from '@utils/highlight';
+import { useSort } from 'hooks/useSort';
+import { sortByField } from '@utils/sortUtils';
 import React from 'react';
 
 const columns = {
@@ -51,17 +53,21 @@ const ReportPage = () => {
   );
   const { classOptions } = useFetchClassesOptions();
   const [searchQuery, setSearchQuery] = useState('');
+  const defaultSortField =
+    selectedReport === 'student' ? 'score.totalScore' : 'class.totalStudents';
+  const { sortConfig, handleSort, getSortIcon } = useSort(defaultSortField);
   // const [startDate, setStartDate] = useState(
   //   () => new Date(new Date().setDate(new Date().getDate() - 3))
   // );
   // const [endDate, setEndDate] = useState(new Date());
 
   const filteredReports = useMemo(() => {
-    return reports.filter((item: any) => {
-      // Điều kiện lọc lớp
-      const classCondition = !selectedClass || item.class?.id === selectedClass;
+    const filteredData = reports.filter((item: any) => {
+      // Class filter
+      const classCondition =
+        !selectedClass || String(item.class?.classID) === selectedClass;
 
-      // Điều kiện tìm kiếm theo loại báo cáo
+      // Search query filter
       let searchCondition = true;
       if (searchQuery) {
         const lowerQuery = searchQuery.toLowerCase();
@@ -75,16 +81,19 @@ const ReportPage = () => {
         } else if (selectedReport === 'course') {
           searchCondition = [
             item.course?.courseName,
-            item.stats?.teacherNames,
-            item.stats?.classNames,
-            item.stats?.totalStudents?.toString(),
+            item.class?.teacherNames,
+            item.class?.classNames,
+            item.class?.totalStudents?.toString(),
           ].some((field) => field?.toLowerCase().includes(lowerQuery));
         }
       }
 
       return classCondition && searchCondition;
     });
-  }, [reports, selectedClass, searchQuery, selectedReport]);
+
+    // sort logic
+    return sortByField(filteredData, sortConfig.field, sortConfig.order);
+  }, [reports, selectedClass, searchQuery, selectedReport, sortConfig]);
 
   // Render item với highlight
   const renderHighlightedItem = (text: string) => {
@@ -156,17 +165,14 @@ const ReportPage = () => {
       >
         <td className='p-4'>{(currentPage - 1) * 10 + index + 1}</td>
         <td className='p-4'>
-          {renderHighlightedItem(item.course?.courseName) || 'Dont have course'}
+          {renderHighlightedItem(item.course?.courseName)}
+        </td>
+        <td className='p-4'>{renderHighlightedItem(item.class?.classNames)}</td>
+        <td className='p-4'>
+          {renderHighlightedItem(item.class?.teacherNames)}
         </td>
         <td className='p-4'>
-          {renderHighlightedItem(item.stats?.classNames) || 'No class assigned'}
-        </td>
-        <td className='p-4'>
-          {renderHighlightedItem(item.stats?.teacherNames) ||
-            'No teacher assigned'}
-        </td>
-        <td className='p-4'>
-          {renderHighlightedItem(String(item.stats?.totalStudents)) || '-'}
+          {renderHighlightedItem(String(item.class?.totalStudents ?? 0))}
         </td>
       </tr>
     );
@@ -224,6 +230,15 @@ const ReportPage = () => {
             </option>
           ))}
         </select>
+
+        <div className='flex items-center '>
+          <button
+            onClick={() => handleSort(defaultSortField)}
+            className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'
+          >
+            <img src={getSortIcon()} alt='Sort' width={14} height={14} />
+          </button>
+        </div>
         {/* <DatePicker
           locale={t('calendar.locale')}
           selected={startDate}

@@ -132,7 +132,8 @@ expressRouter.get('/list', async (req, res) => {
             courseID: Courses.id,
             courseName: sql`COALESCE(${Courses.name}, 'No course name')`,
           },
-          stats: {
+          class: {
+            classID: Classes.id,
             classNames:
               sql`GROUP_CONCAT(DISTINCT ${Classes.name} SEPARATOR ', ')`.as(
                 'classNames'

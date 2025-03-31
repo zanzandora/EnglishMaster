@@ -10,7 +10,10 @@ import useFetchTeachers from 'hooks/useFetchTeachers';
 import { useAuth } from 'hooks/useAuth';
 import { decodeToken } from '@utils/decodeToken ';
 import { highlightText } from '@utils/highlight';
+import { sortByField } from '@utils/sortUtils';
+import { Teacher } from '@interfaces';
 import React from 'react';
+import { useSort } from 'hooks/useSort';
 
 const columns = (t: any) => [
   {
@@ -52,24 +55,33 @@ const TeacherListPage = () => {
 
   const [reloadTrigger, setReloadTrigger] = useState(0); // Triggers a re-render when data is updated
   const [searchQuery, setSearchQuery] = useState('');
+  const { sortConfig, handleSort, getSortIcon } = useSort<keyof Teacher>('id');
   const { teachers, loading, error } = useFetchTeachers(reloadTrigger);
 
   // Hàm lọc dữ liệu client-side
   const filteredTeachers = useMemo(() => {
-    if (!searchQuery) return teachers;
+    let result = [...(teachers || [])];
 
-    const lowerQuery = searchQuery.toLowerCase();
-    return teachers.filter((teacher) => {
-      return (
-        teacher.name.toLowerCase().includes(lowerQuery) ||
-        teacher.email.toLowerCase().includes(lowerQuery) ||
-        teacher.userName.toLowerCase().includes(lowerQuery) ||
-        String(teacher.userID).includes(lowerQuery) ||
-        (teacher.phoneNumber?.toLowerCase()?.includes(lowerQuery) ?? false) ||
-        (teacher.address?.toLowerCase()?.includes(lowerQuery) ?? false)
-      );
-    });
-  }, [teachers, searchQuery]);
+    if (searchQuery) {
+      const lowerQuery = searchQuery.toLowerCase();
+      result = result.filter((teacher) => {
+        const searchFields = [
+          teacher.name,
+          teacher.email,
+          teacher.userName,
+          String(teacher.userID),
+          teacher.phoneNumber,
+          teacher.address,
+        ];
+        return searchFields.some((field) =>
+          field?.toLowerCase().includes(lowerQuery)
+        );
+      });
+    }
+
+    //* sort logic
+    return sortByField(result, sortConfig.field, sortConfig.order);
+  }, [teachers, searchQuery, sortConfig]);
 
   // Render item với highlight
   const renderHighlightedItem = (text: string) => {
@@ -181,11 +193,14 @@ const TeacherListPage = () => {
             placeholder={t('search.placeholder')}
           />
           <div className='flex teachers-center gap-4 self-end'>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
+            {/* <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/filter.png' alt='' width={14} height={14} />
-            </button>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
-              <img src='/sort.png' alt='' width={14} height={14} />
+            </button> */}
+            <button
+              onClick={() => handleSort('id')}
+              className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'
+            >
+              <img src={getSortIcon()} alt='' width={14} height={14} />
             </button>
             {role === 'admin' && (
               <FormModal

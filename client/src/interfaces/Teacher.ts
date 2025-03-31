@@ -21,7 +21,7 @@ export interface Teacher {
   createdAt: Date;
   updatedAt: Date;
 
-  username: string;
+  userName: string;
   password: string;
   email: string;
   name: string;

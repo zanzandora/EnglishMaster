@@ -10,6 +10,8 @@ import { decodeToken } from '@utils/decodeToken ';
 import { formatDate } from '@utils/dateUtils';
 import DownloadCertificate from '@components/common/DownloadCertificate';
 import { highlightText } from '@utils/highlight';
+import { useSort } from 'hooks/useSort';
+import { sortByField } from '@utils/sortUtils';
 import React from 'react';
 
 const columns = (t: any, role?: string) => [
@@ -81,14 +83,13 @@ const ResultListPage = () => {
 
   const [selectedClass, setSelectedClass] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const { sortConfig, handleSort, getSortIcon } = useSort('score');
 
   const filteredResults = useMemo(() => {
-    return results.filter((item: any) => {
-      // Điều kiện lọc lớp
+    const filteredData = results.filter((item: any) => {
       const classCondition =
         selectedClass === 'All' || item.className === selectedClass;
 
-      // Điều kiện tìm kiếm
       const searchCondition =
         !searchQuery ||
         [
@@ -104,7 +105,9 @@ const ResultListPage = () => {
 
       return classCondition && searchCondition;
     });
-  }, [results, selectedClass, searchQuery]);
+
+    return sortByField(filteredData, sortConfig.field, sortConfig.order);
+  }, [results, selectedClass, searchQuery, sortConfig]);
 
   // Render item với highlight
   const renderHighlightedItem = (text: string) => {
@@ -141,6 +144,7 @@ const ResultListPage = () => {
           throw new Error('Network response was not ok');
         }
         const data = await response.json();
+
         setResults(
           data.map((c: any) => ({
             ...c,
@@ -248,11 +252,14 @@ const ResultListPage = () => {
             ))}
           </select>
           <div className='flex items-center gap-4 self-end'>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
+            {/* <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/filter.png' alt='' width={14} height={14} />
-            </button>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
-              <img src='/sort.png' alt='' width={14} height={14} />
+            </button> */}
+            <button
+              onClick={() => handleSort('score')}
+              className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'
+            >
+              <img src={getSortIcon()} alt='' width={14} height={14} />
             </button>
           </div>
         </div>

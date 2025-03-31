@@ -11,6 +11,8 @@ import { useAuth } from 'hooks/useAuth';
 import { decodeToken } from '@utils/decodeToken ';
 import { highlightText } from '@utils/highlight';
 import React from 'react';
+import { sortByField } from '@utils/sortUtils';
+import { useSort } from 'hooks/useSort';
 
 const columns = (t: any) => [
   {
@@ -54,6 +56,7 @@ const ClassListPage = () => {
 
   const { userID: urlUserID } = useParams();
   const [reloadTrigger, setReloadTrigger] = useState(0); // Triggers a re-render when data is updated
+  const { sortConfig, handleSort, getSortIcon } = useSort('totalStudents');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Xác định userID dựa trên role
@@ -78,17 +81,25 @@ const ClassListPage = () => {
 
   // Hàm lọc dữ liệu client-side
   const filteredClasses = useMemo(() => {
-    if (!searchQuery) return classes;
+    let result = [...(classes || [])];
 
-    const lowerQuery = searchQuery.toLowerCase();
-    return classes.filter((classItem) => {
-      return (
-        classItem.name.toLowerCase().includes(lowerQuery) ||
-        classItem.teacherName.toLowerCase().includes(lowerQuery) ||
-        classItem.courseName.toLowerCase().includes(lowerQuery)
-      );
-    });
-  }, [classes, searchQuery]);
+    if (searchQuery) {
+      const lowerQuery = searchQuery.toLowerCase();
+      result = result.filter((classItem) => {
+        const searchFields = [
+          classItem.name,
+          classItem.courseName,
+          classItem.teacherName,
+        ];
+        return searchFields.some((field) =>
+          field?.toString().toLowerCase().includes(lowerQuery)
+        );
+      });
+    }
+
+    //* sort logic
+    return sortByField(result, sortConfig.field, sortConfig.order);
+  }, [classes, searchQuery, sortConfig]);
 
   // Render item với highlight
   const renderHighlightedItem = (text: string) => {
@@ -184,11 +195,14 @@ const ClassListPage = () => {
             placeholder={t('search.placeholder')}
           />
           <div className='flex items-center gap-4 self-end'>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
+            {/* <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
               <img src='/filter.png' alt='' width={14} height={14} />
-            </button>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'>
-              <img src='/sort.png' alt='' width={14} height={14} />
+            </button> */}
+            <button
+              onClick={() => handleSort('totalStudents')}
+              className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-redLight_fade'
+            >
+              <img src={getSortIcon()} alt='' width={14} height={14} />
             </button>
             {role === 'admin' && !targetUserID && (
               <FormModal
