@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import DatePicker from 'react-datepicker';
+// import DatePicker from 'react-datepicker';
 import { useTranslation } from 'react-i18next';
 import Table from '@components/common/table/Table';
 import Pagination from '@components/common/Pagination';
@@ -13,6 +13,7 @@ import { decodeToken } from '@utils/decodeToken ';
 import { highlightText } from '@utils/highlight';
 import { useSort } from 'hooks/useSort';
 import { sortByField } from '@utils/sortUtils';
+import { Classes } from '@interfaces';
 import React from 'react';
 
 const columns = {
@@ -62,7 +63,7 @@ const ReportPage = () => {
   // const [endDate, setEndDate] = useState(new Date());
 
   const filteredReports = useMemo(() => {
-    const filteredData = reports.filter((item: any) => {
+    const filteredData = reports.filter((item) => {
       // Class filter
       const classCondition =
         !selectedClass || String(item.class?.classID) === selectedClass;
@@ -224,7 +225,7 @@ const ReportPage = () => {
           className='px-4 py-2 border rounded-full ring-[1.5px] ring-gray-300'
         >
           <option value=''>Select Class</option>
-          {classOptions.map((classItem) => (
+          {classOptions.map((classItem: Classes) => (
             <option key={classItem.id} value={classItem.id}>
               {classItem.name}
             </option>

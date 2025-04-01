@@ -10,6 +10,7 @@ import { decodeToken } from '@utils/decodeToken ';
 import { highlightText } from '@utils/highlight';
 import { useSort } from 'hooks/useSort';
 import { sortByField } from '@utils/sortUtils';
+import { Lesson } from '@interfaces';
 import React from 'react';
 
 const columns = (t: any) => [
@@ -39,7 +40,7 @@ const LessonListPage = () => {
   const decodedToken = decodeToken(token);
   const role = decodedToken?.role;
 
-  const [lessons, setLessons] = useState([]);
+  const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reloadTrigger, setReloadTrigger] = useState(0);

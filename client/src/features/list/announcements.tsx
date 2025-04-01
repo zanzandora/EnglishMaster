@@ -8,6 +8,7 @@ import usePagination from 'hooks/usePagination';
 import { useEffect, useMemo, useState } from 'react';
 import { formatDate } from '@utils/dateUtils';
 import { highlightText } from '@utils/highlight';
+import { Announcement } from '@interfaces';
 import React from 'react';
 
 const columns = (t: any) => [
@@ -36,9 +37,9 @@ const AnnouncementListPage = () => {
 
   const { token } = useAuth();
   const decodedToken = decodeToken(token);
-  const role = decodedToken?.role;
+  // const role = decodedToken?.role;
 
-  const [announcements, setAnnouncements] = useState([]);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');

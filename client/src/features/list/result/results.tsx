@@ -12,6 +12,7 @@ import DownloadCertificate from '@components/common/DownloadCertificate';
 import { highlightText } from '@utils/highlight';
 import { useSort } from 'hooks/useSort';
 import { sortByField } from '@utils/sortUtils';
+import { Result } from '@interfaces';
 import React from 'react';
 
 const columns = (t: any, role?: string) => [
@@ -76,7 +77,7 @@ const ResultListPage = () => {
   const role = decodedToken?.role;
   const teacherID = decodedToken?.user_id;
 
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState<Result[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reloadTrigger, setReloadTrigger] = useState(0);
@@ -86,7 +87,7 @@ const ResultListPage = () => {
   const { sortConfig, handleSort, getSortIcon } = useSort('score');
 
   const filteredResults = useMemo(() => {
-    const filteredData = results.filter((item: any) => {
+    const filteredData = results.filter((item: Result) => {
       const classCondition =
         selectedClass === 'All' || item.className === selectedClass;
 
@@ -121,7 +122,7 @@ const ResultListPage = () => {
   };
 
   const uniqueClasses = Array.from(
-    new Set(results.map((item: any) => item.className))
+    new Set(results.map((item: Result) => item.className))
   ).filter(Boolean);
 
   const { currentData, currentPage, totalPages, setCurrentPage } =

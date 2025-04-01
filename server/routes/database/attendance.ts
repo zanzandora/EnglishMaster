@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { and, eq,count,sql  } from 'drizzle-orm'
+import { and, eq,sql  } from 'drizzle-orm'
 
 import { Attendances, Classes, ClassStudents, Students, Teachers, Users } from '../../database/entity'
 import { db } from '../../database/driver'

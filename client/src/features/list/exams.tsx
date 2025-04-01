@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { useSort } from 'hooks/useSort';
 import { sortByField } from '@utils/sortUtils';
+import { Exam } from '@interfaces';
 
 const columns = (t: any, role?: string) => [
   {
@@ -57,7 +58,7 @@ const ExamListPage = () => {
 
   const { userID: urlUserID } = useParams();
 
-  const [exams, setExams] = useState([]);
+  const [exams, setExams] = useState<Exam[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reloadTrigger, setReloadTrigger] = useState(0);

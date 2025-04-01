@@ -67,7 +67,7 @@ const generateRecurringEvents = (schedule: any): ExtendedEvent[] => {
 
 const SingleStudentPage = () => {
   const { id } = useParams();
-  const [reloadTrigger, setReloadTrigger] = useState(0);
+  const [reloadTrigger] = useState(0);
 
   const { token } = useAuth();
   const decodedToken = decodeToken(token);
@@ -82,7 +82,7 @@ const SingleStudentPage = () => {
 
   const [events, setEvents] = useState<ExtendedEvent[]>([]);
 
-  const [view, setView] = useState<View>('week');
+  const [setView] = useState<View>('week');
 
   const normalizeEvent = (eventObj: any): ExtendedEvent => {
     const startDatePart = eventObj.startDate.split('T')[0];
@@ -241,7 +241,9 @@ const SingleStudentPage = () => {
                 className='w-6 h-6'
               />
               <div className=''>
-                <h1 className='text-xl font-semibold'>2</h1>
+                <h1 className='text-xl font-semibold'>
+                  {student.totalAbsences}
+                </h1>
                 <span className='text-sm text-gray-400'>Absent</span>
               </div>
             </div>

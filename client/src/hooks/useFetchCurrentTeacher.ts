@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "./useAuth";
+import { CurrentTeacher } from "@interfaces";
 
 const useFetchCurrentTeacher = () => {
-  const [teacher, setTeacher] = useState(null);
+  const [teacher, setTeacher] = useState<CurrentTeacher>();
   const { token } = useAuth();
 
   useEffect(() => {

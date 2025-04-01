@@ -9,6 +9,7 @@ export interface Student {
     photo?: string;
     className: string;
     courseName: string;
+    totalAbsences?: number;
     createdAt: Date; 
     updatedAt: Date; 
   }

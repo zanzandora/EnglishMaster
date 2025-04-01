@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
+import { Course } from '@interfaces';
 
 const useFetchcourses = (reloadTrigger?: number) => {
-  const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

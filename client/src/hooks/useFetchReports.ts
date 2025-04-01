@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
+import {Report} from '@interfaces';
 
 const useFetchreports = (reloadTrigger?: number, options?:string, classID?: any) => {
-  const [reports, setReports] = useState([]);
+  const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

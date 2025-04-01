@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import { Attendance } from "@interfaces";
 
-const useFetchAttendances = (role: any, reloadTrigger?: number) => {
-  const [attendances, setAttendances] = useState([]);
+const useFetchAttendances = (role: string, reloadTrigger?: number) => {
+  const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // const prevTeacherID = useRef(teacherID); 

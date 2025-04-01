@@ -33,6 +33,7 @@ export interface Teacher {
   gender: 'male' | 'female';  // Mối quan hệ với bảng User
 
   totalCourses?: number | undefined;
+  courseNames?: string[] | undefined; 
   totalClasses?: number | undefined;
 
 }
