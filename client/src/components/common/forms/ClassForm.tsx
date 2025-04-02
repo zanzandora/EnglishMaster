@@ -44,6 +44,7 @@ const ClassForm = ({
   setOpen?: (open: boolean) => void;
 }) => {
   const { t } = useTranslation();
+  const tableNameDefault = t('form.table.class');
   const [activeTab, setActiveTab] = useState<'details' | 'students'>('details');
 
   const { teachers } = useFetchTeachers();
@@ -94,8 +95,8 @@ const ClassForm = ({
 
       toast.success(
         type === 'create'
-          ? 'Class created successfully!'
-          : 'Class updated successfully!'
+          ? t('orther.toast.create', { tableNameDefault })
+          : t('orther.toast.update', { tableNameDefault })
       );
       onSuccess();
       if (setOpen) setOpen(false);
@@ -146,7 +147,9 @@ const ClassForm = ({
   return (
     <form className='flex flex-col gap-8' onSubmit={handleSubmit(onSubmit)}>
       <h1 className='text-xl font-semibold'>
-        {type === 'create' ? 'Create a new Class' : 'Update Class'}
+        {type === 'create'
+          ? t('form.titles.add', { tableNameDefault })
+          : t('form.titles.edit', { tableNameDefault })}
       </h1>
 
       <div className='flex gap-4'>
@@ -158,7 +161,7 @@ const ClassForm = ({
             }`}
             onClick={() => setActiveTab('details')}
           >
-            Class Details
+            {t('form.class.sections.classDetails')}
           </button>
         </span>
         <span className='text-xs text-gray-400 font-medium'>
@@ -169,7 +172,7 @@ const ClassForm = ({
             }`}
             onClick={() => setActiveTab('students')}
           >
-            Add Students
+            {t('form.class.sections.addStudents')}
           </button>
         </span>
       </div>
@@ -177,7 +180,7 @@ const ClassForm = ({
       {activeTab === 'details' && (
         <div className='flex justify-between flex-wrap gap-4'>
           <InputField
-            label='Class Name'
+            label={t('form.class.name')}
             name='name'
             register={register}
             error={errors.name}
@@ -186,7 +189,7 @@ const ClassForm = ({
 
           <div className='flex flex-wrap gap-4 w-full justify-between order-1'>
             <InputField
-              label='Teacher in charge'
+              label={t('form.class.teacher')}
               name='teacherID'
               register={register}
               value={teacherIDValue !== undefined ? String(teacherIDValue) : ''}
@@ -200,7 +203,7 @@ const ClassForm = ({
               ))}
             </InputField>
             <InputField
-              label='Course'
+              label={t('form.class.course')}
               name='courseID'
               register={register}
               value={courseIDValue !== undefined ? String(courseIDValue) : ''}
@@ -216,7 +219,7 @@ const ClassForm = ({
             </InputField>
           </div>
           <InputField
-            label='Capacity'
+            label={t('form.class.capacity')}
             name='capacity'
             type='number'
             register={register}
@@ -240,7 +243,9 @@ const ClassForm = ({
       )}
 
       <button className='bg-blue-400 text-white p-2 rounded-md'>
-        {type === 'create' ? 'Create' : 'Update'}
+        {type === 'create'
+          ? t('form.actions.create')
+          : t('form.actions.update')}
       </button>
     </form>
   );

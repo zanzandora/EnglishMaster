@@ -29,6 +29,7 @@ interface BigCalendarProps {
 const CustomEventComponent: React.FC<EventProps<ExtendedEvent>> = ({
   event,
 }) => {
+  const { t } = useTranslation();
   const anchorId = `anchor-${event.id}-${event.start?.getTime()}`;
 
   return (
@@ -52,16 +53,22 @@ const CustomEventComponent: React.FC<EventProps<ExtendedEvent>> = ({
         </span>
 
         {event.data?.room && (
-          <span className='text-xs'>🏫 Room {event.data.room}</span>
+          <span className='text-xs'>
+            🏫 {t('calendar.toolTip.room')} {event.data.room}
+          </span>
         )}
         {event.data?.teacher && (
-          <span className='text-xs'>👨‍🏫 Teacher: {event.data.teacher}</span>
+          <span className='text-xs'>
+            👨‍🏫 {t('calendar.toolTip.teacher')}: {event.data.teacher}
+          </span>
         )}
         {event.data?.course && (
-          <span className='text-xs'>📚 Course: {event.data.course}</span>
+          <span className='text-xs'>
+            📚 {t('calendar.toolTip.course')}: {event.data.course}
+          </span>
         )}
         {event.data?.type === 'exam' && (
-          <span className=' text-red-500'>Exam</span>
+          <span className=' text-red-500'>{t('calendar.toolTip.exam')}</span>
         )}
       </div>
       {/* Tooltip */}
@@ -75,18 +82,29 @@ const CustomEventComponent: React.FC<EventProps<ExtendedEvent>> = ({
           <div className=' overflow-auto'>
             <strong>{event.title}</strong>
             {event.data?.type === 'exam' && (
-              <span className=' text-red-500 font-bold'>(Exam)</span>
+              <span className=' text-red-500 font-bold'>
+                ({t('calendar.toolTip.course')})
+              </span>
             )}
             <br />
             {event.data?.room && (
               <>
-                🏫 Room: {event.data.room}
+                🏫 {t('calendar.toolTip.room')}: {event.data.room}
                 <br />
               </>
             )}
-            {event.data?.teacher && <>👨‍🏫 Teacher: {event.data.teacher}</>}
+            {event.data?.teacher && (
+              <>
+                👨‍🏫 {t('calendar.toolTip.teacher')}: {event.data.teacher}
+              </>
+            )}
             <br />
-            {event.data?.course && <> 📚 Course: {event.data.course}</>}
+            {event.data?.course && (
+              <>
+                {' '}
+                📚 {t('calendar.toolTip.course')}: {event.data.course}
+              </>
+            )}
           </div>
         )}
       />

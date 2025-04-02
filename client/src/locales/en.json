@@ -50,21 +50,33 @@
     "today": "Today",
     "day": "Day",
     "week": "Week",
-    "month": "Month"
+    "month": "Month",
+    "toolTip": {
+      "class": "Class",
+      "teacher": "Teacher",
+      "room": "Room",
+      "course": "Course",
+      "exam": "Exam"
+    }
   },
   "card": {
-    "label":{
+    "label": {
       "students": "students",
       "teachers": "teachers",
       "staffs": "staffs",
-      "revenue": "revenue"
+      "revenue": "revenue",
+      "courses": "Courses",
+      "classThisWeek": "Class this week",
+      "classes": "Classes",
+      "class": "Class",
+      "absent": "Absent"
     }
   },
   "chart": {
     "title": {
       "students": "students",
       "studentGrowth": "Monthly Student Growth",
-      "finance":"finance"
+      "finance": "finance"
     },
     "label": {
       "boys": "boys",
@@ -76,11 +88,11 @@
       "income": "income"
     }
   },
-  "announcements":{
+  "announcements": {
     "title": "announcements"
   },
   "table": {
-    "teachers":{
+    "teachers": {
       "title": "Teachers",
       "header": {
         "info": "Info",
@@ -132,14 +144,11 @@
     "exams": {
       "title": "Exams",
       "header": {
-        "name": "Exam Name",
-        "examId": "Exam ID",
+        "title": "Title",
+        "source": "Source",
         "course": "Course",
         "class": "Class",
         "teacher": "Teacher",
-        "date": "Date",
-        "file": "Source",
-        "time": "Time",
         "actions": "Actions"
       }
     },
@@ -153,6 +162,8 @@
         "topic": "Topic",
         "classes": "Classes",
         "teachers": "Teachers",
+        "source": "Source",
+        "type": "Lesson Type",
         "actions": "Actions"
       }
     },
@@ -162,10 +173,13 @@
         "name": "Exam Name",
         "resultId": "Result ID",
         "student": "Student",
-        "teacher": "Teacher",
         "class": "Class",
-        "date": "Date",
-        "score": "Score",
+        "studentId": "Student ID",
+        "mt": "Midterm score (MT)",
+        "ft": "Final score (FT)",
+        "certificate": "Certificate",
+        "teacher": "Teacher",
+        "score": "Total Score",
         "status": "Status",
         "actions": "Actions"
       }
@@ -175,42 +189,49 @@
       "header": {
         "announcementId": "Announcement ID",
         "title": "Title",
-        "content": "Content",
+        "message": "Message",
         "class": "Class",
         "date": "Date",
-        "actions": "Actions"
+        "type": "Type"
       }
     },
     "attendances": {
       "title": "Attendance",
       "header": {
+        "NO": "NO.",
         "name": "Sutdent Name",
-        "inCharge":"Teacher Name",
-        "attendanceId": "ID",
-        "total": "Total/week",
-        "attendancePercentage": "Attendance % ",
-        "date": "Date"
+        "inCharge": "Teacher Name",
+        "class": "Class",
+        "absences": "Absences",
+        "totalChecking": "Total Checking",
+        "actions": "Actions"
       }
     },
     "reports": {
       "student": {
         "label": "Student",
+        "NO": "NO.",        
         "id": "Student ID",
         "name": "Student Name",
+        "birth":"Birth",
+        "class": "Class",
+        "mt": "Midterm score (MT)",
+        "ft": "Final score (FT)",
+        "totalScore": "Total Score",
+        "status": "Status",
+        "attended": "Attended",
+        "absent": "Absent",
+        "certificate": "Certificate",
         "progress": "Progress",
         "score": "Score"
       },
-      "teacher": {
-        "label": "Teacher",
-        "id": "Teacher ID",
-        "name": "Teacher Name",
-        "rating": "Rating"
-      },
       "course": {
+        "NO": "NO.",
         "label": "Course",
         "id": "Course ID",
         "name": "Course Name",
-        "completion": "Completion",
+        "classes": "Class Name",
+        "teachers": "Teachers",
         "students": "Students"
       },
       "finance": {
@@ -240,6 +261,10 @@
       "update": "Update",
       "create": "Create"
     },
+    "titles": {
+      "add": "Created a new {{tableNameDefault}}",
+      "edit": "Updated {{tableNameDefault}}"
+    },
     "table": {
       "teacher": "teacher",
       "student": "student",
@@ -254,20 +279,15 @@
       "announcement": "announcement",
       "schedule": "schedule"
     },
-    "sections": {
-      "personalInformation": "Personal Information",
-      "authenticationInformation": "Authentication Information"
-    },
     "placeholders": {
-      "select": "Select"
+      "select": "Select",
+      "description": "Takes note..."
     },
     "options": {
       "male": "Male",
       "female": "Female"
     },
     "student": {
-      "titleAdd":"Create a new Student",
-      "titleEdit":"Student Updated",
       "username": "Username",
       "password": "Password",
       "email": "Email",
@@ -275,11 +295,15 @@
       "phone": "Phone",
       "address": "Address",
       "birthday": "Birthday",
+      "uploadPhoto": "Upload photo",
       "sex": "Sex"
     },
     "teacher": {
-      "titleAdd":"Create a new Teacher",
-      "titleEdit":"Teacher Updated",
+      "sections": {
+        "personalInformation": "Personal Information",
+        "authenticationInformation": "Authentication Information",
+        "professionalInformation": "Professional Information"
+      },
       "username": "Username",
       "password": "Password",
       "email": "Email",
@@ -288,19 +312,71 @@
       "address": "Address",
       "birthday": "Birthday",
       "sex": "Sex",
+      "uploadPhoto": "Upload photo",
       "specialization": "Specialization",
       "experience": "Experience"
     },
-    "event": {
-      "titleAdd":"Create a new Schedule",
-      "titleEdit":"Schedule Updated",
-      "name": "Name",
+    "course": {
+      "name": "Course name",
+      "fee": "Fee",
+      "duration": "Duration (month)",
+      "teachers": "Teachers in charge",
+      "description": "Description"
+    },
+    "class": {
+      "sections":{
+        "classDetails": "Class Details",
+        "addStudents": "Add Students"
+      },
+      "list": {
+        "title": "Students List",
+        "studentId": "Student ID",
+        "studentName": "Student Name",
+        "email": "Email",
+        "actions": "Actions"
+      },
+      "name": "Class name",
+      "teacher": "Teacher in charge",
+      "students": "Select students",
+      "course": "Course",
+      "capacity": "Capacity"
+    },
+    "lesson": {
+      "title": "Title",
       "description": "Description",
+      "type": "Lesson Type",
+      "file": "Upload file"
+    },
+    "exam": {
+      "title": "Title",
+      "class": "Class",
+      "file": "Upload file"
+    },
+    "schedule": {
+      "sections": {
+        "eventInfo": "Event Information",
+        "scheduleDetails": "Schedule Details"
+      },
+      "class": "Class",
+      "room": "Room",
+      "type": "Type",
+      "endDate": "End Date",
       "startDate": "Start Date",
-      "endDate": "End Date"
+      "daysOfWeek": "Date to repeat",
+      "shift": "Shift"
+    },
+    "attendance": {
+      "list":{
+        "title": "Details",
+        "status": "Status",
+        "note": "Note",
+        "date": "Date"
+      },
+      "class": "Class",
+      "file": "Upload file"
     }
   },
-  "search":{
+  "search": {
     "placeholder": "Search",
     "students": "Students",
     "teachers": "Teachers",
@@ -310,5 +386,40 @@
     "showMore": "Show {{count}} more",
     "showLess": "Show less",
     "noResults": "No results found"
+  },
+  "profile": {
+    "title": "Profile",
+    "code": "ID",
+    "userName": "User Name",
+    "phone": "Phone",
+    "address": "Address",
+    "birth": "Birth",
+    "gender": "Gender",
+    "teacher": {
+      "specialization": "Specialization",
+      "experience": "Experience"
+    },
+    "student": {
+      "class": "Class",
+      "course": "Course"
+    }
+  },
+  "shortcuts": {
+    "title": "Shortcuts",
+    "classesStudents": " Teacher's Classes and Students",
+    "exams": " Teacher's Exams"
+  },
+  "orther": {
+    "error": "Something went wrong. Please try again later.",
+    "toast": {
+      "create": "Created {{tableNameDefault}} successful!",
+      "update": "Updated {{tableNameDefault}} successful!",
+      "delete": "Deleted {{tableNameDefault}} successful!"
+    },
+    "parValues": "($)",
+    "label": {
+      "studentSchedule": "Lịch học viên",
+      "teacherSchedule": "Lịch giáo viên"
+    }
   }
 }

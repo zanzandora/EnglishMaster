@@ -16,29 +16,29 @@ import { sortByField } from '@utils/sortUtils';
 import { Classes } from '@interfaces';
 import React from 'react';
 
-const columns = {
+const columns = (t: any) => ({
   student: [
-    { header: 'STT', accessor: 'stt' },
-    { header: 'Student Name', accessor: 'studentName' },
-    { header: 'Student ID', accessor: 'studentID' },
-    { header: 'Birth', accessor: 'dateOfBirth' },
-    { header: 'Class', accessor: 'className' },
-    { header: 'Middle Score (MT)', accessor: 'MT' },
-    { header: 'Final Score (FT)', accessor: 'FT' },
-    { header: 'Total Score', accessor: 'totalScore' },
+    { header: t('table.reports.student.NO'), accessor: 'stt' },
+    { header: t('table.reports.student.name'), accessor: 'studentName' },
+    { header: t('table.reports.student.id'), accessor: 'studentID' },
+    { header: t('table.reports.student.birth'), accessor: 'dateOfBirth' },
+    { header: t('table.reports.student.class'), accessor: 'className' },
+    { header: t('table.reports.student.mt'), accessor: 'MT' },
+    { header: t('table.reports.student.ft'), accessor: 'FT' },
+    { header: t('table.reports.student.totalScore'), accessor: 'totalScore' },
     { header: 'GPA', accessor: 'GPA' },
-    { header: 'Status', accessor: 'status' },
-    { header: 'Attended', accessor: 'totalCheckins' },
-    { header: 'Absences', accessor: 'totalAbsences' },
+    { header: t('table.reports.student.status'), accessor: 'status' },
+    { header: t('table.reports.student.attended'), accessor: 'totalCheckins' },
+    { header: t('table.reports.student.absent'), accessor: 'totalAbsences' },
   ],
   course: [
-    { header: 'STT', accessor: 'stt' },
-    { header: 'Course Name', accessor: 'courseName' },
-    { header: 'Classes', accessor: 'className' },
-    { header: 'Teachers', accessor: 'teacherName' },
-    { header: 'Students', accessor: 'studentCount' },
+    { header: t('table.reports.course.NO'), accessor: 'stt' },
+    { header: t('table.reports.course.name'), accessor: 'courseName' },
+    { header: t('table.reports.course.classes'), accessor: 'className' },
+    { header: t('table.reports.course.teachers'), accessor: 'teacherName' },
+    { header: t('table.reports.course.students'), accessor: 'studentCount' },
   ],
-};
+});
 
 const ReportPage = () => {
   const { t } = useTranslation();
@@ -267,7 +267,9 @@ const ReportPage = () => {
       ) : (
         <Table
           columns={
-            selectedReport === 'student' ? columns.student : columns.course
+            selectedReport === 'student'
+              ? columns(t).student
+              : columns(t).course
           }
           data={currentData}
           renderRow={(item, index) => renderRow(item, index, selectedReport)}

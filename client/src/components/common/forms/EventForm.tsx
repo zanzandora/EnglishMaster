@@ -58,6 +58,7 @@ const EventForm = ({
   setOpen?: (open: boolean) => void;
 }) => {
   const { t } = useTranslation();
+  const tableNameDefault = t('form.table.schedule');
   const [openTrigger, setOpenTrigger] = useState<number>(0);
   const [OpenDelete, setOpenDelete] = useState(false);
 
@@ -141,8 +142,8 @@ const EventForm = ({
 
       toast.success(
         type === 'create'
-          ? 'Thêm lịch học thành công!'
-          : 'Cập nhật lịch học thành công!'
+          ? t('orther.toast.create', { tableNameDefault })
+          : t('orther.toast.update', { tableNameDefault })
       );
 
       if (onSuccess) {
@@ -217,8 +218,8 @@ const EventForm = ({
     <form className='flex flex-col gap-8' onSubmit={handleSubmit(onSubmit)}>
       <h1 className='text-xl font-semibold'>
         {type === 'create'
-          ? t('form.event.titleAdd')
-          : t('form.event.titleEdit')}
+          ? t('form.titles.add', { tableNameDefault })
+          : t('form.titles.edit', { tableNameDefault })}
       </h1>
 
       {/* Tab Navigation */}
@@ -230,7 +231,7 @@ const EventForm = ({
           }`}
           onClick={() => setActiveTab('eventInfo')}
         >
-          Event Information
+          {t('form.schedule.sections.eventInfo')}
         </button>
         <button
           type='button'
@@ -239,7 +240,7 @@ const EventForm = ({
           }`}
           onClick={() => setActiveTab('scheduling')}
         >
-          Schedule Details
+          {t('form.schedule.sections.scheduleDetails')}
         </button>
       </div>
 
@@ -247,7 +248,7 @@ const EventForm = ({
       {activeTab === 'eventInfo' && (
         <div className='flex flex-col gap-4'>
           <InputField
-            label='Class'
+            label={t('form.schedule.class')}
             name='classID'
             register={register}
             error={errors.classID}
@@ -262,7 +263,7 @@ const EventForm = ({
           </InputField>
 
           <InputField
-            label='Phòng học'
+            label={t('form.schedule.room')}
             name='room'
             register={register}
             error={errors.room}
@@ -276,7 +277,7 @@ const EventForm = ({
             ))}
           </InputField>
           <InputField
-            label='Type'
+            label={t('form.schedule.type')}
             name='type'
             register={register}
             error={errors.type}
@@ -294,7 +295,7 @@ const EventForm = ({
           <div className=' flex flex-row gap-4 justify-between items-center my-2'>
             <div className=' relative'>
               <label className='text-xs text-gray-500 absolute bottom-full mb-1'>
-                Start Date
+                {t('form.schedule.startDate')}
               </label>
               <DatePicker
                 todayButton='Today'
@@ -310,7 +311,7 @@ const EventForm = ({
             </div>
             <div className=' relative'>
               <label className='text-xs text-gray-500 absolute bottom-full mb-1'>
-                End Date
+                {t('form.schedule.endDate')}
               </label>
               <DatePicker
                 locale={vi}
@@ -327,7 +328,7 @@ const EventForm = ({
           </div>
           <div className='flex flex-col gap-4'>
             <InputField
-              label='Date to Repeat'
+              label={t('form.schedule.daysOfWeek')}
               name='daysOfWeek'
               register={register}
               error={errors.daysOfWeek}
@@ -338,7 +339,7 @@ const EventForm = ({
               }}
             />
             <InputField
-              label='Ca học'
+              label={t('form.schedule.shift')}
               name='shift'
               register={register}
               error={errors.shift}
@@ -366,7 +367,7 @@ const EventForm = ({
           className='bg-red-500 text-white p-2 rounded-md'
           onClick={handleOpenDeleteModal}
         >
-          Delete
+          {t('form.actions.delete')}
         </button>
       )}
 

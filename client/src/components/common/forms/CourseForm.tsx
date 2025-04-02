@@ -45,6 +45,7 @@ const CourseForm = ({
   setOpen?: (open: boolean) => void;
 }) => {
   const { t } = useTranslation();
+  const tableNameDefault = t('form.table.course');
 
   const schema = type === 'create' ? CreateCourseSchema : UpdateCourseSchema;
 
@@ -85,8 +86,8 @@ const CourseForm = ({
 
       toast.success(
         type === 'create'
-          ? 'Thêm Khóa học thành công!'
-          : 'Cập nhật Khóa học thành công!'
+          ? t('orther.toast.create', { tableNameDefault })
+          : t('orther.toast.update', { tableNameDefault })
       );
 
       if (onSuccess) {
@@ -139,12 +140,14 @@ const CourseForm = ({
   return (
     <form className='flex flex-col gap-8' onSubmit={handleSubmit(onSubmit)}>
       <h1 className='text-xl font-semibold'>
-        {type === 'create' ? 'Create a new Course' : 'Update Course'}
+        {type === 'create'
+          ? t('form.titles.add', { tableNameDefault })
+          : t('form.titles.edit', { tableNameDefault })}
       </h1>
 
       <div className='flex justify-between flex-wrap gap-4'>
         <InputField
-          label='Course Name'
+          label={t('form.course.name')}
           name='name'
           register={register}
           error={errors.name}
@@ -152,7 +155,7 @@ const CourseForm = ({
         />
 
         <InputField
-          label='Fee ( .000Đ )'
+          label={t('form.course.fee') + ' ' + t('orther.parValues')}
           name='fee'
           register={register}
           error={errors.fee}
@@ -160,7 +163,7 @@ const CourseForm = ({
         />
 
         <InputField
-          label='Duration ( month )'
+          label={t('form.course.duration')}
           type='number'
           name='duration'
           register={register}
@@ -179,17 +182,22 @@ const CourseForm = ({
           className='min-w-full'
         />
         <InputField
-          label='Description'
+          label={t('form.course.description')}
           type='textarea'
           name='description'
           register={register}
           error={errors.description}
-          inputProps={{ placeholder: 'Nhập ghi chú...', rows: 5 }}
+          inputProps={{
+            placeholder: t('form.placeholders.description'),
+            rows: 5,
+          }}
           className='min-w-full'
         />
       </div>
       <button type='submit' className='bg-blue-400 text-white p-2 rounded-md'>
-        {type === 'create' ? 'Create' : 'Update'}
+        {type === 'create'
+          ? t('form.actions.create')
+          : t('form.actions.update')}
       </button>
     </form>
   );

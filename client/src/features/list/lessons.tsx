@@ -19,11 +19,11 @@ const columns = (t: any) => [
     accessor: 'name',
   },
   {
-    header: 'Source',
+    header: t('table.lessons.header.source'),
     accessor: 'source',
   },
   {
-    header: 'Lesson Type',
+    header: t('table.lessons.header.type'),
     accessor: 'type',
   },
 

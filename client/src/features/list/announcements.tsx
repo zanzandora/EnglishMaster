@@ -17,7 +17,7 @@ const columns = (t: any) => [
     accessor: 'title',
   },
   {
-    header: 'Message',
+    header: t('table.announcements.header.message'),
     accessor: 'message',
   },
   {
@@ -26,7 +26,7 @@ const columns = (t: any) => [
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Type',
+    header: t('table.announcements.header.type'),
     accessor: 'type',
     className: 'hidden md:table-cell',
   },

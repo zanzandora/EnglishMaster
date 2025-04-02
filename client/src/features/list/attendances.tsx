@@ -21,7 +21,7 @@ registerLocale('vi', vi);
 // Tách cấu hình columns
 const columnsAdmin = (t: any) => [
   {
-    header: 'STT',
+    header: t('table.attendances.header.NO'),
     accessor: 'stt',
   },
   {
@@ -29,19 +29,19 @@ const columnsAdmin = (t: any) => [
     accessor: 'name',
   },
   {
-    header: 'Class',
+    header: t('table.attendances.header.class'),
     accessor: 'class',
   },
   {
-    header: 'Absences',
+    header: t('table.attendances.header.absences'),
     accessor: 'absences',
   },
   {
-    header: 'Total Checking',
-    accessor: 'attendancePercentage',
+    header: t('table.attendances.header.totalChecking'),
+    accessor: 'totalChecking',
   },
   {
-    header: 'Action',
+    header: t('table.attendances.header.actions'),
     accessor: 'action',
   },
 ];

@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import Table from '@components/common/table/Table';
 import usePagination from 'hooks/usePagination';
 import Pagination from '@components/common/Pagination';
+import { useTranslation } from 'react-i18next';
 
 const AttendancesList = ({ studentID }) => {
+  const { t } = useTranslation();
   const [attendances, setAttendances] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -47,9 +49,9 @@ const AttendancesList = ({ studentID }) => {
   }, [studentID]);
 
   const columns = [
-    { header: 'Date', accessor: 'date' },
-    { header: 'Status', accessor: 'status' },
-    { header: 'Note', accessor: 'note' },
+    { header: t('form.attendance.list.date'), accessor: 'date' },
+    { header: t('form.attendance.list.status'), accessor: 'status' },
+    { header: t('form.attendance.list.note'), accessor: 'note' },
   ];
 
   const renderRow = (item: any) => (
@@ -67,7 +69,9 @@ const AttendancesList = ({ studentID }) => {
 
   return (
     <div>
-      <h2 className='text-lg font-semibold mb-4'>Details</h2>
+      <h2 className='text-lg font-semibold mb-4'>
+        {t('form.attendance.list.title')}
+      </h2>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (

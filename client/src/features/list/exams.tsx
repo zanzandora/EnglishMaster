@@ -17,12 +17,12 @@ import { Exam } from '@interfaces';
 
 const columns = (t: any, role?: string) => [
   {
-    header: 'Title',
+    header: t('table.exams.header.title'),
     accessor: 'title',
   },
   {
-    header: t('table.exams.header.file'),
-    accessor: 'file',
+    header: t('table.exams.header.source'),
+    accessor: 'source',
   },
   {
     header: t('table.exams.header.course'),

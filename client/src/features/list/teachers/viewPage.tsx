@@ -13,6 +13,8 @@ import useFetchSchedules from 'hooks/useFetchSchedules';
 import { decodeToken } from '@utils/decodeToken ';
 import { useAuth } from 'hooks/useAuth';
 import { formatDate } from '@utils/dateUtils';
+import { useTranslation } from 'react-i18next';
+
 const locales = {
   'en-US': import('date-fns/locale/en-US'),
 };
@@ -68,6 +70,7 @@ const generateRecurringEvents = (schedule: any): ExtendedEvent[] => {
 };
 
 const SingleTeacherPage = () => {
+  const { t } = useTranslation();
   const { userID } = useParams();
   const [reloadTrigger, setReloadTrigger] = useState(0);
 
@@ -206,12 +209,12 @@ const SingleTeacherPage = () => {
               <div className='flex justify-between gap-2 flex-wrap text-xs font-medium flex-col text-gray-700'>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
                   <img src='/date.png' alt='' width={14} height={14} />
-                  Id:
+                  {t('profile.code')}:
                   <span className=' truncate'>{teacher.userID}</span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
                   <img src='/date.png' alt='' width={14} height={14} />
-                  User Name:
+                  {t('profile.userName')}:
                   <span className=' truncate'>{teacher.username}</span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2 '>
@@ -223,17 +226,16 @@ const SingleTeacherPage = () => {
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
                   <img src='/phone.png' alt='' width={14} height={14} />
-                  Phone:
-                  <span> {teacher.phoneNumber}</span>
+                  {t('profile.phone')}:<span> {teacher.phoneNumber}</span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2 '>
                   <img src='/address.png' alt='' width={14} height={14} />
-                  Address:
+                  {t('profile.address')}:
                   <span className=' truncate '>{teacher.address}</span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
                   <img src='/date.png' alt='' width={14} height={14} />
-                  Birth:
+                  {t('profile.birth')}:
                   <span>
                     {teacher.dateOfBirth
                       ? teacher.dateOfBirth.split('T')[0]
@@ -242,18 +244,18 @@ const SingleTeacherPage = () => {
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2 '>
                   <img src='/mail.png' alt='' width={14} height={14} />
-                  Gender:
+                  {t('profile.gender')}:
                   <span className=' truncate '>{teacher.gender}</span>
                 </div>
 
                 <div className='w-full mt-3 md:w-1/3 lg:w-full flex items-center gap-2 '>
                   <img src='/certificate.png' alt='' width={14} height={14} />
-                  Experience:
+                  {t('profile.teacher.experience')}:
                   <span className=' truncate '>{teacher.experience}</span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2 '>
                   <img src='/star.png' alt='' width={14} height={14} />
-                  Specialization:
+                  {t('profile.teacher.specialization')}:
                   <span className=' truncate '>{teacher.specialization}</span>
                 </div>
               </div>
@@ -274,11 +276,12 @@ const SingleTeacherPage = () => {
                 className='w-6 h-6'
               />
               <div className=''>
-                <h1 className='text-xl font-semibold'>
-                  {' '}
+                <h1 className='text-3xl font-semibold'>
                   {teacher.totalCourses}
                 </h1>
-                <span className='text-sm text-gray-400'>Course</span>
+                <span className='text-sm text-gray-400'>
+                  {t('card.label.courses')}
+                </span>
               </div>
             </div>
 
@@ -292,8 +295,10 @@ const SingleTeacherPage = () => {
                 className='w-6 h-6'
               />
               <div className=''>
-                <h1 className='text-xl font-semibold'>8</h1>
-                <span className='text-sm text-gray-400'>Classes this week</span>
+                <h1 className='text-3xl font-semibold'>8</h1>
+                <span className='text-sm text-gray-400'>
+                  {t('card.label.classThisWeek')}
+                </span>
               </div>
             </div>
 
@@ -310,17 +315,19 @@ const SingleTeacherPage = () => {
                 className='w-6 h-6'
               />
               <div className=''>
-                <h1 className='text-xl font-semibold'>
+                <h1 className='text-3xl font-semibold'>
                   {teacher.totalClasses}
                 </h1>
-                <span className='text-sm text-gray-400'>Classes</span>
+                <span className='text-sm text-gray-400'>
+                  {t('card.label.classes')}
+                </span>
               </div>
             </div>
           </div>
         </div>
         {/* BOTTOM */}
         <div className='mt-4 bg-white rounded-md p-4 h-[750px] overflow-auto'>
-          <h1>Teacher&apos;s Schedule</h1>
+          <h1>{t('orther.label.teacherSchedule')}</h1>
           <div className='calendar-wrapper'>
             <BigCalendar
               events={filteredEvents}
@@ -335,20 +342,20 @@ const SingleTeacherPage = () => {
       {/* RIGHT */}
       <div className='w-full xl:w-1/3 flex flex-col gap-4'>
         <div className='bg-white p-4 rounded-md'>
-          <h1 className='text-xl font-semibold'>Shortcuts</h1>
+          <h1 className='text-xl font-semibold'>{t('shortcuts.title')}</h1>
           <div className='mt-4 flex gap-4 flex-wrap text-sm text-gray-500 '>
             <Link
               className='p-3 rounded-md bg-secondary-blueLight'
               to={`/admin/list/classes/${teacher.userID}`}
             >
-              Teacher&apos;s Classes and Students
+              {t('shortcuts.classesStudents')}
             </Link>
 
             <Link
               className='p-3 rounded-md bg-secondary-lavenderLight'
               to={`/admin/list/exams/${teacher.userID}`}
             >
-              Teacher&apos;s Exams
+              {t('shortcuts.exams')}
             </Link>
           </div>
         </div>

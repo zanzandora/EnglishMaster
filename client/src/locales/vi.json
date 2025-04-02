@@ -28,7 +28,7 @@
   },
   "menu": {
     "home": "Trang chủ",
-    "teachers": "Giáo viên",
+    "teachers": "Giảng viên",
     "students": "Học viên",
     "courses": "Khóa học",
     "classes": "Lớp học",
@@ -50,21 +50,33 @@
     "today": "Hôm nay",
     "day": "Ngày",
     "week": "Tuần",
-    "month": "Tháng"
+    "month": "Tháng",
+    "toolTip": {
+      "class": "Lớp học",
+      "teacher": "Giảng viên",
+      "room": "Phòng",
+      "course": "Khóa học",
+      "exam": "Kiểm tra"
+    }
   },
   "card": {
-    "label":{
+    "label": {
       "students": "học viên",
-      "teachers": "giáo viên",
+      "teachers": "giảng viên",
       "staffs": "nhân viên",
-      "revenue": "doanh thu"
+      "revenue": "doanh thu",
+      "courses": "Khóa học",
+      "classThisWeek": "Lớp trong tuần",
+      "classes": "Lớp học",
+      "class": "Lớp học",
+      "absent": "Vắng mặt"
     }
   },
   "chart": {
     "title": {
       "students": "học viên",
       "studentGrowth": "học viên tăng trưởng hàng tháng",
-      "finance":"doanh thu"
+      "finance": "doanh thu"
     },
     "label": {
       "boys": "trai",
@@ -76,15 +88,15 @@
       "income": "Thu nhập"
     }
   },
-  "announcements":{
+  "announcements": {
     "title": "thông báo"
   },
   "table": {
-    "teachers":{
-      "title": "Giáo viên",
+    "teachers": {
+      "title": "Giảng viên",
       "header": {
         "info": "Thông tin",
-        "teacherId": "Mã giáo viên",
+        "teacherId": "Mã giảng viên",
         "subjects": "Môn học",
         "classes": "Lớp học",
         "phone": "Điện thoại",
@@ -97,7 +109,7 @@
       "header": {
         "info": "Thông tin",
         "studentId": "Mã học viên",
-        "experience": "Kinh nghiệm",
+        "classes": "Lớp học",
         "phone": "Điện thoại",
         "address": "Địa chỉ",
         "actions": "Hành động"
@@ -109,8 +121,10 @@
         "courseId": "Mã khóa học",
         "name": "Tên khóa học",
         "description": "Mô tả",
+        "duration": "Thời hạn",
+        "fee": "Giá",
         "credits": "Số tín chỉ",
-        "teachers": "Giáo viên",
+        "teachers": "Giảng viên",
         "actions": "Hành động"
       }
     },
@@ -120,7 +134,8 @@
         "name": "Tên lớp",
         "classId": "Mã lớp học",
         "course": "Khóa học",
-        "supervisor": "Giám sát viên",
+        "teacher": "Giảng viên",
+        "students": "Tổng học viên",
         "capacity": "Sức chứa",
         "grade": "Cấp",
         "schedule": "Lịch học",
@@ -130,13 +145,11 @@
     "exams": {
       "title": "Bài kiểm tra",
       "header": {
-        "name": "Tên bài thi",
-        "examId": "Mã bài kiểm tra",
+        "title": "Tiêu đề",
+        "source": "Nguồn",
         "course": "Khóa học",
         "class": "Lớp",
-        "teacher": "Giáo viên",
-        "date": "Ngày",
-        "time": "Thời gian",
+        "teacher": "Giảng viên",
         "actions": "Hành động"
       }
     },
@@ -149,7 +162,9 @@
         "date": "Ngày",
         "topic": "Chủ đề",
         "classes": "Lớp học",
-        "teachers": "Giáo viên",
+        "teachers": "Giảng viên",
+        "source": "Nguồn",
+        "type": "Thể loại",
         "actions": "Hành động"
       }
     },
@@ -159,10 +174,14 @@
         "name": "Tên kết quả",
         "resultId": "Mã kết quả",
         "student": "Học viên",
-        "teacher": "Giáo viên",
+        "studentId": "ID học viên",
+        "mt": "Điểm giữa kỳ (MT)",
+        "ft": "ĐIểm cuối kỳ (FT)",
+        "certificate": "Chứng chỉ",
+        "teacher": "Giảng viên",
         "class": "Lớp học",
-        "date": "Ngày",
-        "score": "Điểm",
+        "score": "Tổng điểm",
+        "status": "Trạng thái",
         "actions": "Hành động"
       }
     },
@@ -171,56 +190,63 @@
       "header": {
         "announcementId": "Mã thông báo",
         "title": "Tiêu đề",
-        "content": "Nội dung",
+        "message": "Tin nhắn",
         "class": "Lớp",
         "date": "Ngày",
-        "actions": "Hành động"
+        "type": "Loại"
       }
     },
     "attendances": {
       "title": "Điểm danh",
       "header": {
-        "name": "Tên học viên",
-        "inCharge":"Tên giáo viên",
-        "attendanceId": "Mã điểm danh",
-        "total": "Tổng/tuần",
-        "attendancePercentage": "Điểm danh % ",
-        "date": "Ngày"
+        "NO": "STT.",
+        "name": "Tên học sinh",
+        "inCharge": "Tên giảng viên",
+        "class": "Lớp",
+        "absences": "Vắng mặt",
+        "totalChecking": "Tổng điểm danh",
+        "actions": "Hành động"
       }
     },
-    "reports":{
-      "student":{
+    "reports": {
+      "student": {
+        "NO":"STT.",
         "label": "Học Viên",
-        "id":"Mã học viên",
-        "name":"Tên học viên",
-        "progress":"Tiến trình",
-        "score":"Điểm"
+        "id": "Mã học viên",
+        "name": "Tên học viên",
+        "birth":"Ngày sinh",
+        "class": "lớp học",
+        "mt": "Điểm giữa kỳ (MT)",
+        "ft": "ĐIểm cuối kỳ (FT)",
+        "totalScore": "Tổng điểm",
+        "status": "Trạng thái",
+        "attended": "Điểm danh",
+        "absent": "Vắng mặt",
+        "certificate": "Chứng chỉ",
+        "progress": "Tiến trình",
+        "score": "Điểm"
       },
-      "teacher":{
-        "label": "Giảng viên",
-        "id":"Mã giáo viên",
-        "name":"Tên giáo viên",
-        "rating":"Đánh giá"
-      },
-      "course":{
+      "course": {
+        "NO": "STT.",
         "label": "Khóa học",
-        "id":"Mã khóa học",
-        "name":"Tên khóa học",
-        "completion":"Hoàn thành",
-        "students":"Học viên"
+        "id": "Mã khóa học",
+        "name": "Tên khóa học",
+        "classes": "Lớp học",
+        "teachers": "Giảng viên",
+        "students": "Học viên"
       },
-      "finance":{
-        "label":"Tài chính",
-        "id":"Mã khoản chi",
-        "category":"Danh mục",
-        "amount":"Số tiền",
-        "date":"Ngày"
+      "finance": {
+        "label": "Tài chính",
+        "id": "Mã khoản chi",
+        "category": "Danh mục",
+        "amount": "Số tiền",
+        "date": "Ngày"
       }
     }
   },
   "filters": {
     "teachers": {
-      "all": "Tất cả giáo viên"
+      "all": "Tất cả giảng viên"
     },
     "students": {
       "all": "Tất cả học viên"
@@ -229,15 +255,19 @@
       "all": "Tất cả lớp học"
     }
   },
-  "form":{
+  "form": {
     "actions": {
-      "message":"Tất cả dữ liệu sẽ bị mất. Bạn có chắc chắn muốn xóa",
-      "delete":"Xóa",
-      "update":"Cập nhập",
-      "create":"Thêm mới"
+      "message": "Tất cả dữ liệu sẽ bị mất. Bạn có chắc chắn muốn xóa",
+      "delete": "Xóa",
+      "update": "Cập nhập",
+      "create": "Thêm mới"
+    },
+    "titles": {
+      "add": "Thêm {{tableNameDefault}}",
+      "edit": "Cập nhập {{tableNameDefault}}"
     },
     "table": {
-      "teacher": "giáo viên",
+      "teacher": "giảng viên",
       "student": "học viên",
       "course": "khóa học",
       "class": "lớp học",
@@ -248,23 +278,17 @@
       "attendance": "điểm danh",
       "event": "sự kiện",
       "announcement": "thông báo",
-      "schedule": "Lịch học"
-
-    },
-    "sections": {
-      "personalInformation": "Thông tin cá nhân",
-      "authenticationInformation": "Thông tin xác thực"
+      "schedule": "lịch học"
     },
     "placeholders": {
-      "select": "Chọn"
+      "select": "Chọn",
+      "description": "Nhập ghi chú..."
     },
     "options": {
       "male": "Nam",
       "female": "Nữ"
     },
     "student": {
-      "titleAdd":"Thêm học viên",
-      "titleEdit":"Cập nhập học viên",
       "username": "Tên đăng nhập",
       "password": "Mật khẩu",
       "email": "Email",
@@ -272,11 +296,15 @@
       "phone": "Điện thoại",
       "address": "Địa chỉ",
       "birthday": "Ngày sinh",
+      "uploadPhoto": "Tải ảnh",
       "sex": "Giới tính"
     },
     "teacher": {
-      "titleAdd":"Thêm giáo viên",
-      "titleEdit":"Cập nhập giáo viên",
+      "sections": {
+        "personalInformation": "Thông tin cá nhân",
+        "authenticationInformation": "Thông tin xác thực",
+        "professionalInformation": "Thông tin chuyên môn"
+      },
       "username": "Tên đăng nhập",
       "password": "Mật khẩu",
       "email": "Email",
@@ -285,17 +313,103 @@
       "address": "Địa chỉ",
       "birthday": "Ngày sinh",
       "sex": "Giới tính",
+      "uploadPhoto": "Tải ảnh",
       "specialization": "Chuyên môn",
       "experience": "Kinh nghiệm"
     },
-    "events": {
-      "titleAdd":"Thêm lịch",
-      "titleEdit":"Cập nhập lịch",
-      "name": "Tên sự kiện",
+    "course": {
+      "name": "Tên khóa học",
+      "fee": "Học phí",
+      "duration": "Thời gian (tháng)",
+      "teachers": "Giảng viên phụ trách",
+      "description": "Mô tả"
+    },
+    "class": {
+      "sections": {
+        "classDetails": "Chi tiết lớp học",
+        "addStudents": "Thêm học sinh"
+      },
+      "list": {
+        "title": "Danh sách học sinh",
+        "studentId": "ID học viên",
+        "studentName": "Tên học viên",
+        "email": "Email",
+        "actions": "Hành động"
+      },
+      "name": "Tên lớp học",
+      "teacher": "Giảng viên phụ trách",
+      "students": "Chọn học sinh",
+      "course": "Khóa học",
+      "capacity": "Sức chứa"
+    },
+    "lesson": {
+      "title": "Tiêu đề",
       "description": "Mô tả",
-      "date": "Ngày",
-      "time": "Th��i gian",
-      "location": "Địa điểm"
+      "type": "Kiểu bài giảng",
+      "file": "Tải tệp"
+    },
+    "exam": {
+      "title": "Tiêu đề",
+      "class": "Lớp học",
+      "file": "Tải tệp"
+    },
+    "schedule": {
+      "sections": {
+        "eventInfo": "Thông tin sự kiện",
+        "scheduleDetails": "Chi tiết lịch trình"
+      },
+      "class": "Lớp",
+      "room": "Phòng",
+      "type": "Loại",
+      "endDate": "Ngày kết thúc",
+      "startDate": "Ngày bắt đầu",
+      "daysOfWeek": "Ngày lặp lại",
+      "shift": "Ca"
+    },
+    "attendance": {
+      "list":{
+        "title": "Chi tiết điểm danh",
+        "status": "Trạng thái",
+        "note": "Ghi chú",
+        "date": "Ngày"
+      },
+      "class": "Class",
+      "file": "Upload file"
+    }
+  },
+  "profile": {
+    "title": "Hồ sơ",
+    "code": "Mã định danh",
+    "userName": "Tên người dùng",
+    "phone": "Số điện thoại",
+    "address": "Địa chỉ",
+    "birth": "Ngày sinh",
+    "gender": "Giới tính",
+    "teacher": {
+      "specialization": "Chuyên môn",
+      "experience": "Kinh nghiệm"
+    },
+    "student": {
+      "class": "Lớp",
+      "course": "Khóa học"
+    }
+  },
+  "shortcuts": {
+    "title": "Lối tắt",
+    "classesStudents": "Lớp học và học sinh của giảng viên",
+    "exams": "Bài kiểm tra của giảng viên"
+  },
+  "orther": {
+    "error": "Có lỗi xảy ra. Vui lòng thử lại sau.",
+    "toast": {
+      "create": "Thêm {{tableNameDefault}} thành công!",
+      "update": "Cập nhập {{tableNameDefault}} thành công!",
+      "delete": "Xóa {{tableNameDefault}} thành công!"
+    },
+    "parValues": "(.000Đ)",
+    "label": {
+      "studentSchedule": "Lịch học viên",
+      "teacherSchedule": "Lịch giảng viên"
     }
   }
 }

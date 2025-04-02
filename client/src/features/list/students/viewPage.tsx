@@ -10,6 +10,7 @@ import { ExtendedEvent, Student } from '@interfaces';
 import useFetchSchedules from 'hooks/useFetchSchedules';
 import { useAuth } from 'hooks/useAuth';
 import { decodeToken } from '@utils/decodeToken ';
+import { useTranslation } from 'react-i18next';
 
 const locales = {
   'en-US': import('date-fns/locale/en-US'),
@@ -66,6 +67,7 @@ const generateRecurringEvents = (schedule: any): ExtendedEvent[] => {
 };
 
 const SingleStudentPage = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [reloadTrigger] = useState(0);
 
@@ -197,7 +199,7 @@ const SingleStudentPage = () => {
               <div className='flex justify-between gap-2 flex-wrap text-xs font-medium flex-col text-gray-700'>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
                   <img src='/id_badge.png' alt='' width={14} height={14} />
-                  Id:
+                  {t('profile.code')}:
                   <span className=' truncate'>{student.id}</span>
                 </div>
 
@@ -208,23 +210,21 @@ const SingleStudentPage = () => {
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
                   <img src='/phone.png' alt='' width={14} height={14} />
-                  Phone:
-                  <span>{student.phoneNumber}</span>
+                  {t('profile.phone')}:<span>{student.phoneNumber}</span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2 '>
                   <img src='/address.png' alt='' width={14} height={14} />
-                  Address:
+                  {t('profile.address')}:
                   <span className=' truncate'>{student.address}</span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
                   <img src='/date.png' alt='' width={14} height={14} />
-                  Birth:
+                  {t('profile.birth')}:
                   <span>{student.dateOfBirth.split('T')[0]}</span>
                 </div>
                 <div className='w-full md:w-1/3 lg:w-full flex items-center gap-2'>
                   <img src='/gender.png' alt='' width={14} height={14} />
-                  Gender:
-                  <span>{student.gender}</span>
+                  {t('profile.gender')}:<span>{student.gender}</span>
                 </div>
               </div>
             </div>
@@ -241,10 +241,12 @@ const SingleStudentPage = () => {
                 className='w-6 h-6'
               />
               <div className=''>
-                <h1 className='text-xl font-semibold'>
+                <h1 className='text-2xl font-semibold'>
                   {student.totalAbsences}
                 </h1>
-                <span className='text-sm text-gray-400'>Absent</span>
+                <span className='text-sm text-gray-400'>
+                  {t('card.label.absent')}
+                </span>
               </div>
             </div>
 
@@ -261,7 +263,9 @@ const SingleStudentPage = () => {
                 <h1 className='text-xl font-semibold truncate w-32'>
                   {student.className || 'No class assigned'}
                 </h1>
-                <span className='text-sm text-gray-400'>Classes</span>
+                <span className='text-sm text-gray-400'>
+                  {t('card.label.class')}
+                </span>
               </div>
             </div>
 
@@ -278,14 +282,16 @@ const SingleStudentPage = () => {
                 <h1 className='text-xl font-semibold'>
                   {student.courseName || 'No course assigned'}
                 </h1>
-                <span className='text-sm text-gray-400'>Course</span>
+                <span className='text-sm text-gray-400'>
+                  {t('card.label.courses')}
+                </span>
               </div>
             </div>
           </div>
         </div>
         {/* BOTTOM */}
         <div className='mt-4 bg-white rounded-md p-4 h-[650px] overflow-auto'>
-          <h1>Student&apos;s Schedule</h1>
+          <h1>{t('orther.label.studentSchedule')}</h1>
           <div className='calendar-wrapper '>
             <BigCalendar
               events={filteredEvents}

@@ -9,6 +9,7 @@ import {
   FieldErrorsImpl,
 } from 'react-hook-form';
 import useFetchStudents from 'hooks/useFetchStudents';
+import { useTranslation } from 'react-i18next';
 
 interface StudentSelectProps {
   control: Control<FieldValues>; // Sử dụng kiểu Control từ react-hook-form
@@ -25,6 +26,7 @@ const StudentSelect = ({
   defaultValue,
 }: StudentSelectProps) => {
   const { students, loading } = useFetchStudents();
+  const { t } = useTranslation();
 
   const animatedComponents = makeAnimated();
 
@@ -45,7 +47,7 @@ const StudentSelect = ({
       className={`relative flex flex-col gap-2 w-full my-1 md:w-1/4 ${className}`}
     >
       <label className='text-xs text-gray-500' htmlFor='teachers'>
-        Select Students
+        {t('form.class.students')}
       </label>
       <Controller
         name={name}

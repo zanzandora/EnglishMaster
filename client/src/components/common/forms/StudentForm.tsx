@@ -45,6 +45,8 @@ const StudentForm = ({
   setOpen?: (open: boolean) => void;
 }) => {
   const { t } = useTranslation();
+  const tableNameDefault = t('form.table.student');
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [existingPhotoPath, setExistingPhotoPath] = useState<string>('');
   const [photoPath, setPhotoPath] = useState<string>('');
@@ -95,8 +97,8 @@ const StudentForm = ({
 
       toast.success(
         type === 'create'
-          ? 'Thêm học viên thành công!'
-          : 'Cập nhật học viên thành công!'
+          ? t('orther.toast.create', { tableNameDefault })
+          : t('orther.toast.update', { tableNameDefault })
       );
 
       if (onSuccess) {
@@ -156,8 +158,8 @@ const StudentForm = ({
     <form className='flex flex-col gap-8' onSubmit={handleSubmit(onSubmit)}>
       <h1 className='text-xl font-semibold'>
         {type === 'create'
-          ? t('form.student.titleAdd')
-          : t('form.student.titleEdit')}
+          ? t('form.titles.add', { tableNameDefault })
+          : t('form.titles.edit', { tableNameDefault })}
       </h1>
       <span className='text-xs text-gray-400 font-medium'>
         {t('form.sections.authenticationInformation')}
@@ -217,7 +219,7 @@ const StudentForm = ({
             <option value='female'>{t('form.options.female')}</option>
           </InputField>
           <InputField
-            label='Upload photo'
+            label={t('form.teacher.uploadPhoto')}
             type='file'
             inputProps={{ accept: 'image/*' }}
             onFileChange={handleFileChange}

@@ -51,6 +51,7 @@ const TeacherForm = ({
   setOpen?: (open: boolean) => void;
 }) => {
   const { t } = useTranslation();
+  const tableNameDefault = t('form.table.teacher');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [activeTab, setActiveTab] = useState('personalInformation');
   const [existingPhotoPath, setExistingPhotoPath] = useState<string>('');
@@ -68,7 +69,6 @@ const TeacherForm = ({
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
@@ -106,8 +106,8 @@ const TeacherForm = ({
 
       toast.success(
         type === 'create'
-          ? 'Thêm giáo viên thành công!'
-          : 'Cập nhật giáo viên thành công!'
+          ? t('orther.toast.create', { tableNameDefault })
+          : t('orther.toast.update', { tableNameDefault })
       );
 
       if (onSuccess) {
@@ -166,11 +166,11 @@ const TeacherForm = ({
     <form className='flex flex-col gap-8' onSubmit={handleSubmit(onSubmit)}>
       <h1 className='text-xl font-semibold'>
         {type === 'create'
-          ? t('form.teacher.titleAdd')
-          : t('form.teacher.titleEdit')}
+          ? t('form.titles.add', { tableNameDefault })
+          : t('form.titles.edit', { tableNameDefault })}
       </h1>
       <span className='text-xs text-gray-400 font-medium'>
-        {t('form.sections.authenticationInformation')}
+        {t('form.teacher.sections.authenticationInformation')}
       </span>
       <div className='flex flex-wrap gap-4'>
         <div className='flex justify-between items-center flex-1 gap-8'>
@@ -213,7 +213,7 @@ const TeacherForm = ({
             }`}
             onClick={() => setActiveTab('personalInformation')}
           >
-            {t('form.sections.personalInformation')}
+            {t('form.teacher.sections.personalInformation')}
           </button>
         </span>
         <span className='text-xs text-gray-400 font-medium'>
@@ -226,7 +226,7 @@ const TeacherForm = ({
             }`}
             onClick={() => setActiveTab('professionalInformation')}
           >
-            Professional Information
+            {t('form.teacher.sections.professionalInformation')}
           </button>
         </span>
       </div>
@@ -275,7 +275,7 @@ const TeacherForm = ({
                 <option value='female'>{t('form.options.female')}</option>
               </InputField>
               <InputField
-                label='Upload photo'
+                label={t('form.teacher.uploadPhoto')}
                 type='file'
                 inputProps={{ accept: 'image/*' }}
                 onFileChange={handleFileChange}

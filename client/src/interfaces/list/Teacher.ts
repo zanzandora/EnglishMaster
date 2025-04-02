@@ -22,6 +22,7 @@ export interface Teacher {
   updatedAt: Date;
 
   userName: string;
+  username: string;
   password: string;
   email: string;
   name: string;

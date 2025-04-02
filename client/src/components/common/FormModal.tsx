@@ -178,7 +178,9 @@ const FormModal = ({
         throw new Error(errorText);
       }
 
-      toast.success(`Xóa ${t(`form.table.${table}`)} thành công`);
+      toast.success(
+        t('orther.toast.delete', { tableNameDefault: t(`form.table.${table}`) })
+      );
       setOpen(false);
       if (onSuccess) {
         onSuccess();

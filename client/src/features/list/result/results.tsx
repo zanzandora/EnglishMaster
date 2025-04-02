@@ -21,7 +21,7 @@ const columns = (t: any, role?: string) => [
     accessor: 'student',
   },
   {
-    header: 'Student ID',
+    header: t('table.results.header.studentId'),
     accessor: 'studentID',
   },
   {
@@ -30,17 +30,17 @@ const columns = (t: any, role?: string) => [
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Midterm score (MT)',
+    header: t('table.results.header.mt'),
     accessor: 'mt',
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Final score (FT)',
+    header: t('table.results.header.ft'),
     accessor: 'ft',
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Total score',
+    header: t('table.results.header.score'),
     accessor: 'score',
     className: 'hidden md:table-cell',
   },
@@ -56,7 +56,7 @@ const columns = (t: any, role?: string) => [
     className: 'hidden md:table-cell',
   },
   {
-    header: 'Dowload Certificate',
+    header: t('table.results.header.certificate'),
     accessor: 'certificate',
   },
   ...(role === 'teacher'
@@ -201,7 +201,7 @@ const ResultListPage = () => {
         <td className='hidden md:table-cell'>
           {item.MT > 0 && item.FT > 0 ? item.status : ' '}
         </td>
-        <td className=' pl-14'>
+        <td className='p-4'>
           {item.status === 'passed' && (
             <DownloadCertificate
               studentName={item.student.studentName}

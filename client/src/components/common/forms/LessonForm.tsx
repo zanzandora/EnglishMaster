@@ -28,6 +28,7 @@ const LessonForm = ({
   setOpen?: (open: boolean) => void;
 }) => {
   const { t } = useTranslation();
+  const tableNameDefault = t('form.table.lesson');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [activeTab, setActiveTab] = useState('lessonInformation');
 
@@ -71,8 +72,8 @@ const LessonForm = ({
 
       toast.success(
         type === 'create'
-          ? 'Lesson created successfully!'
-          : 'Lesson updated successfully!'
+          ? t('orther.toast.create', { tableNameDefault })
+          : t('orther.toast.update', { tableNameDefault })
       );
       onSuccess();
       if (setOpen) setOpen(false);
@@ -113,29 +114,26 @@ const LessonForm = ({
       encType='multipart/form-data'
     >
       <h1 className='text-xl font-semibold'>
-        {type === 'create' ? 'Create a new Lesson' : 'Update Lesson'}
+        {type === 'create'
+          ? t('form.titles.add', { tableNameDefault })
+          : t('form.titles.edit', { tableNameDefault })}
       </h1>
-      <div className='flex gap-4 items-center justify-start space-x-4'>
-        <span className='text-xs text-gray-400 font-medium'>
-          Lesson Information
-        </span>
-      </div>
       <div className='flex justify-between flex-wrap gap-4'>
         <InputField
-          label='Title'
+          label={t('form.lesson.title')}
           name='title'
           register={register}
           error={errors.title}
           className='min-w-full'
         />
         <InputField
-          label='Lesson Type'
+          label={t('form.lesson.type')}
           name='type'
           register={register}
           error={errors.type}
         ></InputField>
         <InputField
-          label='Upload file'
+          label={t('form.lesson.file')}
           type='file'
           inputProps={{ multiple: true }}
           onFileChange={handleFileChange}
@@ -144,17 +142,22 @@ const LessonForm = ({
           className='flex-1'
         />
         <InputField
-          label='Description'
+          label={t('form.lesson.description')}
           type='textarea'
           name='description'
           register={register}
           error={errors.description}
-          inputProps={{ placeholder: 'Nhập ghi chú...', rows: 5 }}
+          inputProps={{
+            placeholder: t('form.placeholders.description'),
+            rows: 5,
+          }}
           className='min-w-full'
         />
       </div>
       <button className='bg-blue-400 text-white p-2 rounded-md'>
-        {type === 'create' ? 'Create' : 'Update'}
+        {type === 'create'
+          ? t('form.actions.create')
+          : t('form.actions.update')}
       </button>
     </form>
   );

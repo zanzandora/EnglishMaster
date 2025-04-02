@@ -99,6 +99,7 @@ expressRouter.get('/:id', async (req, res) => {
         dateOfBirth: Students.dateOfBirth,
         gender: Students.gender,
         className: Classes.name,
+        courseName: Courses.name,
         totalAbsences: sql`
         COALESCE(
           (SELECT SUM(CASE WHEN ${Attendances.status} = false THEN 1 ELSE 0 END)

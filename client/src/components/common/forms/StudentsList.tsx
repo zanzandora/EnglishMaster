@@ -3,8 +3,10 @@ import Table from '@components/common/table/Table';
 import usePagination from 'hooks/usePagination';
 import Pagination from '@components/common/Pagination';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const StudentsList = ({ classID }) => {
+  const { t } = useTranslation();
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -35,10 +37,10 @@ const StudentsList = ({ classID }) => {
   }, [classID]);
 
   const columns = [
-    { header: 'Student ID', accessor: 'studentID' },
-    { header: 'Name', accessor: 'studentName' },
-    { header: 'Email', accessor: 'email' },
-    { header: 'Action', accessor: 'action' },
+    { header: t('form.class.list.studentId'), accessor: 'studentID' },
+    { header: t('form.class.list.studentName'), accessor: 'studentName' },
+    { header: t('form.class.list.email'), accessor: 'email' },
+    { header: t('form.class.list.actions'), accessor: 'action' },
   ];
 
   const renderRow = (item: any) => (
@@ -67,7 +69,9 @@ const StudentsList = ({ classID }) => {
 
   return (
     <div>
-      <h2 className='text-lg font-semibold mb-4'>Student List</h2>
+      <h2 className='text-lg font-semibold mb-4'>
+        {t('form.class.list.title')}
+      </h2>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (

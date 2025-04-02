@@ -29,6 +29,7 @@ const ExamForm = ({
   setOpen?: (open: boolean) => void;
 }) => {
   const { t } = useTranslation();
+  const tableNameDefault = t('form.table.exam');
   const {
     register,
     handleSubmit,
@@ -68,8 +69,8 @@ const ExamForm = ({
 
       toast.success(
         type === 'create'
-          ? 'Exam created successfully!'
-          : 'Exam updated successfully!'
+          ? t('orther.toast.create', { tableNameDefault })
+          : t('orther.toast.update', { tableNameDefault })
       );
       onSuccess();
       if (setOpen) setOpen(false);
@@ -112,11 +113,13 @@ const ExamForm = ({
       encType='multipart/form-data'
     >
       <h1 className='text-xl font-semibold'>
-        {type === 'create' ? 'Create a new Exam' : 'Update Exam'}
+        {type === 'create'
+          ? t('form.titles.add', { tableNameDefault })
+          : t('form.titles.edit', { tableNameDefault })}
       </h1>
       <div className='flex justify-between flex-wrap gap-4'>
         <InputField
-          label='Exam name'
+          label={t('form.exam.title')}
           name='title'
           register={register}
           error={errors.title}
@@ -124,7 +127,7 @@ const ExamForm = ({
         />
 
         <InputField
-          label='Class'
+          label={t('form.exam.class')}
           name='classID'
           register={register}
           error={errors.classID}
@@ -138,7 +141,7 @@ const ExamForm = ({
         </InputField>
 
         <InputField
-          label='Upload file'
+          label={t('form.exam.file')}
           type='file'
           inputProps={{ multiple: true }}
           onFileChange={handleFileChange}
@@ -148,7 +151,9 @@ const ExamForm = ({
         />
       </div>
       <button className='bg-blue-400 text-white p-2 rounded-md'>
-        {type === 'create' ? 'Create' : 'Update'}
+        {type === 'create'
+          ? t('form.actions.create')
+          : t('form.actions.update')}
       </button>
     </form>
   );
