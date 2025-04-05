@@ -16,6 +16,7 @@ export interface Report {
     totalScore: number;
     MT: number;
     FT: number;
+    GPA: string;
     status: boolean;
   };
   attendance: {

@@ -47,14 +47,12 @@ expressRouter.get('/list', async (req, res) => {
               status: Results.status,
             },
             attendance: {
-              totalCheckins:
-                sql`COALESCE(COUNT(${Attendances.studentID}), 0)`.as(
-                  'totalCheckins'
-                ),
-              totalAbsences:
-                sql`COALESCE(SUM(CASE WHEN ${Attendances.status} = false THEN 1 ELSE 0 END), 0)`.as(
-                  'totalAbsences'
-                ),
+              totalCheckins: sql`COALESCE(SUM(CASE WHEN ${Attendances.status} = true AND ${Attendances.status} IS NOT NULL THEN 1 ELSE 0 END), 0)`.as(
+                'totalCheckins'
+              ),
+              totalAbsences: sql`COALESCE(SUM(CASE WHEN ${Attendances.status} = false AND ${Attendances.status} IS NOT NULL THEN 1 ELSE 0 END), 0)`.as(
+                'totalAbsences'
+              ),
             },
           })
           .from(ClassStudents)
@@ -76,7 +74,7 @@ expressRouter.get('/list', async (req, res) => {
             Classes.id,
             Classes.name
           )
-          .orderBy(asc(ClassStudents.studentID));
+          .orderBy(asc(ClassStudents.classID));
       }
     } else if (options === 'student') {
       allReports = db
@@ -98,13 +96,12 @@ expressRouter.get('/list', async (req, res) => {
             status: Results.status,
           },
           attendance: {
-            totalCheckins: sql`COALESCE(COUNT(${Attendances.studentID}), 0)`.as(
+            totalCheckins: sql`COALESCE(SUM(CASE WHEN ${Attendances.status} = true AND ${Attendances.status} IS NOT NULL THEN 1 ELSE 0 END), 0)`.as(
               'totalCheckins'
             ),
-            totalAbsences:
-              sql`COALESCE(SUM(CASE WHEN ${Attendances.status} = false THEN 1 ELSE 0 END), 0)`.as(
-                'totalAbsences'
-              ),
+            totalAbsences: sql`COALESCE(SUM(CASE WHEN ${Attendances.status} = false AND ${Attendances.status} IS NOT NULL THEN 1 ELSE 0 END), 0)`.as(
+              'totalAbsences'
+            ),
           },
         })
         .from(ClassStudents)
@@ -124,7 +121,7 @@ expressRouter.get('/list', async (req, res) => {
           Classes.id,
           Classes.name
         )
-        .orderBy(asc(ClassStudents.studentID));
+        .orderBy(asc(ClassStudents.classID));
     } else if (options === 'course') {
       allReports = db
         .select({

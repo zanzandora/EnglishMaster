@@ -108,7 +108,7 @@
       "title": "Học viên",
       "header": {
         "info": "Thông tin",
-        "studentId": "Mã học viên",
+        "studentId": "MHV",
         "classes": "Lớp học",
         "phone": "Điện thoại",
         "address": "Địa chỉ",
@@ -199,7 +199,7 @@
     "attendances": {
       "title": "Điểm danh",
       "header": {
-        "NO": "STT.",
+        "NO": "STT",
         "name": "Tên học sinh",
         "inCharge": "Tên giảng viên",
         "class": "Lớp",
@@ -210,9 +210,9 @@
     },
     "reports": {
       "student": {
-        "NO":"STT.",
+        "NO":"STT",
         "label": "Học Viên",
-        "id": "Mã học viên",
+        "id": "MHV",
         "name": "Tên học viên",
         "birth":"Ngày sinh",
         "class": "lớp học",
@@ -227,7 +227,7 @@
         "score": "Điểm"
       },
       "course": {
-        "NO": "STT.",
+        "NO": "STT",
         "label": "Khóa học",
         "id": "Mã khóa học",
         "name": "Tên khóa học",

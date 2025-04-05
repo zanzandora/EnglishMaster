@@ -82,7 +82,7 @@ const DownloadCertificate = ({ studentName, courseName }: any) => {
     <div>
       <button
         onClick={generateCertificatePDF}
-        className='group relative inline-flex items-center justify-center w-[30px] h-[30px] bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-full shadow-lg transform scale-100 transition-transform duration-300 focus:outline-none focus:ring-4 focus:ring-blue-300'
+        className='group relative inline-flex items-center justify-center w-[30px] h-[30px] bg-purple-500  text-white rounded-full shadow-lg transform scale-100 transition-transform duration-300 focus:outline-none focus:ring-4 focus:ring-blue-300'
       >
         <svg
           width='20px'

@@ -15,6 +15,7 @@ import { useSort } from 'hooks/useSort';
 import { sortByField } from '@utils/sortUtils';
 import { Classes } from '@interfaces';
 import React from 'react';
+import ExportReportToExcel from '@components/common/export/excel/report';
 
 const columns = (t: any) => ({
   student: [
@@ -109,6 +110,166 @@ const ReportPage = () => {
 
   const { currentData, currentPage, totalPages, setCurrentPage } =
     usePagination(filteredReports, 10);
+
+  // // Export to Excel
+  // const exportToExcel = () => {
+  //   const studentColumns = [
+  //     'NO',
+  //     'Student Name',
+  //     'Student ID',
+  //     'Birth',
+  //     'Class',
+  //     'Midterm score (MT)',
+  //     'Final score (FT)',
+  //     'Total Score',
+  //     'GPA',
+  //     'Status',
+  //     'Attended',
+  //     'Absent',
+  //   ]; // Dịch tên cột cho sinh viên
+  //   const courseColumns = [
+  //     'NO',
+  //     'Course Name',
+  //     'Classes',
+  //     'Teachers',
+  //     'Total Students',
+  //   ];
+
+  //   // Ánh xạ giữa tên cột và trường dữ liệu trong flat data
+  //   const columnToFieldMappingStudent = {
+  //     NO: 'NO',
+  //     'Student Name': 'studentName',
+  //     'Student ID': 'studentID',
+  //     Birth: 'dateOfBirth',
+  //     Class: 'Class',
+  //     'Midterm score (MT)': 'MT',
+  //     'Final score (FT)': 'FT',
+  //     'Total Score': 'totalScore',
+  //     GPA: 'GPA',
+  //     Status: 'Status',
+  //     Attended: 'Attended',
+  //     Absent: 'Absent',
+  //   };
+
+  //   const columnToFieldMappingCourse = {
+  //     NO: 'NO',
+  //     'Course Name': 'courseName',
+  //     Classes: 'classNames',
+  //     Teachers: 'teacherNames',
+  //     Students: 'totalStudents',
+  //   };
+
+  //   // Làm phẳng dữ liệu cho báo cáo sinh viên (student report)
+  //   const flattenStudentData = filteredReports.map((item, index) => ({
+  //     NO: index + 1,
+  //     studentName: item.student?.studentName,
+  //     studentID: item.student?.studentID,
+  //     dateOfBirth: formatDate(item.student?.dateOfBirth, 'yyyy-MM-dd'),
+  //     Class: item.class?.className,
+  //     MT: item.score?.MT,
+  //     FT: item.score?.FT,
+  //     totalScore: item.score?.totalScore,
+  //     GPA: getScoreGrade(item.score?.totalScore),
+  //     Status: item.score?.status,
+  //     Attended: item.attendance?.totalCheckins,
+  //     Absent: item.attendance?.totalAbsences,
+  //   }));
+
+  //   // Làm phẳng dữ liệu cho báo cáo khóa học (course report)
+  //   const flattenCourseData = filteredReports.map((item, index) => ({
+  //     NO: index + 1,
+  //     courseName: item.course?.courseName,
+  //     classNames: item.class?.classNames,
+  //     teacherNames: item.class?.teacherNames,
+  //     totalStudents: item.class?.totalStudents,
+  //   }));
+
+  //   // Hàm ánh xạ dữ liệu flat với tiêu đề cột
+  //   const mapDataToColumns = (data, columnMapping) => {
+  //     return data.map((item) => {
+  //       let mappedItem: Record<string, any> = {};
+  //       for (let column in columnMapping) {
+  //         mappedItem[column] = item[columnMapping[column]];
+  //       }
+  //       return mappedItem;
+  //     });
+  //   };
+
+  //   // Ánh xạ dữ liệu với cột cho báo cáo sinh viên
+  //   const studentDataWithColumns = mapDataToColumns(
+  //     flattenStudentData,
+  //     columnToFieldMappingStudent
+  //   );
+
+  //   // Ánh xạ dữ liệu với cột cho báo cáo khóa học
+  //   const courseDataWithColumns = mapDataToColumns(
+  //     flattenCourseData,
+  //     columnToFieldMappingCourse
+  //   );
+
+  //   const dataToExport =
+  //     selectedReport === 'student'
+  //       ? studentDataWithColumns
+  //       : courseDataWithColumns;
+  //   const columnsToExport =
+  //     selectedReport === 'student' ? studentColumns : courseColumns;
+
+  //   console.log('Data to Export:', dataToExport);
+  //   console.log('Columns to Export:', columnsToExport);
+
+  //   if (dataToExport.length === 0) {
+  //     toast.error('No data available to export!');
+  //     return;
+  //   }
+
+  //   const ws = XLSX.utils.json_to_sheet(dataToExport, {
+  //     header: columnsToExport,
+  //   }); // Convert current data to sheet
+
+  //   // Tạo một đối tượng Style mặc định cho tất cả các
+
+  //   ws['!cols'] = columnsToExport.map(() => ({
+  //     width: 5,
+  //   }));
+
+  //   // Xác định index của các cột cần loại trừ
+  //   const includedColumns = [
+  //     'Student Name',
+  //     'Class',
+  //     ' Birth',
+  //     'Student ID',
+  //     'Classes',
+  //     'Teachers',
+  //     'Total Students',
+  //   ];
+  //   const includedIndexes = includedColumns.map((col) =>
+  //     columnsToExport.indexOf(col)
+  //   );
+
+  //   // Duyệt qua từng ô và điều chỉnh style cho các cột loại trừ
+  //   const range = XLSX.utils.decode_range(ws['!ref'] ?? '');
+  //   for (let R = range.s.r; R <= range.e.r; R++) {
+  //     for (let C = range.s.c; C <= range.e.c; C++) {
+  //       let cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+
+  //       // Nếu là cột loại trừ, xóa style căn giữa và màu nền
+  //       if (includedIndexes.includes(C)) {
+  //         if (ws[cellAddress]) {
+  //           ws['!cols'][C] = { width: 20 };
+  //         }
+  //       } else {
+  //         // Nếu không phải là cột cần áp dụng style, xóa các style
+  //         if (ws[cellAddress]) {
+  //           delete ws[cellAddress].width;
+  //         }
+  //       }
+  //     }
+  //   }
+
+  //   const wb = XLSX.utils.book_new(); // Create a new workbook
+  //   XLSX.utils.book_append_sheet(wb, ws, 'Report'); // Append the sheet to the workbook
+  //   XLSX.writeFile(wb, 'report.xlsx'); // Trigger file download
+  // };
 
   const reportsList = [
     { key: 'student', label: 'Student' },
@@ -214,6 +375,11 @@ const ReportPage = () => {
 
       {/* Bộ lọc */}
       <div className='flex justify-end gap-4 mb-5'>
+        <ExportReportToExcel
+          getScoreGrade={getScoreGrade}
+          filteredReports={filteredReports}
+          selectedReport={selectedReport}
+        />
         <TableSearch
           searchType={selectedReport as 'student' | 'course'}
           onSearch={setSearchQuery}

@@ -8,7 +8,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from 'hooks/useAuth';
 import { decodeToken } from '@utils/decodeToken ';
 import { formatDate } from '@utils/dateUtils';
-import DownloadCertificate from '@components/common/DownloadCertificate';
+import DownloadCertificate from '@components/common/export/DownloadCertificate';
 import { highlightText } from '@utils/highlight';
 import { useSort } from 'hooks/useSort';
 import { sortByField } from '@utils/sortUtils';
