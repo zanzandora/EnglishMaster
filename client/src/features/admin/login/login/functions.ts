@@ -47,7 +47,7 @@ const res = await fetch(isRegistering ? '/register' : '/login', {
   if (res.status === 200 && resJson.msg === 'success') {
     setNotice(`Sign ${isRegistering ? 'up' : 'in'} successful!`)
     if (!isRegistering) {
-      localStorage.setItem('token', resJson.token);
+      // localStorage.setItem('token', resJson.token);
       setToken(resJson.token);
 
       const decodedToken = decodeToken(resJson.token); // Hàm parseJWT sẽ giải mã token

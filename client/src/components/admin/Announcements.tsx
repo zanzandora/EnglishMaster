@@ -2,10 +2,19 @@ import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 import { Announcement } from '@interfaces';
 import { formatDate } from '@utils/dateUtils';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from 'hooks/useAuth';
+import { decodeToken } from '@utils/decodeToken ';
 
 const Announcements = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
+  const { token } = useAuth();
+  const decodedToken = decodeToken(token);
+  const role = decodedToken?.role;
+
+  const [open, setOpen] = useState(false);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -30,13 +39,23 @@ const Announcements = () => {
     fetchLessons();
   }, []);
 
+  const goToNotifications = () => {
+    setOpen(false);
+    navigate(`/${role}/list/announcements`);
+  };
+
   return (
     <div className='bg-white p-4 rounded-md'>
       <div className='flex items-center justify-between'>
         <h1 className='text-xl font-semibold capitalize'>
           {t('announcements.title')}
         </h1>
-        <span className='text-xs text-gray-400'>View All</span>
+        <span
+          onClick={goToNotifications}
+          className='text-xs text-gray-400 cursor-pointer hover:opacity-70'
+        >
+          View All
+        </span>
       </div>
       <div
         className={`flex flex-col gap-4 mt-4 ${

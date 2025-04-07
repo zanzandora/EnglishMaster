@@ -14,6 +14,7 @@ const useFetchAttendances = (role: string, reloadTrigger?: number) => {
     
       try {
         setLoading(true);
+        if (!role) return
        
         const response = await fetch(role === 'admin' ? '/attendance/list' : `/attendance/list-today`);
         if (!response.ok) throw new Error('Lỗi khi tải dữ liệu');
