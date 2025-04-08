@@ -121,6 +121,19 @@ const SingleTeacherPage = () => {
     );
   }, [teacherClass, normalizedEvents]);
 
+  // *Lọc các sự kiện trong tuần này
+  const getEventsThisWeek = (events: any) => {
+    const now = new Date();
+    const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 1));
+    startOfWeek.setHours(0, 0, 0, 0); // Set to the beginning of the day
+    const endOfWeek = new Date(startOfWeek.getTime() + 6 * 24 * 60 * 60 * 1000);
+    endOfWeek.setHours(23, 59, 59, 999); // Set to the end of the day
+
+    return events.filter(
+      (event: any) => event.start >= startOfWeek && event.start <= endOfWeek
+    );
+  };
+
   useEffect(() => {
     const fetchTeacher = async () => {
       try {
@@ -297,7 +310,9 @@ const SingleTeacherPage = () => {
                 className='w-6 h-6'
               />
               <div className=''>
-                <h1 className='text-xl font-semibold'>8</h1>
+                <h1 className='text-xl font-semibold'>
+                  {getEventsThisWeek(filteredEvents).length}
+                </h1>
                 <span className='text-sm text-gray-400'>Classes this week</span>
               </div>
             </div>
