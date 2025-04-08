@@ -13,6 +13,8 @@ import AdminRoutes from './src/features/admin/AdminRoutes';
 import TeacherRoutes from './src/features/teacher/TeacherRoutes';
 import Login from './src/features/admin/login/Login';
 import Forgot from './src/features/admin/login/Forgot';
+import SendOPT from './src/features/admin/login/SendOPT';
+import ResetPassword from './src/features/admin/login/ResetPassword';
 import ProtectedRoute from 'ProtectedRoute';
 import { AuthProvider } from 'context/AuthProvider';
 
@@ -24,6 +26,10 @@ hydrateRoot(
         {/* Public Routes */}
         <Route path='/login' element={<Login />} />
         <Route path='/forgot' element={<Forgot />} />
+        <Route path='/send-otp' element={<SendOPT />} />
+        <Route path='/reset-password' element={<ResetPassword />} />
+
+        {/* Dashboard */}
         <Route
           path='/faq'
           element={

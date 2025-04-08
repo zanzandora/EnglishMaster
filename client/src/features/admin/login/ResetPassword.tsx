@@ -1,21 +1,24 @@
 import { useState } from 'react';
-import { hideInvalidate, showInvalidate } from './login/validation';
+import { useLocation, useNavigate } from 'react-router-dom';
 import useForgotPassword from 'hooks/useForgotPassword';
-import { useNavigate } from 'react-router-dom';
+import { hideInvalidate, showInvalidate } from './login/validation';
+import { toast } from 'react-toastify';
 import LanguagePopover from '@components/dashboard/components/navBar/LanguagePopover';
 
-const Forgot = () => {
-  const [email, setEmail] = useState('');
-  const { loading, sendOtp } = useForgotPassword();
+const ForgotPasswordNewPassword = () => {
+  const [newPassword, setNewPassword] = useState('');
+  const { message, loading, resetPassword } = useForgotPassword();
+  const location = useLocation();
   const navigate = useNavigate();
+  const { email, otp } = location.state || {}; // Lấy email và OTP từ state
 
-  const handleEmailSubmit = (e: any) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
-    sendOtp(email); // Gửi OTP khi người dùng nhập email
-
-    // Sau khi gửi OTP, chuyển sang trang nhập OTP
-    navigate('/send-otp', { state: { email } });
+    resetPassword(email, otp, newPassword); // Xác thực OTP và thay đổi mật khẩu
+    navigate('/login'); // Chuyển sang bước 3 với email và OTP
   };
+
+  console.log(message);
 
   return (
     <>
@@ -33,7 +36,7 @@ const Forgot = () => {
         <div className='flex justify-end'>
           <LanguagePopover />
           <div className='bg-red-50 min-h-screen w-2/5 flex justify-center items-center'>
-            <form method='post' onSubmit={handleEmailSubmit}>
+            <form method='post' onSubmit={handleSubmit}>
               <span className='font-semibold text-4xl mx-auto select-none mb-2 text-center'>
                 <h1 className='text-2xl font-bold'>Forgot Password</h1>
               </span>
@@ -41,15 +44,14 @@ const Forgot = () => {
               <div className='flex flex-col gap-5 mt-5  '>
                 <div className='flex flex-col'>
                   <label className='block text-md mb-2' htmlFor='email'>
-                    Email
+                    New Password
                   </label>
                   <input
                     className='px-4 w-72 border-2 py-2 rounded-md text-sm outline-none'
-                    type='email'
-                    value={email}
-                    name='email'
+                    type='password'
+                    value={newPassword}
                     placeholder='Email'
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => setNewPassword(e.target.value)}
                     onInvalid={showInvalidate}
                     onInput={hideInvalidate}
                     required
@@ -61,10 +63,11 @@ const Forgot = () => {
                   type='submit'
                   className='mt-3 mb-3 w-full bg-secondary hover:opacity-90 text-white py-2 rounded-md transition duration-100'
                 >
-                  {loading ? 'Sending OTP...' : 'Submit'}
+                  {loading ? 'Changing...' : 'Submit'}
                 </button>
               </div>
             </form>
+            {message && toast.success(message)}
           </div>
         </div>
       </div>
@@ -72,4 +75,4 @@ const Forgot = () => {
   );
 };
 
-export default Forgot;
+export default ForgotPasswordNewPassword;

@@ -106,16 +106,103 @@ expressRouter.post('/register', async (req, res) => {
   }
 })
 
+expressRouter.post('/send-otp', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // Kiểm tra xem email có tồn tại trong cơ sở dữ liệu không
+    const user = (await db.select().from(Users).where(eq(Users.email, email))).at(0);
+    if (!user) {
+      return res.status(404).send('Email không tồn tại trong hệ thống.');
+    }
+
+    // Tạo OTP ngẫu nhiên (6 chữ số)
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    
+      // Lưu OTP vào cookie với thời gian hết hạn
+      const otpExpiry = Date.now() + 10 * 60 * 1000;  // OTP có hiệu lực trong 10 phút
+      res.cookie('otp', otp, { maxAge: 10 * 60 * 1000});  // Lưu OTP vào cookie
+      res.cookie('otpExpiry', otpExpiry, { maxAge: 10 * 60 * 1000});  // Lưu thời gian hết hạn vào cookie
+
+    // Tạo nội dung email
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Forgot Password - OTP Verification',
+      text: `Here is your OTP code to change password: ${otp}`,
+    };
+
+    // Gửi email chứa OTP
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.error('Lỗi khi gửi email:', err);
+        return res.status(500).send('Không thể gửi OTP. Vui lòng thử lại sau.');
+      }
+
+      console.log('Email đã được gửi:', info.response);
+      return res.status(200).json({ message: 'OTP đã được gửi đến email của bạn.' });
+    });
+  } catch (error) {
+    console.error('Lỗi hệ thống:', error);
+    return res.status(500).send('Có lỗi xảy ra. Vui lòng thử lại sau.');
+  }
+})
+
+expressRouter.post('/verify-otp', async (req, res) => {
+  const { email, otp } = req.body;
+
+  try {
+    // Kiểm tra xem email có tồn tại trong cơ sở dữ liệu không
+    const user = (await db.select().from(Users).where(eq(Users.email, email))).at(0);
+    if (!user) {
+      return res.status(404).json({ message: 'Email không tồn tại trong hệ thống.' });
+    }
+
+    // Kiểm tra OTP trong cookie
+    const otpFromCookie = req.cookies.otp;
+    const otpExpiryFromCookie = req.cookies.otpExpiry;
+
+    // Kiểm tra OTP có hợp lệ không và đã hết hạn chưa
+    if (!otpFromCookie || Date.now() > otpExpiryFromCookie) {
+      return res.status(400).json({ message: 'OTP không hợp lệ hoặc đã hết hạn.' });
+    }
+
+    // Kiểm tra OTP người dùng nhập vào có khớp với OTP trong cookie không
+    if (otpFromCookie !== otp) {
+      return res.status(400).json({ message: 'OTP không hợp lệ.' });
+    }
+
+    // Nếu OTP hợp lệ, trả về thông báo thành công
+    return res.status(200).json({ message: 'OTP hợp lệ. Bạn có thể thay đổi mật khẩu.' });
+  } catch (error) {
+    console.error('Lỗi hệ thống:', error);
+    return res.status(500).json({ message: 'Có lỗi xảy ra. Vui lòng thử lại sau.' });
+  }
+});
+
 expressRouter.post('/forgot', async (req, res) => {
-  transporter.sendMail({
-    from: process.env.EMAIL_USER,
-    to: req.body.email,
-    subject: 'Forgot Password',
-    text: 'Đây là mail mẫu cho chức năng quên mật khẩu'
-  }, (err, info) => {
-    if (err) return res.send('CANNOT SEND EMAIL: ' + err.message)
-    return res.send('SUCCESS')
-  })
+  const { email, newPassword } = req.body;
+
+  try {
+    // Kiểm tra xem email có tồn tại trong cơ sở dữ liệu không
+    const user = (await db.select().from(Users).where(eq(Users.email, email))).at(0);
+    if (!user) {
+      return res.status(404).send('Email không tồn tại trong hệ thống.');
+    }
+
+    // Cập nhật mật khẩu mới
+    user.password = newPassword; 
+    await db.update(Users).set({ password: await bcrypt.hash(newPassword, +process.env.SALT_ROUND!) }).where(eq(Users.id, user.id));
+
+    // Xóa cookie OTP và thời gian hết hạn sau khi thay đổi mật khẩu
+    res.clearCookie('otp', { secure: process.env.NODE_ENV === 'production' });
+    res.clearCookie('otpExpiry', { secure: process.env.NODE_ENV === 'production' });
+
+    return res.status(200).json({ message: 'Mật khẩu đã được thay đổi thành công.' });
+  } catch (error) {
+    console.error('Lỗi hệ thống:', error);
+    return res.status(500).send({ message: 'Có lỗi xảy ra. Vui lòng thử lại sau.'});
+  }
 })
 
 expressRouter.post('/logout', async (req, res) => {
