@@ -26,6 +26,24 @@
     "loginText": "Already have an account?",
     "login": "Login"
   },
+  "forgotPassword": {
+    "title": "Forgot Password",
+    "email": "Email",
+    "submit": "Send"
+  },
+  "verifyCode": {
+    "title": "OTP Verification",
+    "code": "Verification OTP",
+    "submit": "Verify",
+    "resendText": "Didn't receive the code?",
+    "resend": "Resend"
+  },
+  "resetPassword": {
+    "title": "Reset Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "submit": "Reset"
+  },
   "menu": {
     "home": "Home",
     "teachers": "Teachers",

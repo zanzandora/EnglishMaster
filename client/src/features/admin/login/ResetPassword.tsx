@@ -4,8 +4,11 @@ import useForgotPassword from 'hooks/useForgotPassword';
 import { hideInvalidate, showInvalidate } from './login/validation';
 import { toast } from 'react-toastify';
 import LanguagePopover from '@components/dashboard/components/navBar/LanguagePopover';
+import { useTranslation } from 'react-i18next';
 
 const ForgotPasswordNewPassword = () => {
+  const { t } = useTranslation();
+
   const [newPassword, setNewPassword] = useState('');
   const { message, loading, resetPassword } = useForgotPassword();
   const location = useLocation();
@@ -38,19 +41,21 @@ const ForgotPasswordNewPassword = () => {
           <div className='bg-red-50 min-h-screen w-2/5 flex justify-center items-center'>
             <form method='post' onSubmit={handleSubmit}>
               <span className='font-semibold text-4xl mx-auto select-none mb-2 text-center'>
-                <h1 className='text-2xl font-bold'>Forgot Password</h1>
+                <h1 className='text-2xl font-bold'>
+                  {t('resetPassword.title')}
+                </h1>
               </span>
 
               <div className='flex flex-col gap-5 mt-5  '>
                 <div className='flex flex-col'>
                   <label className='block text-md mb-2' htmlFor='email'>
-                    New Password
+                    {t('resetPassword.newPassword')}
                   </label>
                   <input
                     className='px-4 w-72 border-2 py-2 rounded-md text-sm outline-none'
                     type='password'
                     value={newPassword}
-                    placeholder='Email'
+                    placeholder='New Password'
                     onChange={(e) => setNewPassword(e.target.value)}
                     onInvalid={showInvalidate}
                     onInput={hideInvalidate}
@@ -61,9 +66,9 @@ const ForgotPasswordNewPassword = () => {
               <div className=''>
                 <button
                   type='submit'
-                  className='mt-3 mb-3 w-full bg-secondary hover:opacity-90 text-white py-2 rounded-md transition duration-100'
+                  className='mt-3 mb-3 w-full bg-secondary hover:opacity-90 text-white py-2 rounded-full transition duration-100'
                 >
-                  {loading ? 'Changing...' : 'Submit'}
+                  {loading ? 'Changing...' : t('resetPassword.submit')}
                 </button>
               </div>
             </form>

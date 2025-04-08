@@ -113,7 +113,7 @@ expressRouter.post('/send-otp', async (req, res) => {
     // Kiểm tra xem email có tồn tại trong cơ sở dữ liệu không
     const user = (await db.select().from(Users).where(eq(Users.email, email))).at(0);
     if (!user) {
-      return res.status(404).send('Email không tồn tại trong hệ thống.');
+      return res.status(404).send({message:'Email không tồn tại trong hệ thống.'});
     }
 
     // Tạo OTP ngẫu nhiên (6 chữ số)
@@ -147,6 +147,26 @@ expressRouter.post('/send-otp', async (req, res) => {
     return res.status(500).send('Có lỗi xảy ra. Vui lòng thử lại sau.');
   }
 })
+
+expressRouter.post('/check-email', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // Kiểm tra xem email có tồn tại trong cơ sở dữ liệu không
+    const user = (await db.select().from(Users).where(eq(Users.email, email))).at(0);
+
+    if (user) {
+      // Nếu email tồn tại, trả về thành công
+      return res.status(200).json({ message: 'Email người dùng hợp lệ.' });
+    } else {
+      // Nếu email không tồn tại, trả về lỗi
+      return res.status(404).json({ message: 'Email không tồn tại.' });
+    }
+  } catch (error) {
+    console.error('Lỗi hệ thống:', error);
+    return res.status(500).json({ message: 'Có lỗi xảy ra. Vui lòng thử lại sau.' });
+  }
+});
 
 expressRouter.post('/verify-otp', async (req, res) => {
   const { email, otp } = req.body;

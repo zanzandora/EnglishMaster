@@ -22,11 +22,14 @@ const useForgotPassword = () => {
       const result = await response.json();
       if (response.ok) {
         toast.success(result.message);
+        return true; 
       } else {
         toast.error(result.message || 'Có lỗi xảy ra. Vui lòng thử lại.');
+        return false; 
       }
     } catch (error) {
       toast.error('Không thể gửi OTP. Vui lòng thử lại.');
+      return false;
     } finally {
       setLoading(false);
     }
@@ -62,6 +65,36 @@ const useForgotPassword = () => {
     }
   };
 
+     // Xác thực OTP
+     const checkEmail = async (email) => {
+      setLoading(true);
+  
+      try {
+        const response = await fetch('/check-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email }),
+        });
+  
+        const result = await response.json();
+  
+        if (response.ok) {
+          toast.success(result.message); // Hiển thị thông báo thành công
+          return true; // OTP hợp lệ
+        } else {
+          toast.error(result.message || 'Có lỗi xảy ra. Vui lòng thử lại.');
+          return false; // OTP không hợp lệ
+        }
+      } catch (error) {
+        toast.error('Không thể xác thực OTP. Vui lòng thử lại.');
+        return false; // OTP không hợp lệ
+      } finally {
+        setLoading(false);
+      }
+    };
+
   // Xác thực OTP và thay đổi mật khẩu
   const resetPassword = async (email, otp, newPassword) => {
     setLoading(true);
@@ -95,6 +128,7 @@ const useForgotPassword = () => {
     sendOtp,
     resetPassword,
     verifyOtp,
+    checkEmail,
   };
 };
 

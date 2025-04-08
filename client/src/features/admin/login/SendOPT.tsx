@@ -4,8 +4,11 @@ import useForgotPassword from 'hooks/useForgotPassword';
 import { hideInvalidate, showInvalidate } from './login/validation';
 import { toast } from 'react-toastify';
 import LanguagePopover from '@components/dashboard/components/navBar/LanguagePopover';
+import { useTranslation } from 'react-i18next';
 
 const ForgotPasswordOtp = () => {
+  const { t } = useTranslation();
+
   const [otp, setOtp] = useState('');
   const { loading, verifyOtp } = useForgotPassword();
   const location = useLocation();
@@ -38,16 +41,17 @@ const ForgotPasswordOtp = () => {
         <div className='flex justify-end'>
           <LanguagePopover />
           <div className='bg-red-50 min-h-screen w-2/5 flex justify-center items-center'>
-            <form method='post' onSubmit={handleOtpSubmit}>
+            <form
+              method='post'
+              onSubmit={handleOtpSubmit}
+              className='w-full max-w-sm'
+            >
               <span className='font-semibold text-4xl mx-auto select-none mb-2 text-center'>
-                <h1 className='text-2xl font-bold'>Forgot Password</h1>
+                <h1 className='text-2xl font-bold'>{t('verifyCode.title')}</h1>
               </span>
 
               <div className='flex flex-col gap-5 mt-5  '>
-                <div className='flex flex-col'>
-                  <label className='block text-md mb-2' htmlFor='email'>
-                    OTP
-                  </label>
+                <div className='flex flex-col mx-auto my-2'>
                   <input
                     className='px-4 w-72 border-2 py-2 rounded-md text-sm outline-none'
                     type='text'
@@ -61,11 +65,15 @@ const ForgotPasswordOtp = () => {
                 </div>
               </div>
               <div className=''>
+                <p className='text-sm text-center'>
+                  Please enter the 6-digits one time password (OTP) that we sent
+                  to your registered email
+                </p>
                 <button
                   type='submit'
-                  className='mt-3 mb-3 w-full bg-secondary hover:opacity-90 text-white py-2 rounded-md transition duration-100'
+                  className='mt-3 mb-3 w-full bg-secondary hover:opacity-90 text-white py-2 rounded-full transition duration-100'
                 >
-                  {loading ? 'Cheking OTP...' : 'Submit'}
+                  {loading ? 'Cheking OTP...' : t('verifyCode.submit')}
                 </button>
               </div>
             </form>

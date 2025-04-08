@@ -26,6 +26,28 @@
     "loginText": "Đã có tài khoản?",
     "login": "Đăng nhập"
   },
+  "forgotPassword": {
+    "title": "Quên mật khẩu",
+    "email": "Email",
+    "submit": "Gửi yêu cầu",
+    "success": "Yêu cầu đặt lại mật khẩu đã được gửi đến email của bạn.",
+    "error": "Có lỗi xảy ra. Vui lòng thử lại sau."
+  },
+  "verifyCode": {
+    "title": "Xác thực OTP",
+    "code": "Mã xác thực OTP",
+    "submit": "Xác thực",
+    "resendText": "Không nhận được otp?",
+    "resend": "Gửi lại"
+  },
+  "resetPassword": {
+    "title": "Đặt lại mật khẩu",
+    "newPassword": "Mật khẩu mới",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "submit": "Xác nhận",
+    "success": "Yêu cầu đặt lại mật khẩu đã được gửi đến email của bạn.",
+    "error": "Có lỗi xảy ra. Vui lòng thử lại sau."
+  },
   "menu": {
     "home": "Trang chủ",
     "teachers": "Giảng viên",

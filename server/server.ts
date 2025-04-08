@@ -68,7 +68,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.post(['/login', '/logout', '/register', '/forgot', '/send-otp', '/verify-otp'], (await import('./routes/login')).router)
+app.post(['/login', '/logout', '/register', '/forgot', '/send-otp', '/verify-otp', '/check-email'], (await import('./routes/login')).router)
 app.use('/student', authenticateToken, (await import('./routes/database/student')).router)
 app.use('/teacher', authenticateToken, (await import('./routes/database/teacher')).router)
 app.use('/user', authenticateToken, (await import('./routes/database/user')).router)
