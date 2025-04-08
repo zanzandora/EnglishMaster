@@ -8,6 +8,7 @@ import { Users } from '../database/entity/user'
 import { db } from '../database/driver'
 import { transporter } from '../mailer'
 import { Teachers } from '../database/entity'
+import { checkUserExists, validateOTP } from './middleware'
 
 const expressRouter = Router()
 
@@ -110,12 +111,13 @@ expressRouter.post('/send-otp', async (req, res) => {
   const { email } = req.body;
 
   try {
-    // Kiểm tra xem email có tồn tại trong cơ sở dữ liệu không
-    const user = (await db.select().from(Users).where(eq(Users.email, email))).at(0);
-    if (!user) {
-      return res.status(404).send({message:'Email không tồn tại trong hệ thống.'});
-    }
-
+    const [user] = await db.select().from(Users).where(eq(Users.email, email)).limit(1);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'Email không tồn tại'
+        });
+      }
     // Tạo OTP ngẫu nhiên (6 chữ số)
     const otp = Math.floor(100000 + Math.random() * 900000);
     
@@ -168,31 +170,8 @@ expressRouter.post('/check-email', async (req, res) => {
   }
 });
 
-expressRouter.post('/verify-otp', async (req, res) => {
-  const { email, otp } = req.body;
-
+expressRouter.post('/verify-otp',validateOTP,checkUserExists, async (req, res) => {
   try {
-    // Kiểm tra xem email có tồn tại trong cơ sở dữ liệu không
-    const user = (await db.select().from(Users).where(eq(Users.email, email))).at(0);
-    if (!user) {
-      return res.status(404).json({ message: 'Email không tồn tại trong hệ thống.' });
-    }
-
-    // Kiểm tra OTP trong cookie
-    const otpFromCookie = req.cookies.otp;
-    const otpExpiryFromCookie = req.cookies.otpExpiry;
-
-    // Kiểm tra OTP có hợp lệ không và đã hết hạn chưa
-    if (!otpFromCookie || Date.now() > otpExpiryFromCookie) {
-      return res.status(400).json({ message: 'OTP không hợp lệ hoặc đã hết hạn.' });
-    }
-
-    // Kiểm tra OTP người dùng nhập vào có khớp với OTP trong cookie không
-    if (otpFromCookie !== otp) {
-      return res.status(400).json({ message: 'OTP không hợp lệ.' });
-    }
-
-    // Nếu OTP hợp lệ, trả về thông báo thành công
     return res.status(200).json({ message: 'OTP hợp lệ. Bạn có thể thay đổi mật khẩu.' });
   } catch (error) {
     console.error('Lỗi hệ thống:', error);
@@ -200,18 +179,15 @@ expressRouter.post('/verify-otp', async (req, res) => {
   }
 });
 
-expressRouter.post('/forgot', async (req, res) => {
-  const { email, newPassword } = req.body;
+expressRouter.post('/forgot',validateOTP, async (req, res) => {
+  const {email,otp, newPassword } = req.body;
 
   try {
-    // Kiểm tra xem email có tồn tại trong cơ sở dữ liệu không
+    // Cập nhật mật khẩu mới
     const user = (await db.select().from(Users).where(eq(Users.email, email))).at(0);
     if (!user) {
-      return res.status(404).send('Email không tồn tại trong hệ thống.');
+      return res.status(404).json({ message: 'Email không tồn tại trong hệ thống.' });
     }
-
-    // Cập nhật mật khẩu mới
-    user.password = newPassword; 
     await db.update(Users).set({ password: await bcrypt.hash(newPassword, +process.env.SALT_ROUND!) }).where(eq(Users.id, user.id));
 
     // Xóa cookie OTP và thời gian hết hạn sau khi thay đổi mật khẩu
