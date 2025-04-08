@@ -203,7 +203,7 @@ expressRouter.post('/add', async (req, res) => {
 
 
 expressRouter.post('/edit', async (req, res) => {
-  const { userName, email, name, age, gender, phoneNumber, address, photo, specialization, experience, password, userID } = req.body;
+  const { username, email, name, age, gender, phoneNumber, address, photo, specialization, experience, password, userID } = req.body;
 
   if (!userID) {
     return res.status(400).json({ error: 'userID is required' });
@@ -231,7 +231,7 @@ expressRouter.post('/edit', async (req, res) => {
 
     // 🔹 Chuẩn bị dữ liệu cập nhật Users
     const set1 = {};
-    if (userName) set1.username = userName;
+    if (username) set1.username = username;
     if (email) set1.email = email;  
     if (name) set1.name = name;
     if (age) set1.age = Number(age);
