@@ -35,6 +35,7 @@
     "title": "OTP Verification",
     "code": "Verification OTP",
     "submit": "Verify",
+    "message": "Please enter the 6-digits (OTP) that we sent to your registered email.",
     "resendText": "Didn't receive the code?",
     "resend": "Resend"
   },

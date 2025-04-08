@@ -37,6 +37,7 @@
     "title": "Xác thực OTP",
     "code": "Mã xác thực OTP",
     "submit": "Xác thực",
+    "message": "Vui lòng nhập 6 chữ số (OTP) mà chúng tôi đã gửi đến email đã đăng ký của bạn.",
     "resendText": "Không nhận được otp?",
     "resend": "Gửi lại"
   },

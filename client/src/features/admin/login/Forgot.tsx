@@ -4,7 +4,6 @@ import useForgotPassword from 'hooks/useForgotPassword';
 import { useNavigate } from 'react-router-dom';
 import LanguagePopover from '@components/dashboard/components/navBar/LanguagePopover';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
 
 const Forgot = () => {
   const { t } = useTranslation();
