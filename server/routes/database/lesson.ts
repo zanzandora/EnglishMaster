@@ -104,7 +104,8 @@ expressRouter.post('/add', upload.single('file'), async (req, res) => {
 
 })
 
-expressRouter.post('/edit', async (req, res) => {
+expressRouter.post('/edit', upload.none(), async (req, res) => {
+  console.log(req.file);
   const id = req.body.id
 
   if (!id) {

@@ -137,6 +137,12 @@ const LessonListPage = () => {
           <div className='flex items-center gap-2'>
             <FormModal
               table='lesson'
+              type='update'
+              data={item}
+              onSuccess={handleSuccess}
+            />
+            <FormModal
+              table='lesson'
               type='delete'
               id={item.id}
               onSuccess={handleSuccess}

@@ -3,7 +3,7 @@ import { z } from 'zod'; // !validation schema
 import { zodResolver } from '@hookform/resolvers/zod';
 import InputField from '../InputField';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 //* Định nghĩa schema bằng cách sử dụng z.object() để mô tả cấu trúc dữ liệu và điều kiện hợp lệ.
 const LessonSchema = z.object({
@@ -34,6 +34,12 @@ const LessonForm = ({
 
   const schema = LessonSchema;
 
+  useEffect(() => {
+    if (type === 'update' && data?.file) {
+      setSelectedFile(null); // Reset the selected file when editing
+    }
+  }, [data, type]);
+
   const {
     register,
     handleSubmit,
@@ -52,6 +58,9 @@ const LessonForm = ({
     const url = type === 'create' ? '/lesson/add' : '/lesson/edit';
 
     const formDataToSend = new FormData();
+    if (type === 'update' && formData?.id) {
+      formDataToSend.append('id', formData.id);
+    }
     formDataToSend.append('title', formData.title);
     formDataToSend.append('type', formData.type);
     formDataToSend.append('description', formData.description);
@@ -89,6 +98,9 @@ const LessonForm = ({
     }
 
     try {
+      if (type === 'update' && data?.id) {
+        formData.id = data.id;
+      }
       const formattedData = {
         ...formData,
       };
@@ -132,15 +144,17 @@ const LessonForm = ({
           register={register}
           error={errors.type}
         ></InputField>
-        <InputField
-          label={t('form.lesson.file')}
-          type='file'
-          inputProps={{ multiple: true }}
-          onFileChange={handleFileChange}
-          name='file'
-          register={register}
-          className='flex-1'
-        />
+        {type === 'create' && (
+          <InputField
+            label={t('form.lesson.file')}
+            type='file'
+            inputProps={{ multiple: true }}
+            onFileChange={handleFileChange}
+            name='file'
+            register={register}
+            className='flex-1'
+          />
+        )}
         <InputField
           label={t('form.lesson.description')}
           type='textarea'

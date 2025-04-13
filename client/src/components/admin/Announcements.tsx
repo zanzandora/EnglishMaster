@@ -59,7 +59,7 @@ const Announcements = () => {
       </div>
       <div
         className={`flex flex-col gap-4 mt-4 ${
-          announcements.length > 3 ? 'overflow-y-auto max-h-96' : ''
+          announcements.length > 3 ? 'overflow-y-auto max-h-80' : ''
         }`}
       >
         {loading ? (
