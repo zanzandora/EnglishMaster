@@ -12,6 +12,7 @@ import { useSort } from 'hooks/useSort';
 import { sortByField } from '@utils/sortUtils';
 import { Lesson } from '@interfaces';
 import React from 'react';
+import DownloadFileDocs from '@components/common/export/DownloadFileDocs';
 
 const columns = (t: any) => [
   {
@@ -140,6 +141,11 @@ const LessonListPage = () => {
               type='update'
               data={item}
               onSuccess={handleSuccess}
+            />
+            <DownloadFileDocs
+              type='lesson'
+              fileUrl={item.file_url}
+              fileName={item.title}
             />
             <FormModal
               table='lesson'

@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import multer from 'multer'
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { eq } from 'drizzle-orm'
 import path from 'path'
 
@@ -45,6 +45,31 @@ expressRouter.get('/list', async (req, res) => {
     res.status(500).send(err.toString())
   }
 })
+
+expressRouter.get('/download/:key', async (req, res) => {
+  const key = decodeURIComponent(req.params.key); 
+  console.log('Trying to download file', key);
+
+  const command = new GetObjectCommand({
+    Bucket: process.env.BUCKET_NAME!,
+    Key: key,
+  });
+
+  try {
+    const { Body, ContentType } = await s3.send(command);
+
+    // Thiết lập headers chuẩn
+    res.setHeader("Content-Disposition", `attachment; filename="${path.basename(key)}"`);
+    res.setHeader("Content-Type", ContentType || "application/octet-stream");
+
+    // Stream trực tiếp từ S3 -> Client
+    (Body as NodeJS.ReadableStream).pipe(res); 
+    
+  } catch (error) {
+    console.error('Error downloading file:', error);
+    res.status(500).send('Error downloading file');
+  }
+});
 
 expressRouter.get('/:userID', async (req, res) => {
   const userID = req.params.userID

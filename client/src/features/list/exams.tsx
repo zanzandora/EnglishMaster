@@ -14,6 +14,7 @@ import { useParams } from 'react-router-dom';
 import { useSort } from 'hooks/useSort';
 import { sortByField } from '@utils/sortUtils';
 import { Exam } from '@interfaces';
+import DownloadFileDocs from '@components/common/export/DownloadFileDocs';
 
 const columns = (t: any, role?: string) => [
   {
@@ -169,6 +170,11 @@ const ExamListPage = () => {
         </td>
         <td>
           <div className='flex items-center gap-2'>
+            <DownloadFileDocs
+              type='lesson'
+              fileUrl={item.source}
+              fileName={item.title}
+            />
             {role === 'admin' && !targetUserID && (
               <>
                 <FormModal
