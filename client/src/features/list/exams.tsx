@@ -171,7 +171,7 @@ const ExamListPage = () => {
         <td>
           <div className='flex items-center gap-2'>
             <DownloadFileDocs
-              type='lesson'
+              type='exam'
               fileUrl={item.source}
               fileName={item.title}
             />
