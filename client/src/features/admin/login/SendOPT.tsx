@@ -9,7 +9,7 @@ const ForgotPasswordOtp = () => {
   const { t } = useTranslation();
 
   const [otp, setOtp] = useState(Array(6).fill(''));
-  const { loading, verifyOtp } = useForgotPassword();
+  const { loading, verifyOtp, sendOtp } = useForgotPassword();
   const location = useLocation();
   const navigate = useNavigate();
   const { email } = location.state || {};
@@ -29,6 +29,14 @@ const ForgotPasswordOtp = () => {
     }
   };
 
+  const handleKeyDown = (e: any, index: number) => {
+    if (e.key === 'ArrowLeft' && index > 0) {
+      document.getElementById(`input${index - 1}`)?.focus();
+    } else if (e.key === 'ArrowRight' && index < 5) {
+      document.getElementById(`input${index + 1}`)?.focus();
+    }
+  };
+
   const handleOtpSubmit = async (e: any) => {
     e.preventDefault();
 
@@ -38,7 +46,19 @@ const ForgotPasswordOtp = () => {
     if (isOtpValid) {
       navigate('/reset-password', { state: { email, otp: otpString } });
     } else {
-      toast.error('OTP không hợp lệ hoặc đã hết hạn.');
+      setOtp(Array(6).fill('')); // Reset OTP đã nhập
+    }
+  };
+
+  const requestNewOtp = async () => {
+    try {
+      // Gửi yêu cầu OTP mới và xóa OTP cũ
+      await sendOtp(email); // Gửi OTP mới qua email
+
+      // Thông báo thành công
+      setOtp(Array(6).fill('')); // Reset OTP đã nhập
+    } catch (error) {
+      toast.error('Không thể gửi OTP mới. Vui lòng thử lại.');
     }
   };
 
@@ -76,12 +96,20 @@ const ForgotPasswordOtp = () => {
                     id={`input${index}`}
                     value={value}
                     onChange={(e) => handleOtpChange(e, index)}
+                    onKeyDown={(e) => handleKeyDown(e, index)} // Di chuyển focus khi nhấn mũi tên
                     type='text'
                     maxLength={1}
                     className='w-8 h-8 text-center border-b-2 border-gray-300 mx-2 focus:border-blue-500 focus:outline-none'
                   />
                 ))}
               </div>
+
+              <span
+                className='text-sm mt-3 text-blue-500 underline cursor-pointer'
+                onClick={requestNewOtp}
+              >
+                Can't receive OTP? Resend OTP
+              </span>
 
               <button
                 type='submit'

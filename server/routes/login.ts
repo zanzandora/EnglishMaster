@@ -118,6 +118,11 @@ expressRouter.post('/send-otp', async (req, res) => {
           message: 'Email không tồn tại'
         });
       }
+      
+    // Xóa OTP cũ nếu có
+    res.clearCookie('otp', { secure: process.env.NODE_ENV === 'production' });
+    res.clearCookie('otpExpiry', { secure: process.env.NODE_ENV === 'production' });
+
     // Tạo OTP ngẫu nhiên (6 chữ số)
     const otp = Math.floor(100000 + Math.random() * 900000);
     

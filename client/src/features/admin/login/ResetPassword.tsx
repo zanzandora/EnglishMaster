@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 const ForgotPasswordNewPassword = () => {
   const { t } = useTranslation();
 
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const { message, loading, resetPassword } = useForgotPassword();
   const location = useLocation();
@@ -17,6 +18,10 @@ const ForgotPasswordNewPassword = () => {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      toast.error('Mật khẩu không khớp. Vui lòng thử lại.');
+      return;
+    }
     resetPassword(email, otp, newPassword); // Xác thực OTP và thay đổi mật khẩu
     navigate('/login'); // Chuyển sang bước 3 với email và OTP
   };
@@ -47,7 +52,7 @@ const ForgotPasswordNewPassword = () => {
               </span>
 
               <div className='flex flex-col gap-5 mt-5  '>
-                <div className='flex flex-col'>
+                <div className='flex flex-col gap-4'>
                   <label className='block text-md mb-2' htmlFor='email'>
                     {t('resetPassword.newPassword')}
                   </label>
@@ -61,9 +66,17 @@ const ForgotPasswordNewPassword = () => {
                     onInput={hideInvalidate}
                     required
                   />
+                  <input
+                    type='password'
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder='Confirm New Password'
+                    required
+                    className='px-4 w-full border-2 py-2 rounded-md text-sm outline-none focus:ring-2 focus:ring-blue-500'
+                  />
                 </div>
               </div>
-              <div className=''>
+              <div className='mt-5 flex flex-col gap-4'>
                 <button
                   type='submit'
                   className='mt-3 mb-3 w-full bg-secondary hover:opacity-90 text-white py-2 rounded-full transition duration-100'
