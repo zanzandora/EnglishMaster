@@ -214,6 +214,17 @@ expressRouter.delete('/delete/:id', async (req, res) => {
   }
 
   try {
+    const studentInClass = await db
+    .select({ className: Classes.name })
+    .from(ClassStudents)
+    .innerJoin(Classes, eq(ClassStudents.classID, Classes.id))
+    .where(eq(ClassStudents.studentID, Number(id)));
+
+  // Nếu học sinh đang trong một lớp nào đó, không cho phép xóa và gửi thông báo
+  if (studentInClass.length > 0) {
+    res.status(400).send(`Can't delete because this student is enrolled in ${studentInClass[0].className} class.`);
+    return;
+  }
     await db.delete(Students).where(eq(Students.id, Number(id)));
 
     res.send('Student deleted');

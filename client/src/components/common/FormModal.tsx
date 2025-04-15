@@ -186,7 +186,7 @@ const FormModal = ({
         onSuccess();
       }
     } catch (error: any) {
-      toast.error('Lỗi khi xóa: ' + error.message);
+      toast.warning(error.message);
       if (onError) {
         onError(error);
       }

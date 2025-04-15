@@ -5,6 +5,7 @@ import { Classes, Courses, CourseTeachers, Teachers, Users } from '../../databas
 import { db } from '../../database/driver'
 
 import bcrypt from 'bcrypt'
+import { getTeacherIdByUserId } from '../../helper/getTeacherID'
 
 const expressRouter = Router()
 
@@ -276,6 +277,23 @@ expressRouter.delete('/delete/:userID', async (req, res) => {
   }
 
   try {
+    const teacherID = await getTeacherIdByUserId(Number(userID))
+    if (!teacherID) {
+      res.status(404).send('Teacher not found')
+      return
+    }
+        const teacherInClass = await db
+        .select({ 
+          className: Classes.name
+         })
+        .from(Classes)
+        .where(eq(Classes.teacherID, Number(teacherID)));
+    
+      // Nếu học sinh đang trong một lớp nào đó, không cho phép xóa và gửi thông báo
+      if (teacherInClass.length > 0) {
+        res.status(400).send(`Can't delete  because this teacher is teaching ${teacherInClass[0].className} class.`);
+        return;
+      }
     await db.delete(Users).where(eq(Users.id, Number(userID)))    
 
     res.send('Teacher deleted')
