@@ -15,6 +15,7 @@ import { useSort } from 'hooks/useSort';
 import { sortByField } from '@utils/sortUtils';
 import { Student } from '@interfaces';
 import ReusableMobileCard from '@components/common/ReusableMobileCard';
+import { useIsMobile } from 'hooks/useIsMobile';
 
 const columns = (t: any) => [
   {
@@ -49,6 +50,7 @@ const columns = (t: any) => [
 
 const StudentListPage = () => {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   const { token } = useAuth();
   const decodedToken = decodeToken(token);
@@ -97,7 +99,7 @@ const StudentListPage = () => {
   };
 
   const { currentData, currentPage, totalPages, setCurrentPage } =
-    usePagination(filteredStudents || [], 10);
+    usePagination(filteredStudents || [], isMobile ? 3 : 10);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -290,11 +292,15 @@ const StudentListPage = () => {
         </>
       )}
       {totalPages > 1 && (
-        <Pagination
-          totalPages={totalPages}
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-        />
+        <>
+          <div className=''>
+            <Pagination
+              totalPages={totalPages}
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        </>
       )}
     </div>
   );
