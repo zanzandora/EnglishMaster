@@ -19,7 +19,7 @@ const Navbar = () => {
   }, [location.pathname, navigate]);
 
   if (!token) {
-    return <ErrorPage />; // Hoặc xử lý khi không có token
+    return <ErrorPage />;
   }
 
   const decoded = decodeToken(token);
@@ -27,30 +27,46 @@ const Navbar = () => {
   const role = decoded?.role;
 
   return (
-    <div className='flex items-center justify-between p-4'>
-      {/* SEARCH BAR */}
-      <TableSearchGlobal />
-
-      {/* ICONS AND USER */}
-      <div className='flex items-center gap-6 justify-end w-full'>
-        <button
-          className='p-2 bg-white rounded-full hover:bg-gray-200'
-          onClick={goToFAQ}
-        >
-          <img src='/question.png' alt='FAQ' width={30} height={30} />
-        </button>
-
-        <LanguagePopover />
-        {role === 'teacher' && <NotificationsPopover />}
-
-        <div className='flex flex-col text-right'>
-          <span className='text-xs font-medium'>{userName}</span>
-          <span className='text-[10px] text-gray-500'>{role}</span>
+    <nav className='w-full  '>
+      <div className='flex flex-col md:flex-row md:items-center md:justify-between px-2 py-2 md:p-4 gap-2 md:gap-0'>
+        {/* SEARCH BAR */}
+        <div className='order-2 md:order-1 w-full '>
+          <TableSearchGlobal />
         </div>
 
-        <AccountPopover />
+        {/* ICONS AND USER */}
+        <div className='order-1 md:order-2 flex items-center justify-between md:justify-end w-full gap-2 md:gap-6'>
+          {/* Left group: FAQ, Language, Notifications */}
+          <div className='flex items-center gap-2 md:gap-4'>
+            <button
+              className='p-2 bg-white rounded-full hover:bg-gray-200'
+              onClick={goToFAQ}
+            >
+              <img
+                src='/question.png'
+                alt='FAQ'
+                width={24}
+                height={24}
+                className='md:w-[30px] md:h-[30px]'
+              />
+            </button>
+            <LanguagePopover />
+            {role === 'teacher' && <NotificationsPopover />}
+          </div>
+
+          {/* User info & Account */}
+          <div className='flex items-center gap-2 md:gap-4'>
+            <div className='flex flex-col text-right'>
+              <span className='text-xs md:text-sm font-medium'>{userName}</span>
+              <span className='text-[10px] md:text-xs text-gray-500'>
+                {role}
+              </span>
+            </div>
+            <AccountPopover />
+          </div>
+        </div>
       </div>
-    </div>
+    </nav>
   );
 };
 

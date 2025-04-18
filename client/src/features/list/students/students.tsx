@@ -14,6 +14,7 @@ import React from 'react';
 import { useSort } from 'hooks/useSort';
 import { sortByField } from '@utils/sortUtils';
 import { Student } from '@interfaces';
+import ReusableMobileCard from '@components/common/ReusableMobileCard';
 
 const columns = (t: any) => [
   {
@@ -216,7 +217,77 @@ const StudentListPage = () => {
       {currentData.length === 0 ? (
         <div className='text-center py-6 text-gray-500'>no student found</div>
       ) : (
-        <Table columns={columns(t)} renderRow={renderRow} data={currentData} />
+        <>
+          <div className='block md:hidden'>
+            {currentData.map((student) => (
+              <ReusableMobileCard
+                key={student.id}
+                avatar={student.photo}
+                title={renderHighlightedItem(student.name)}
+                subtitle={renderHighlightedItem(student.email)}
+                fields={[
+                  {
+                    label: t('table.students.header.studentId'),
+                    value: renderHighlightedItem(String(student.id)),
+                  },
+                  {
+                    label: t('table.students.header.classes'),
+                    value:
+                      renderHighlightedItem(student.className) ||
+                      'No class assigned',
+                  },
+                  {
+                    label: t('table.students.header.phone'),
+                    value: renderHighlightedItem(student.phoneNumber),
+                  },
+                  {
+                    label: t('table.students.header.address'),
+                    value: renderHighlightedItem(student.address),
+                  },
+                ]}
+                actions={
+                  <>
+                    <Link to={`/${role}/list/students/${student.id}`}>
+                      <button className='w-8 h-8 flex items-center justify-center rounded-full bg-tables-actions-bgViewIcon'>
+                        <img
+                          src='/view.png'
+                          alt=''
+                          width={16}
+                          height={16}
+                          className='w-8/12'
+                        />
+                      </button>
+                    </Link>
+                    {role === 'admin' && (
+                      <>
+                        <FormModal
+                          table='student'
+                          type='update'
+                          data={student}
+                          onSuccess={handleSuccess}
+                        />
+                        <FormModal
+                          table='student'
+                          type='delete'
+                          id={student.id}
+                          onSuccess={handleSuccess}
+                        />
+                      </>
+                    )}
+                  </>
+                }
+              />
+            ))}
+          </div>
+
+          <div className='hidden md:block'>
+            <Table
+              columns={columns(t)}
+              renderRow={renderRow}
+              data={currentData}
+            />
+          </div>
+        </>
       )}
       {totalPages > 1 && (
         <Pagination

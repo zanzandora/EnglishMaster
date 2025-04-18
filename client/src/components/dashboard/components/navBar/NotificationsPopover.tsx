@@ -128,7 +128,7 @@ const NotificationsPopover = () => {
   };
 
   return (
-    <div className='relative' ref={popoverRef}>
+    <div className='relative md:block hidden' ref={popoverRef}>
       {/* Nút thông báo */}
       <button
         className='relative p-2 bg-white rounded-full hover:bg-gray-200'
