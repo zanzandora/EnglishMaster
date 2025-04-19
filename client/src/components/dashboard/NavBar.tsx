@@ -7,9 +7,11 @@ import { decodeToken } from '@utils/decodeToken ';
 import ErrorPage from 'features/error/error';
 import { useAuth } from 'hooks/useAuth';
 import TableSearchGlobal from '@components/common/table/searchs/TableSearchGlobal';
+import { useIsMobile } from 'hooks/useIsMobile';
 
 const Navbar = () => {
   const { token } = useAuth();
+  const isMobile = useIsMobile();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,12 +32,14 @@ const Navbar = () => {
     <nav className='w-full  '>
       <div className='flex flex-col md:flex-row md:items-center md:justify-between px-2 py-2 md:p-4 gap-2 md:gap-0'>
         {/* SEARCH BAR */}
-        <div className='order-2 md:order-1 w-full '>
-          <TableSearchGlobal />
-        </div>
+        {isMobile || (
+          <div className='order-2 md:order-1 w-full '>
+            {<TableSearchGlobal />}
+          </div>
+        )}
 
         {/* ICONS AND USER */}
-        <div className='order-1 md:order-2 flex items-center justify-between md:justify-end w-full gap-2 md:gap-6'>
+        <div className='order-1 md:order-2 flex items-center justify-end w-full gap-2 md:gap-6'>
           {/* Left group: FAQ, Language, Notifications */}
           <div className='flex items-center gap-2 md:gap-4'>
             <button

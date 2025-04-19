@@ -99,7 +99,7 @@ const StudentListPage = () => {
   };
 
   const { currentData, currentPage, totalPages, setCurrentPage } =
-    usePagination(filteredStudents || [], isMobile ? 3 : 10);
+    usePagination(filteredStudents || [], isMobile ? 5 : 10);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -139,7 +139,9 @@ const StudentListPage = () => {
           {renderHighlightedItem(String(item.id))}
         </td>
         <td className='hidden md:table-cell'>
-          {renderHighlightedItem(item.className) || 'No class assigned'}
+          {item.className
+            ? renderHighlightedItem(item.className)
+            : 'No class assigned'}
         </td>
         <td className='hidden md:table-cell'>
           {renderHighlightedItem(item.phoneNumber)}
@@ -234,17 +236,9 @@ const StudentListPage = () => {
                   },
                   {
                     label: t('table.students.header.classes'),
-                    value:
-                      renderHighlightedItem(student.className) ||
-                      'No class assigned',
-                  },
-                  {
-                    label: t('table.students.header.phone'),
-                    value: renderHighlightedItem(student.phoneNumber),
-                  },
-                  {
-                    label: t('table.students.header.address'),
-                    value: renderHighlightedItem(student.address),
+                    value: student.className
+                      ? renderHighlightedItem(student.className)
+                      : 'No class assigned',
                   },
                 ]}
                 actions={

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 
 interface PaginationProps {
   totalPages: number;
@@ -48,10 +48,57 @@ const Pagination: React.FC<PaginationProps> = ({
 }) => {
   const pageNumbers = getPageNumbers(totalPages, currentPage);
 
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Đảm bảo clearInterval khi component unmount
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, []);
+
+  const startInterval = (direction: 'prev' | 'next') => {
+    if (intervalRef.current) return; // Ngăn tạo nhiều interval
+
+    intervalRef.current = setInterval(() => {
+      if (direction === 'prev' && currentPage > 1) {
+        onPageChange(currentPage - 1);
+      }
+      if (direction === 'next' && currentPage < totalPages) {
+        onPageChange(currentPage + 1);
+      }
+    }, 100); // đổi trang mỗi 150ms khi giữ nút
+  };
+
+  const stopInterval = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  // Sự kiện cho cả chuột và cảm ứng
+  const handleHoldStart = (direction: 'prev' | 'next') => {
+    startInterval(direction);
+  };
+
+  const handleHoldEnd = () => {
+    stopInterval();
+  };
+
   return (
     <div className='p-4 flex items-center justify-between text-gray-500'>
       <button
         onClick={() => onPageChange(currentPage - 1)}
+        onMouseDown={() => handleHoldStart('prev')}
+        onMouseUp={handleHoldEnd}
+        onMouseLeave={handleHoldEnd}
+        onTouchStart={() => handleHoldStart('prev')}
+        onTouchEnd={handleHoldEnd}
+        onTouchCancel={handleHoldEnd}
         disabled={currentPage === 1}
         className='py-2 px-4 rounded-md bg-slate-200 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed'
       >
@@ -87,6 +134,12 @@ const Pagination: React.FC<PaginationProps> = ({
 
       <button
         onClick={() => onPageChange(currentPage + 1)}
+        onMouseDown={() => handleHoldStart('next')}
+        onMouseUp={handleHoldEnd}
+        onMouseLeave={handleHoldEnd}
+        onTouchStart={() => handleHoldStart('next')}
+        onTouchEnd={handleHoldEnd}
+        onTouchCancel={handleHoldEnd}
         disabled={currentPage === totalPages}
         className='py-2 px-4 rounded-md bg-slate-200 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed'
       >
