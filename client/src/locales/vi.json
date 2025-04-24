@@ -233,11 +233,11 @@
     },
     "reports": {
       "student": {
-        "NO":"STT",
+        "NO": "STT",
         "label": "Học Viên",
         "id": "MHV",
         "name": "Tên học viên",
-        "birth":"Ngày sinh",
+        "birth": "Ngày sinh",
         "class": "lớp học",
         "mt": "Điểm giữa kỳ (MT)",
         "ft": "ĐIểm cuối kỳ (FT)",
@@ -361,7 +361,7 @@
       },
       "name": "Tên lớp học",
       "teacher": "Giảng viên phụ trách",
-      "students": "Chọn học sinh",
+      "students": "Chọn học viên muốn thêm vào lớp này",
       "course": "Khóa học",
       "capacity": "Sức chứa"
     },
@@ -390,7 +390,7 @@
       "shift": "Ca"
     },
     "attendance": {
-      "list":{
+      "list": {
         "title": "Chi tiết điểm danh",
         "status": "Trạng thái",
         "note": "Ghi chú",

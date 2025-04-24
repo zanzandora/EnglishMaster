@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,7 +6,6 @@ import InputField from '../InputField';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import StudentSelect from '@components/common/select/StudentSelect';
-import useFetchTeachers from 'hooks/useFetchTeachers';
 import useFetchCourses from 'hooks/useFetchCourses';
 
 //* Định nghĩa schema bằng cách sử dụng z.object() để mô tả cấu trúc dữ liệu và điều kiện hợp lệ.
@@ -47,18 +46,26 @@ const ClassForm = ({
   const tableNameDefault = t('form.table.class');
   const [activeTab, setActiveTab] = useState<'details' | 'students'>('details');
 
-  const { teachers } = useFetchTeachers();
   const { courses } = useFetchCourses();
 
   const schema = type === 'create' ? CreateClassSchema : UpdateClassSchema;
+
+  // State to track the currently selected course
+  const [selectedCourseId, setSelectedCourseId] = useState<number | ''>(
+    data?.courseID ?? ''
+  );
+  // const [capacityValue, setCapacityValue] = useState<number | ''>(
+  //   data?.capacity ?? 0
+  // );
 
   const {
     register,
     handleSubmit,
     control,
-    watch,
     trigger,
     formState: { errors, dirtyFields },
+    setValue,
+    watch,
   } = useForm({
     // *Khi submit form, Zod sẽ tự động kiểm tra dữ liệu dựa trên ClassSchema.
     resolver: zodResolver(schema),
@@ -72,13 +79,19 @@ const ClassForm = ({
       students: [],
     },
   });
-  // Dùng watch để lấy giá trị hiện tại của teacherID và courseID
-  const teacherIDValue = watch('teacherID');
-  const courseIDValue = watch('courseID');
+
+  const capacityValue = watch('capacity');
+
+  // Filter teachers based on the selected course
+  const filteredTeachers = useMemo(() => {
+    return (
+      courses.find((c) => String(c.id) === String(selectedCourseId))
+        ?.teachers || []
+    );
+  }, [courses, selectedCourseId]);
 
   const submitClass = async (formattedData: any) => {
     const url = type === 'create' ? '/class/add' : '/class/edit';
-    console.log('🔴 API Sending:', formattedData);
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -119,8 +132,6 @@ const ClassForm = ({
         formData.id = data.id;
       }
 
-      console.log('🔴 Before Mapping:', formData.students);
-
       // Tạo object dữ liệu để gửi đi
       const dataToSubmit = { ...formData };
 
@@ -133,8 +144,6 @@ const ClassForm = ({
           typeof s === 'object' ? s.studentID : s
         );
       }
-      console.log('🟢 After Mapping:', dataToSubmit.students);
-      console.log('🚀 Raw Form Data:', dataToSubmit);
 
       await submitClass({
         ...formData,
@@ -189,33 +198,50 @@ const ClassForm = ({
 
           <div className='flex flex-wrap gap-4 w-full justify-between order-1'>
             <InputField
-              label={t('form.class.teacher')}
-              name='teacherID'
-              register={register}
-              value={teacherIDValue !== undefined ? String(teacherIDValue) : ''}
-              error={errors.teacherID}
-            >
-              <option value=''>{t('form.placeholders.select')}</option>
-              {teachers.map((teacher: any) => (
-                <option key={teacher.id} value={teacher.id}>
-                  {teacher.name}
-                </option>
-              ))}
-            </InputField>
-            <InputField
               label={t('form.class.course')}
               name='courseID'
               register={register}
-              value={courseIDValue !== undefined ? String(courseIDValue) : ''}
+              value={
+                selectedCourseId !== undefined ? String(selectedCourseId) : ''
+              }
               error={errors.courseID}
-              className='flex-1 ml-14'
+              className='flex-1 '
+              inputProps={{
+                onChange: (e) => {
+                  const value = Number(e.target.value);
+                  setSelectedCourseId(value);
+                  setValue('courseID', value);
+                  // Reset teacherID when course changes
+                  setValue('teacherID', '');
+                },
+              }}
             >
               <option value=''>{t('form.placeholders.select')}</option>
-              {courses.map((course: any) => (
+              {courses.map((course) => (
                 <option key={course.id} value={course.id}>
                   {course.id} - {course.name}
                 </option>
               ))}
+            </InputField>
+            <InputField
+              label={t('form.class.teacher')}
+              name='teacherID'
+              register={register}
+              error={errors.teacherID}
+              className='ml-14'
+            >
+              <option value=''>{t('form.placeholders.select')}</option>
+              {filteredTeachers.length > 0 ? (
+                filteredTeachers.map((teacher) => (
+                  <option key={teacher.teacherId} value={teacher.teacherId}>
+                    {teacher.teacherName}
+                  </option>
+                ))
+              ) : (
+                <option value='' disabled>
+                  Dont have teacher
+                </option>
+              )}
             </InputField>
           </div>
           <InputField
@@ -239,6 +265,7 @@ const ClassForm = ({
             })) || []
           }
           className='min-w-full'
+          maxStudents={Number(capacityValue) || 0}
         />
       )}
 

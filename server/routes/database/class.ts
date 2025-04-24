@@ -68,6 +68,8 @@ expressRouter.get('/list', async (req, res) => {
         classID: ClassStudents.classID,
         studentID: Students.id,
         studentName: Students.name,
+        studentEmail: Students.email,
+        studentGender: Students.gender,
       })
       .from(ClassStudents)
       .leftJoin(Students, eq(ClassStudents.studentID, Students.id));
@@ -96,26 +98,26 @@ expressRouter.get('/list', async (req, res) => {
 });
 
 expressRouter.get('/options', async (req, res) => {
-  const {user_id,role} = req.user;
+  const { user_id, role } = req.user;
   const teacherID = await getTeacherIdByUserId(Number(user_id));
 
   try {
-    let classOptions
+    let classOptions;
     if (role === 'teacher') {
-     classOptions = await db
-      .select({
-        id: Classes.id,
-        name: Classes.name,
-      })
-      .from(Classes)
-      .where(eq(Classes.teacherID, teacherID));
+      classOptions = await db
+        .select({
+          id: Classes.id,
+          name: Classes.name,
+        })
+        .from(Classes)
+        .where(eq(Classes.teacherID, teacherID));
     } else {
-       classOptions = await db
-      .select({
-        id: Classes.id,
-        name: Classes.name,
-      })
-      .from(Classes);
+      classOptions = await db
+        .select({
+          id: Classes.id,
+          name: Classes.name,
+        })
+        .from(Classes);
     }
     res.send(classOptions);
   } catch (err) {
