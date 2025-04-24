@@ -15,7 +15,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
-
 }
 
 #root {
@@ -23,71 +22,71 @@
   width: 100%;
 }
 
-.custome-react-calender{
+.custome-react-calender {
   border: none !important;
   width: 100% !important;
 }
 
 /* *BIG CALENDAR  */
-.rbc-header{
+.rbc-header {
   @apply bg-calendar-header-bgColor
   text-calendar-header-textColor
   text-sm 
   flex 
   items-center 
   justify-center 
-  h-9
+  h-9;
 }
-.rbc-allday-cell{
-  @apply hidden 
+.rbc-allday-cell {
+  @apply hidden;
 }
-.rbc-time-header-cell .rbc-today{
-  @apply bg-calendar-today
+.rbc-time-header-cell .rbc-today {
+  @apply bg-calendar-today;
 }
-.rbc-time-slot{
-  @apply text-secondary-male 
+.rbc-time-slot {
+  @apply text-secondary-male;
 }
-.rbc-time-slot:not(.rbc-today .rbc-time-slot){
+.rbc-time-slot:not(.rbc-today .rbc-time-slot) {
   background-color: #eff4f7;
 }
 .rbc-selected-cell {
-  background-color: rgb(240,253,250) !important;
+  background-color: rgb(240, 253, 250) !important;
 }
 
 .rbc-month-view .rbc-row-segment {
-  @apply max-h-8 overflow-hidden
+  @apply max-h-8 overflow-hidden;
 }
 
 /* CALENDAR WRAPPER  */
-.calendar-wrapper{
-  @apply w-screen 
+.calendar-wrapper {
+  @apply w-screen;
 }
 
 /* *EVENT STYLES */
 
-.rbc-event, .rbc-background-event {
+.rbc-event,
+.rbc-background-event {
   padding: 0 !important;
   border: none !important;
 }
-.rbc-event-label{
+.rbc-event-label {
   display: none !important;
 }
 
 /* *DATEPICKER  */
 .react-datepicker__input-container {
-  @apply relative w-full
+  @apply relative w-full;
 }
 
 .react-datepicker__input-container input {
-  @apply pr-10
+  @apply pr-10;
 }
 
 .react-datepicker__calendar-icon {
-  @apply absolute right-3 top-2/4 cursor-pointer -translate-y-1/2 hidden md:inline-block
+  @apply absolute right-3 top-2/4 cursor-pointer -translate-y-1/2 hidden md:inline-block;
 }
 .datepicker-popup {
   z-index: 9999 !important;
-
 }
 
 .line-clamp-custom {
@@ -97,6 +96,19 @@
   overflow: hidden;
 }
 
+/* *tooltip-animations grow */
+.custom-tooltip-grow {
+  animation: tooltip-grow 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: top center;
+}
 
-
-
+@keyframes tooltip-grow {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

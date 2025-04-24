@@ -14,6 +14,7 @@ import {
 import useFetchStudents from 'hooks/useFetchStudents';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'react-tooltip';
+import CustomTooltip from '../CustomTooltip';
 
 interface StudentSelectProps {
   control: Control<FieldValues>; // Sử dụng kiểu Control từ react-hook-form
@@ -44,12 +45,7 @@ const CustomOption = (props: OptionProps<StudentOptionType, true>) => {
       >
         <selectComponents.Option {...props} />
       </div>
-      <Tooltip
-        anchorId={anchorId}
-        place='left'
-        className='z-50'
-        style={{ fontSize: 13, lineHeight: 1.5 }}
-      >
+      <CustomTooltip anchorId={anchorId} className='z-50'>
         <div>
           <div>
             <b>Student ID:</b> {data.studentID}
@@ -61,7 +57,7 @@ const CustomOption = (props: OptionProps<StudentOptionType, true>) => {
             <b>Gender:</b> {data.gender}
           </div>
         </div>
-      </Tooltip>
+      </CustomTooltip>
     </>
   );
 };
@@ -139,6 +135,7 @@ const StudentSelect = ({
               <Select
                 {...field}
                 isClearable
+                maxMenuHeight={250}
                 isMulti
                 options={optionsWithDisabled}
                 value={studentOptions.filter((option) =>

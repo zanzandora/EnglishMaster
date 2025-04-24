@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import 'react-tooltip/dist/react-tooltip.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import CustomTooltip from '@components/common/CustomTooltip';
 
 registerLocale('en-GB', enGB);
 registerLocale('vi', vi);
@@ -72,21 +73,17 @@ const CustomEventComponent: React.FC<EventProps<ExtendedEvent>> = ({
         )}
       </div>
       {/* Tooltip */}
-      <Tooltip
-        id={`tooltip-${event.id}-${event.start?.getTime()}`}
-        anchorId={anchorId}
-        place='top'
-        variant='dark'
-        className='z-50 text-left'
-        render={() => (
-          <div className=' overflow-auto'>
+      <CustomTooltip anchorId={anchorId}>
+        <div className='flex  flex-row gap-5 items-center max-h-32'>
+          <div className='text-xl font-bold'>
             <strong>{event.title}</strong>
+          </div>
+          <div>
             {event.data?.type === 'exam' && (
-              <span className=' text-red-500 font-bold'>
-                ({t('calendar.toolTip.course')})
+              <span className='text-red-500 font-bold'>
+                ({t('calendar.toolTip.exam')})
               </span>
             )}
-            <br />
             {event.data?.room && (
               <>
                 🏫 {t('calendar.toolTip.room')}: {event.data.room}
@@ -101,13 +98,12 @@ const CustomEventComponent: React.FC<EventProps<ExtendedEvent>> = ({
             <br />
             {event.data?.course && (
               <>
-                {' '}
                 📚 {t('calendar.toolTip.course')}: {event.data.course}
               </>
             )}
           </div>
-        )}
-      />
+        </div>
+      </CustomTooltip>
     </>
   );
 };
