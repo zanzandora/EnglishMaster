@@ -14,6 +14,7 @@ import { decodeToken } from '@utils/decodeToken ';
 import { useAuth } from 'hooks/useAuth';
 import { formatDate } from '@utils/dateUtils';
 import { useTranslation } from 'react-i18next';
+import CustomTooltip from '@components/common/CustomTooltip';
 
 const locales = {
   'en-US': import('date-fns/locale/en-US'),
@@ -378,44 +379,42 @@ const SingleTeacherPage = () => {
         <Announcements />
       </div>
       {/* Tooltip hiển thị chi tiết */}
-      <Tooltip
+      <CustomTooltip
         id={`event-tooltip-2`}
-        place='top'
+        place='top-start'
         variant='dark'
         className='z-50'
-        render={() => (
-          <div>
-            {teacher.courseNames.length > 0 ? (
-              teacher.courseNames.map((courseName: string, index: number) => (
-                <p key={index} className='text-xs'>
-                  {courseName}
-                </p>
-              ))
-            ) : (
-              <p className='text-xs'>No courses assigned</p>
-            )}
-          </div>
-        )}
-      />
-      <Tooltip
+      >
+        <div>
+          {(teacher.courseNames ?? []).length > 0 ? (
+            teacher.courseNames?.map((courseName: string, index: number) => (
+              <p key={index} className='text-xs'>
+                {courseName}
+              </p>
+            ))
+          ) : (
+            <p className='text-xs'>No courses assigned</p>
+          )}
+        </div>
+      </CustomTooltip>
+      <CustomTooltip
         id={`event-tooltip-4`}
-        place='top'
+        place='top-start'
         variant='dark'
         className='z-50'
-        render={() => (
-          <div>
-            {teacher.classNames.length > 0 ? (
-              teacher.classNames.map((className: string, index: number) => (
-                <p key={index} className='text-xs'>
-                  {className}
-                </p>
-              ))
-            ) : (
-              <p className='text-xs'>No classes assigned</p>
-            )}
-          </div>
-        )}
-      />
+      >
+        <div>
+          {teacher.classNames.length > 0 ? (
+            teacher.classNames.map((className: string, index: number) => (
+              <p key={index} className='text-xs'>
+                {className}
+              </p>
+            ))
+          ) : (
+            <p className='text-xs'>No classes assigned</p>
+          )}
+        </div>
+      </CustomTooltip>
     </div>
   );
 };

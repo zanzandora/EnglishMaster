@@ -80,7 +80,9 @@ const EventForm = ({
     if (type === 'update' && data?.endDate) {
       return new Date(data.endDate);
     }
-    return new Date('2025-04-10');
+    const today = new Date();
+    today.setDate(today.getDate() + 10);
+    return today;
   });
   // Dùng activeTab để chuyển đổi giữa các section
   const [activeTab, setActiveTab] = useState<'eventInfo' | 'scheduling'>(
@@ -282,6 +284,7 @@ const EventForm = ({
             register={register}
             error={errors.type}
             className='w-full'
+            inputProps={{ disabled: true }}
           >
             <option value=''>{t('form.placeholders.select')}</option>
             <option value='class'>Class</option>

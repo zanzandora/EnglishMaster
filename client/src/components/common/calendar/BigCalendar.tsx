@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Calendar, View, ToolbarProps, EventProps } from 'react-big-calendar';
 import DatePicker, { registerLocale } from 'react-datepicker';
-import { Tooltip } from 'react-tooltip';
 import { setHours, setMinutes, format } from 'date-fns';
 import { ExtendedEvent, ResourceCalendar } from '@interfaces';
 import { enGB } from 'date-fns/locale/en-GB';

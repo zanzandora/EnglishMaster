@@ -75,32 +75,63 @@ const generateRecurringEvents = (schedule: any): ExtendedEvent[] => {
   const startDate = new Date(schedule.startDate);
   const endDate = new Date(schedule.endDate);
 
-  // Trường hợp exam: chỉ tạo 1 event dựa trên startDate
-  if (schedule.type === 'exam') {
-    const eventStart = createEventDate(
-      new Date(schedule.startDate),
-      schedule.startTime
-    );
-    const eventEnd = createEventDate(
-      new Date(schedule.startDate),
-      schedule.endTime
-    );
-    return [{ ...schedule, start: eventStart, end: eventEnd }];
+  // Hàm chuyển đổi ngày JS (0-6, CN-Thứ 7) thành 1-7 (Thứ 2-Chủ Nhật)
+  const convertToCalendarDay = (date: Date): number => {
+    return ((date.getDay() + 6) % 7) + 1; // Thứ 2 = 1, CN = 7
+  };
+
+  // Tạo các sự kiện học lặp lại hàng tuần
+  const daysOfWeek = schedule.daysOfWeek?.split(',').map(Number) || [];
+
+  // Tìm ngày cuối cùng thuộc daysOfWeek để tạo exam
+  let examDate: Date | null = null;
+  let checkDate = new Date(endDate);
+  while (checkDate >= startDate) {
+    const dayOfWeek = convertToCalendarDay(checkDate);
+    if (daysOfWeek.includes(dayOfWeek)) {
+      examDate = new Date(checkDate);
+      break;
+    }
+    checkDate.setDate(checkDate.getDate() - 1);
   }
 
-  // Các event lặp theo daysOfWeek: chuyển chuỗi thành mảng số
-  const daysOfWeek = schedule.daysOfWeek?.split(',').map(Number) || [];
+  // Tạo các event học, bỏ qua ngày trùng examDate
   let currentDate = new Date(startDate);
   while (currentDate <= endDate) {
-    // Chuyển JS day (0-6, CN-Sat) thành 1-7, với thứ 2 = 1
-    const dayJs = ((currentDate.getDay() + 6) % 7) + 1;
-    if (daysOfWeek.includes(dayJs)) {
+    const dayOfWeek = convertToCalendarDay(currentDate);
+    // Nếu là ngày học, và không trùng ngày thi thì mới tạo event học
+    const isExamDay =
+      examDate &&
+      currentDate.getFullYear() === examDate.getFullYear() &&
+      currentDate.getMonth() === examDate.getMonth() &&
+      currentDate.getDate() === examDate.getDate();
+
+    if (daysOfWeek.includes(dayOfWeek) && !isExamDay) {
       const eventStart = createEventDate(currentDate, schedule.startTime);
       const eventEnd = createEventDate(currentDate, schedule.endTime);
       events.push({ ...schedule, start: eventStart, end: eventEnd });
     }
     currentDate.setDate(currentDate.getDate() + 1);
   }
+
+  // Tạo sự kiện exam nếu tìm thấy ngày phù hợp
+  if (examDate) {
+    const examStart = createEventDate(
+      examDate,
+      schedule.examStartTime || schedule.startTime
+    );
+    const examEnd = createEventDate(
+      examDate,
+      schedule.examEndTime || schedule.endTime
+    );
+    events.push({
+      ...schedule,
+      start: examStart,
+      end: examEnd,
+      type: 'exam', // Đánh dấu sự kiện là exam
+    });
+  }
+
   return events;
 };
 
