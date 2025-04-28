@@ -57,10 +57,12 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       {/* Main content area */}
       <div className='flex-1 bg-[#F7F8FA] overflow-scroll flex flex-col relative'>
         {/* Draggable Hamburger button: only show on mobile and when sidebar is closed */}
-        <HamBurgerBtn
-          onClick={() => setSidebarOpen(true)}
-          visible={isMobile && !sidebarOpen}
-        />
+        {isMobile !== null && (
+          <HamBurgerBtn
+            onClick={() => setSidebarOpen(true)}
+            visible={isMobile && !sidebarOpen}
+          />
+        )}
 
         {/* Navbar and content */}
         <Navbar />

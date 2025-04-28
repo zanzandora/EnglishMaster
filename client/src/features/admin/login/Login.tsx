@@ -6,6 +6,7 @@ import { blueTextBottom, submitForm } from './login/functions';
 import { hideInvalidate, showInvalidate } from './login/validation';
 import LanguagePopover from '@components/dashboard/components/navBar/LanguagePopover';
 import { useAuth } from 'hooks/useAuth';
+import { useIsClientMounted } from 'hooks/useIsClientMounted';
 
 const Login = () => {
   const { t } = useTranslation();
@@ -16,12 +17,18 @@ const Login = () => {
 
   const [notice, setNotice] = useState('');
 
+  const isMounted = useIsClientMounted();
+
   const navigate = useNavigate();
 
   useEffect(() => {
     if (document.cookie.includes('token='))
       navigate('/admin', { replace: true });
   }, [navigate]);
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <>
@@ -73,9 +80,11 @@ const Login = () => {
                       className='px-4 w-full border-2 py-2 rounded-md text-sm outline-none'
                       type='text'
                       name='username'
+                      id='username'
                       placeholder={t('login.username')}
                       onInvalid={showInvalidate}
                       onInput={hideInvalidate}
+                      autoComplete=''
                       required
                     />
                   </div>
@@ -92,6 +101,7 @@ const Login = () => {
                       className='px-4 w-full border-2 py-2 rounded-md text-sm outline-none'
                       type='password'
                       name='password'
+                      id='password'
                       placeholder={t('login.password')}
                       onInvalid={showInvalidate}
                       onInput={hideInvalidate}

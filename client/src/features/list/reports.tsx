@@ -292,7 +292,7 @@ const ReportPage = () => {
     if (selectedReport === 'student') {
       return (
         <tr
-          key={item.studentID}
+          key={`student-${item.studentID}-${index}`}
           className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
         >
           <td className='p-4'>{(currentPage - 1) * 10 + index + 1}</td>
@@ -322,7 +322,7 @@ const ReportPage = () => {
 
     return (
       <tr
-        key={index}
+        key={`course-${item.courseID}-${index}`}
         className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavender_fade'
       >
         <td className='p-4'>{(currentPage - 1) * 10 + index + 1}</td>

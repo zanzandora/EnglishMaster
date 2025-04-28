@@ -128,56 +128,54 @@ const ClassListPage = () => {
 
   const renderRow = (item: any) => {
     return (
-      <>
-        <tr
-          key={item.id}
-          className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
-        >
-          <td className='flex items-center gap-4 p-4'>
-            <div className='flex flex-col'>
-              <h3 className='font-semibold'>
-                {renderHighlightedItem(item.name)}
-              </h3>
-              <p className='text-xs text-gray-500'>
-                {item.startDate} - {item.endDate}
-              </p>
-            </div>
-          </td>
-          <td className='hidden md:table-cell'>{item.capacity}</td>
+      <tr
+        key={item.id}
+        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
+      >
+        <td className='flex items-center gap-4 p-4'>
+          <div className='flex flex-col'>
+            <h3 className='font-semibold'>
+              {renderHighlightedItem(item.name)}
+            </h3>
+            <p className='text-xs text-gray-500'>
+              {item.startDate} - {item.endDate}
+            </p>
+          </div>
+        </td>
+        <td className='hidden md:table-cell'>{item.capacity}</td>
 
-          <td className='hidden md:table-cell'>
-            {item.totalStudents ? item.totalStudents : 0}
-          </td>
-          <td className='hidden md:table-cell'>
-            {renderHighlightedItem(item.courseName) || 'No course assigned'}
-          </td>
-          <td className='hidden md:table-cell'>
-            {renderHighlightedItem(item.teacherName) || 'No teacher assigned'}
-          </td>
-          <td>
-            <div className='flex items-center gap-2'>
-              <FormModal table='students' type='list' id={item.id} />
+        <td className='hidden md:table-cell'>
+          {item.totalStudents ? item.totalStudents : 0}
+        </td>
+        <td className='hidden md:table-cell'>
+          {renderHighlightedItem(item.courseName) || 'No course assigned'}
+        </td>
+        <td className='hidden md:table-cell'>
+          {renderHighlightedItem(item.teacherName) || 'No teacher assigned'}
+        </td>
+        <td>
+          <div className='flex items-center gap-2'>
+            <FormModal table='students' type='list' id={item.id} />
 
-              {role === 'admin' && !targetUserID && (
-                <>
-                  <FormModal
-                    table='class'
-                    type='update'
-                    data={item}
-                    onSuccess={handleSuccess}
-                  />
-                  <FormModal
-                    table='class'
-                    type='delete'
-                    id={item.id}
-                    onSuccess={handleSuccess}
-                  />
-                </>
-              )}
-            </div>
-          </td>
-        </tr>
-      </>
+            {role === 'admin' && !targetUserID && (
+              <>
+                <FormModal
+                  table='class'
+                  type='update'
+                  data={item}
+                  onSuccess={handleSuccess}
+                />
+                <FormModal
+                  table='class'
+                  type='delete'
+                  id={item.id}
+                  onSuccess={handleSuccess}
+                />
+              </>
+            )}
+          </div>
+        </td>
+      </tr>
     );
   };
 

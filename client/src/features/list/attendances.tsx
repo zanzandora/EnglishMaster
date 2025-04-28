@@ -66,12 +66,11 @@ const AttendancePage = () => {
   const { t } = useTranslation();
   const { token } = useAuth();
   const decodedToken = decodeToken(token);
+  const role = decodedToken?.role;
 
   // ! TEEACHER LOGIN DEMO
-  const { teacher } = useFetchCurrentTeacher();
+  const { teacher } = useFetchCurrentTeacher(role);
   // const [role, setRole] = useState('teacher');
-
-  const role = decodedToken?.role;
 
   const [selectedTeacher, setSelectedTeacher] = useState<string>('All');
   const [selectedClass, setSelectedClass] = useState<string>('All');
@@ -223,7 +222,7 @@ const AttendancePage = () => {
 
     return (
       <tr
-        key={item.studentID}
+        key={`admin-${item.student.studentID}-${index}`}
         className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
       >
         <td className='p-4'>{(currentPage - 1) * 10 + index + 1}</td>
@@ -249,7 +248,7 @@ const AttendancePage = () => {
 
     return (
       <tr
-        key={item.student.studentID}
+        key={`teacher-${item.student.studentID}-${index}`}
         className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavender_fade'
       >
         <td className='p-4'>{(currentPage - 1) * 10 + index + 1}</td>
@@ -268,6 +267,7 @@ const AttendancePage = () => {
         </td>
         <td className='p-4'>
           <input
+            key={`note-${item.student.studentID}`}
             type='text'
             className=' p-2 border rounded-md'
             value={updatedNotes[item.student.studentID] ?? item.note}

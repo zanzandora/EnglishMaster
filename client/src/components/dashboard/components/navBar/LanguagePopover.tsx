@@ -1,9 +1,11 @@
+import { useIsClientMounted } from 'hooks/useIsClientMounted';
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const LanguagePopover = () => {
   const [open, setOpen] = useState(false);
   const [flag, setFlag] = useState('Vietnamese');
+  const isMounted = useIsClientMounted();
   const popoverRef = useRef(null);
 
   const { i18n } = useTranslation();
@@ -15,7 +17,7 @@ const LanguagePopover = () => {
       setFlag(storedLanguage);
       i18n.changeLanguage(storedLanguage.substring(0, 2).toLowerCase());
     }
-  }, [i18n]);
+  }, [i18n, isMounted]);
 
   // *Đóng popover khi click ra ngoài
   useEffect(() => {
@@ -31,7 +33,7 @@ const LanguagePopover = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [popoverRef]);
+  }, [popoverRef, isMounted]);
 
   const handleLanguageChange = (lang: string) => {
     setFlag(lang);
@@ -39,6 +41,10 @@ const LanguagePopover = () => {
     setOpen(false);
     localStorage.setItem('language', lang);
   };
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <div className='relative' ref={popoverRef}>

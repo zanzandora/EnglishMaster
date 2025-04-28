@@ -1,19 +1,18 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "./useAuth";
-import { CurrentTeacher } from "@interfaces";
+import { useState, useEffect } from 'react';
+import { useAuth } from './useAuth';
+import { CurrentTeacher } from '@interfaces';
 
-const useFetchCurrentTeacher = () => {
+const useFetchCurrentTeacher = (role?: string) => {
   const [teacher, setTeacher] = useState<CurrentTeacher>();
   const { token } = useAuth();
 
   useEffect(() => {
-
+    if (role !== 'teacher') return;
     const fetchTeacher = async () => {
       try {
-        const response = await fetch("/attendance/current-teacher", {
-          credentials: "include",
+        const response = await fetch('/attendance/current-teacher', {
+          credentials: 'include',
         });
-
 
         if (!response.ok) {
           throw new Error(`Failed to fetch teache: ${response.statusText}`);
@@ -21,11 +20,10 @@ const useFetchCurrentTeacher = () => {
 
         const data = await response.json();
         setTeacher(data.teacher);
-        localStorage.setItem("loggedInTeacher", JSON.stringify(data.teacher));
+        localStorage.setItem('loggedInTeacher', JSON.stringify(data.teacher));
       } catch (err) {
         console.log(err);
-        
-      } 
+      }
     };
 
     if (token) {
@@ -33,7 +31,7 @@ const useFetchCurrentTeacher = () => {
     }
   }, [token]);
 
-  return { teacher};
+  return { teacher };
 };
 
 export default useFetchCurrentTeacher;

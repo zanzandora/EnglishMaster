@@ -109,73 +109,71 @@ const TeacherListPage = () => {
 
   const renderRow = (item: any) => {
     return (
-      <>
-        <tr
-          key={item.id}
-          className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
-        >
-          <td className='flex item-center gap-4 p-4'>
-            <img
-              src={item.photo}
-              alt=''
-              width={40}
-              height={40}
-              className='md:hidden xl:block w-10 h-10 rounded-full object-cover'
-            />
-            <div className='flex flex-col'>
-              <h3 className='font-semibold'>
-                {renderHighlightedItem(item.name)}
-              </h3>
-              <p className='text-xs text-gray-500'>
-                {renderHighlightedItem(item.email)}
-              </p>
-            </div>
-          </td>
-          <td className='hidden md:table-cell'>
-            {renderHighlightedItem(String(item.userID))}
-          </td>
-          <td className='hidden md:table-cell'>
-            {renderHighlightedItem(item.userName)}
-          </td>
-          <td className='hidden md:table-cell'>
-            {renderHighlightedItem(item.phoneNumber)}
-          </td>
-          <td className='hidden lg:table-cell'>
-            {renderHighlightedItem(item.address)}
-          </td>
-          <td>
-            <div className='flex teachers-center gap-2'>
-              <Link to={`/${role}/list/teachers/${item.userID}`}>
-                <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgViewIcon'>
-                  <img
-                    src='/view.png'
-                    alt=''
-                    width={16}
-                    height={16}
-                    className='w-8/12'
-                  />
-                </button>
-              </Link>
-              {role === 'admin' && (
-                <>
-                  <FormModal
-                    table='teacher'
-                    type='update'
-                    data={item}
-                    onSuccess={handleSuccess}
-                  />
-                  <FormModal
-                    table='teacher'
-                    type='delete'
-                    id={item.userID}
-                    onSuccess={handleSuccess}
-                  />
-                </>
-              )}
-            </div>
-          </td>
-        </tr>
-      </>
+      <tr
+        key={item.id}
+        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-secondary-lavenderFade'
+      >
+        <td className='flex item-center gap-4 p-4'>
+          <img
+            src={item.photo}
+            alt=''
+            width={40}
+            height={40}
+            className='md:hidden xl:block w-10 h-10 rounded-full object-cover'
+          />
+          <div className='flex flex-col'>
+            <h3 className='font-semibold'>
+              {renderHighlightedItem(item.name)}
+            </h3>
+            <p className='text-xs text-gray-500'>
+              {renderHighlightedItem(item.email)}
+            </p>
+          </div>
+        </td>
+        <td className='hidden md:table-cell'>
+          {renderHighlightedItem(String(item.userID))}
+        </td>
+        <td className='hidden md:table-cell'>
+          {renderHighlightedItem(item.userName)}
+        </td>
+        <td className='hidden md:table-cell'>
+          {renderHighlightedItem(item.phoneNumber)}
+        </td>
+        <td className='hidden lg:table-cell'>
+          {renderHighlightedItem(item.address)}
+        </td>
+        <td>
+          <div className='flex teachers-center gap-2'>
+            <Link to={`/${role}/list/teachers/${item.userID}`}>
+              <button className='w-7 h-7 flex items-center justify-center rounded-full bg-tables-actions-bgViewIcon'>
+                <img
+                  src='/view.png'
+                  alt=''
+                  width={16}
+                  height={16}
+                  className='w-8/12'
+                />
+              </button>
+            </Link>
+            {role === 'admin' && (
+              <>
+                <FormModal
+                  table='teacher'
+                  type='update'
+                  data={item}
+                  onSuccess={handleSuccess}
+                />
+                <FormModal
+                  table='teacher'
+                  type='delete'
+                  id={item.userID}
+                  onSuccess={handleSuccess}
+                />
+              </>
+            )}
+          </div>
+        </td>
+      </tr>
     );
   };
 
