@@ -158,7 +158,6 @@ const TeacherForm = ({
     if (file) {
       setSelectedFile(file);
       setPhotoPath(file.name); // Chỉ lấy tên file
-      console.log('✅ File selected:', file.name);
     }
   };
 

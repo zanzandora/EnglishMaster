@@ -1,20 +1,23 @@
-import { Router } from 'express'
-import { and, eq } from 'drizzle-orm'
+import { Router } from 'express';
+import { and, eq } from 'drizzle-orm';
 
-import { Courses, Teachers, Users, CourseTeachers } from '../../database/entity'
-import { db } from '../../database/driver'
+import {
+  Courses,
+  Teachers,
+  Users,
+  CourseTeachers,
+} from '../../database/entity';
+import { db } from '../../database/driver';
 
-const expressRouter = Router()
+const expressRouter = Router();
 
 expressRouter.get('/list', async (req, res) => {
   try {
     // Lấy danh sách khóa học
-    const allCourses = await db
-      .select()
-      .from(Courses);
+    const allCourses = await db.select().from(Courses);
 
     // Lấy danh sách giáo viên theo từng khóa học từ bảng CourseTeachers
-    
+
     const teachersData = await db
       .select({
         courseID: CourseTeachers.courseID,
@@ -29,7 +32,9 @@ expressRouter.get('/list', async (req, res) => {
     // Nhóm giáo viên theo courseID
     const teachersGrouped = teachersData.reduce((acc, teacher) => {
       if (!acc[teacher.courseID]) acc[teacher.courseID] = [];
-      if (!acc[teacher.courseID].some(t => t.teacherId === teacher.teacherId)) {
+      if (
+        !acc[teacher.courseID].some((t) => t.teacherId === teacher.teacherId)
+      ) {
         acc[teacher.courseID].push(teacher);
       }
       return acc;
@@ -63,35 +68,36 @@ expressRouter.get('/options', async (req, res) => {
 });
 
 expressRouter.get('/', async (req, res) => {
-  const name = req.body.name
+  const name = req.body.name;
 
-  let missingFields: string[] = []
-  if (!name) missingFields.push('name')
+  let missingFields: string[] = [];
+  if (!name) missingFields.push('name');
   if (missingFields.length > 0) {
-    res.status(400).send(`Missing fields: ${missingFields.join(', ')}`)
-    return
+    res.status(400).send(`Missing fields: ${missingFields.join(', ')}`);
+    return;
   }
 
   try {
-    let selectedCourses = await db.select().from(Courses).where(and(eq(Courses.name, name)))
+    let selectedCourses = await db
+      .select()
+      .from(Courses)
+      .where(and(eq(Courses.name, name)));
 
     if (selectedCourses.length === 0) {
-      res.status(404).send(`Course "${name}" not found`)
-      return
+      res.status(404).send(`Course "${name}" not found`);
+      return;
     }
 
     res.send({
-      ...selectedCourses[0]
-    })
+      ...selectedCourses[0],
+    });
+  } catch (err) {
+    res.status(500).send(err.toString());
   }
-  catch (err) {
-    res.status(500).send(err.toString())
-  }
-})
+});
 
 expressRouter.post('/add', async (req, res) => {
   const { name, description, duration, fee, teachers } = req.body;
-  // !console.log('🔴 API Received:', req.body);
   const missingFields: string[] = [];
   if (!name) missingFields.push('name');
   if (!duration) missingFields.push('duration');
@@ -99,17 +105,22 @@ expressRouter.post('/add', async (req, res) => {
   if (!teachers) missingFields.push('teachers');
 
   if (missingFields.length > 0) {
-    return res.status(400).json({ error: `Missing fields: ${missingFields.join(', ')}` });
+    return res
+      .status(400)
+      .json({ error: `Missing fields: ${missingFields.join(', ')}` });
   }
 
   try {
     // *1️ Thêm khóa học vào bảng COURSE và lấy courseID
-    const [newCourse] = await db.insert(Courses).values({
-      name,
-      description,
-      duration,
-      fee,
-    }).$returningId();
+    const [newCourse] = await db
+      .insert(Courses)
+      .values({
+        name,
+        description,
+        duration,
+        fee,
+      })
+      .$returningId();
 
     const courseID = newCourse.id;
 
@@ -133,7 +144,6 @@ expressRouter.post('/add', async (req, res) => {
 
 expressRouter.post('/edit', async (req, res) => {
   const { id, name, description, duration, fee, teachers } = req.body;
-  // console.log('🔴 API Received:', req.body);
   // Kiểm tra id có tồn tại không
   if (!id) {
     res.status(400).send('Course id is required');
@@ -158,12 +168,14 @@ expressRouter.post('/edit', async (req, res) => {
         // Chỉ cập nhật nếu teachers có phần tử
         if (teachers.length > 0) {
           // Xóa các bản ghi cũ
-          await db.delete(CourseTeachers).where(eq(CourseTeachers.courseID, id));
-          
+          await db
+            .delete(CourseTeachers)
+            .where(eq(CourseTeachers.courseID, id));
+
           // Thêm các bản ghi mới
           const courseTeachersData = teachers.map((teacherId) => ({
             courseID: id,
-            teacherID: teacherId
+            teacherID: teacherId,
           }));
           await db.insert(CourseTeachers).values(courseTeachersData);
         }
@@ -188,7 +200,10 @@ expressRouter.delete('/delete/:id', async (req, res) => {
   }
 
   try {
-    const course = await db.select().from(Courses).where(eq(Courses.id, Number(id)));
+    const course = await db
+      .select()
+      .from(Courses)
+      .where(eq(Courses.id, Number(id)));
     if (!course.length) {
       return res.status(404).json({ error: 'Course not found' });
     }
@@ -222,4 +237,4 @@ expressRouter.delete('/delete/:id', async (req, res) => {
 //   }
 // });
 
-export const router = expressRouter
+export const router = expressRouter;

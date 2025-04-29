@@ -117,7 +117,6 @@ const AttendancePage = () => {
 
   const handleSubmitAttendance = async () => {
     try {
-      console.log('Submitting attendance updates:', updatedAttendances);
       await Promise.all(
         Object.entries(updatedAttendances).map(async ([studentID, status]) => {
           if (status !== null) {
@@ -331,7 +330,6 @@ const AttendancePage = () => {
             className='border rounded-md p-2'
             value={selectedClass}
             onChange={(e) => {
-              console.log('selectedClass changed:', e.target.value);
               setSelectedClass(e.target.value);
             }}
           >

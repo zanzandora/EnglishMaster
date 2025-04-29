@@ -157,7 +157,6 @@ const SingleStudentPage = () => {
 
   if (loading) return <p>Đang tải...</p>;
   if (!student) return <p>Không tìm thấy sinh viên</p>;
-  console.log(classSchedule);
 
   return (
     <div className='flex-1 p-4 flex flex-col gap-4 xl:flex-row'>

@@ -126,7 +126,6 @@ const EventForm = ({
 
   const submitSchedule = async (formattedData: any) => {
     const url = type === 'create' ? '/schedule/add' : '/schedule/edit';
-    console.log('🔴 API Sending:', formattedData);
 
     try {
       const response = await fetch(url, {
@@ -165,7 +164,6 @@ const EventForm = ({
   ) => {
     const isValid = await trigger();
     if (!isValid) {
-      console.log('Validation errors:', errors);
       toast.error('Validation errors:' + JSON.stringify(errors));
       return;
     }
@@ -192,7 +190,6 @@ const EventForm = ({
       if (type === 'update' && data?.id) {
         formattedData.id = data.id;
       }
-      console.log('🚀 Before submit Form Data:', formattedData);
 
       if (type === 'create') {
         // 🔥 Gọi API kiểm tra xung đột trước khi gửi form

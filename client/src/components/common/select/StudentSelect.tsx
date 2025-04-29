@@ -74,9 +74,6 @@ const StudentSelect = ({
 
   const animatedComponents = makeAnimated();
 
-  // Debug để xem giá trị defaultValue
-  // console.log('TeacherSelect defaultValue:', defaultValue);
-
   // Format các options từ students data, bổ sung thông tin cho tooltip
   const studentOptions: StudentOptionType[] = students.map((student: any) => ({
     value: student.id,
@@ -85,9 +82,6 @@ const StudentSelect = ({
     email: student.email || 'N/A',
     gender: student.gender || 'N/A',
   }));
-
-  // Debug để xem các options có sẵn
-  // console.log('studentSelect options:', studentOptions);
 
   return (
     <div
@@ -101,21 +95,14 @@ const StudentSelect = ({
         control={control}
         defaultValue={defaultValue}
         render={({ field, fieldState }) => {
-          // Debug để xem giá trị hiện tại của field
-          // console.log('Field value:', field.value);
-
           // Đảm bảo value luôn là mảng
           const selectedValues = Array.isArray(field.value) ? field.value : [];
-          // console.log('Select Value', selectedValues);
 
           // // Tạo options từ selectedValues
           // const selectedIDs = field.value.map((obj) => obj.studentID);
           // const selectedOptions = studentOptions.filter((opt) =>
           //   selectedIDs.includes(opt.value)
           // );
-
-          // // Debug để xem các options đã chọn
-          // console.log('Selected options:', selectedOptions);
 
           const selectedCount = selectedValues.length;
 
@@ -155,7 +142,6 @@ const StudentSelect = ({
                     studentName: opt.label.split(' - ')[0],
                   }));
                   field.onChange(newValue);
-                  console.log('selected student', newValue);
                 }}
                 onBlur={() => {
                   if (!fieldState.error) {

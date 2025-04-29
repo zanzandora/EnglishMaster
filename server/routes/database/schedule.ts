@@ -100,53 +100,50 @@ expressRouter.post('/check-conflict', async (req, res) => {
 // Lấy lịch theo teacherID
 expressRouter.get('/by-teacher', authenticateToken, async (req, res) => {
   try {
-      const teacherID = req.user.user_id;
-  
-      const id = await getTeacherIdByUserId(Number(teacherID));
+    const teacherID = req.user.user_id;
 
-      const schedules = await db
-        .select({
-          id: Schedule.id,
-          classID: Schedule.classID,
-          type: Schedule.type,
-          repeatRule: Schedule.repeatRule,
-          daysOfWeek: Schedule.daysOfWeek,
-          startTime: Schedule.startTime,
-          endTime: Schedule.endTime,
-          startDate: Schedule.startDate,
-          endDate: Schedule.endDate,
-          room: Schedule.room,
-          class: {
-            classID: Classes.id,
-            className: Classes.name,
-            teacherID: Classes.teacherID,
-          },
-          teacher: {
-            userID: Teachers.userID,
-            teacherName: Users.name,
-          },
-          course: {
-            courseID: Courses.id,
-            courseName: Courses.name,
-          },
-        })
-        .from(Schedule)
-        .leftJoin(Classes, eq(Schedule.classID, Classes.id))
-        .leftJoin(Teachers, eq(Classes.teacherID, Teachers.id))
-        .leftJoin(Users, eq(Teachers.userID, Users.id))
-        .leftJoin(Courses, eq(Classes.courseID, Courses.id))
-        .where(eq(Classes.teacherID, id));
+    const id = await getTeacherIdByUserId(Number(teacherID));
 
-      res.json(schedules);
-    } catch (err) {
-      res.status(500).send(err.toString());
-    }
+    const schedules = await db
+      .select({
+        id: Schedule.id,
+        classID: Schedule.classID,
+        type: Schedule.type,
+        repeatRule: Schedule.repeatRule,
+        daysOfWeek: Schedule.daysOfWeek,
+        startTime: Schedule.startTime,
+        endTime: Schedule.endTime,
+        startDate: Schedule.startDate,
+        endDate: Schedule.endDate,
+        room: Schedule.room,
+        class: {
+          classID: Classes.id,
+          className: Classes.name,
+          teacherID: Classes.teacherID,
+        },
+        teacher: {
+          userID: Teachers.userID,
+          teacherName: Users.name,
+        },
+        course: {
+          courseID: Courses.id,
+          courseName: Courses.name,
+        },
+      })
+      .from(Schedule)
+      .leftJoin(Classes, eq(Schedule.classID, Classes.id))
+      .leftJoin(Teachers, eq(Classes.teacherID, Teachers.id))
+      .leftJoin(Users, eq(Teachers.userID, Users.id))
+      .leftJoin(Courses, eq(Classes.courseID, Courses.id))
+      .where(eq(Classes.teacherID, id));
+
+    res.json(schedules);
+  } catch (err) {
+    res.status(500).send(err.toString());
   }
-);
+});
 
 expressRouter.post('/add', async (req, res) => {
-  console.log(req.io);
-  
   const {
     classID,
     type,
@@ -196,7 +193,7 @@ expressRouter.post('/add', async (req, res) => {
 });
 
 expressRouter.post('/edit', async (req, res) => {
-  const userID = req.user.user_id
+  const userID = req.user.user_id;
   const {
     id,
     classID,
@@ -261,17 +258,17 @@ expressRouter.post('/edit', async (req, res) => {
       .limit(1);
 
     const teacherUserId = teacherInfo[0].userID;
-     // Emit notification to all users
-     const notificationMessage = `Lịch học của ${userInfo[0].name} đã được cập nhật! Lớp: ${classInfo[0].name}, Thời gian: ${startDate} - ${endDate}`;
+    // Emit notification to all users
+    const notificationMessage = `Lịch học của ${userInfo[0].name} đã được cập nhật! Lớp: ${classInfo[0].name}, Thời gian: ${startDate} - ${endDate}`;
 
-     req.io.emit(`send_to_${teacherUserId}`, { 
+    req.io.emit(`send_to_${teacherUserId}`, {
       message: notificationMessage,
       title: 'Your schedule has been updated !',
       userId: userInfo[0].id, // ID của teacher
       relatedEntityType: 'schedule',
     });
 
-     // Store the notification in the database
+    // Store the notification in the database
     await db.insert(Notifications).values({
       userId: teacherUserId, // 0 for all users, you can modify this based on the user type
       title: 'Your schedule has been updated !',

@@ -26,8 +26,6 @@ const ForgotPasswordNewPassword = () => {
     navigate('/login'); // Chuyển sang bước 3 với email và OTP
   };
 
-  console.log(message);
-
   return (
     <>
       <div className='min-h-'>

@@ -38,7 +38,7 @@ expressRouter.get('/list', async (req, res) => {
       .innerJoin(Students, eq(Results.studentID, Students.id))
       .innerJoin(ClassStudents, eq(Results.studentID, ClassStudents.studentID))
       .innerJoin(Classes, eq(ClassStudents.classID, Classes.id))
-      .innerJoin(Courses, eq(Classes.courseID, Courses.id))
+      .innerJoin(Courses, eq(Classes.courseID, Courses.id));
 
     if (teacherID) {
       const teacherId = await getTeacherIdByUserId(Number(teacherID));
@@ -107,7 +107,6 @@ expressRouter.post('/add', async (req, res) => {
 
     res.send('Result added');
   } catch (err) {
-    console.log(err);
     res.status(500).send(err.toString());
   }
 });

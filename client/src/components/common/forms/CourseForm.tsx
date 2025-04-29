@@ -69,7 +69,6 @@ const CourseForm = ({
 
   const submitCourse = async (formattedData: any) => {
     const url = type === 'create' ? '/course/add' : '/course/edit';
-    console.log('🔴 API Sending:', formattedData);
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -118,7 +117,6 @@ const CourseForm = ({
 
       // Tạo object dữ liệu để gửi đi
       const dataToSubmit = { ...formData };
-      console.log('🚀 Raw Form Data:', dataToSubmit);
 
       // !Nếu teachers không thay đổi, giữ nguyên danh sách cũ
       if (!dirtyFields.teachers) {
@@ -130,7 +128,6 @@ const CourseForm = ({
           (t: any) => t.teacherId || t
         );
       }
-      console.log('🚀 Before submit Form Data:', dataToSubmit);
 
       await submitCourse(dataToSubmit);
     } catch (error: any) {

@@ -138,7 +138,6 @@ const StudentForm = ({
         formattedData.id = data.id;
       }
 
-      // console.log('Formatted data being submitted:', formattedData);
       await submitStudent(formattedData);
     } catch (error: any) {
       toast.error('Error processing form' + error.message);
@@ -150,7 +149,6 @@ const StudentForm = ({
     if (file) {
       setSelectedFile(file);
       setPhotoPath(file.name); // Chỉ lấy tên file
-      console.log('✅ File selected:', file.name);
     }
   };
 

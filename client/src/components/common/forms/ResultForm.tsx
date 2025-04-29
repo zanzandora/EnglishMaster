@@ -59,7 +59,6 @@ const ResultForm = ({
 
   const submitResult = async (formattedData: any) => {
     const url = type === 'create' ? '/result/add' : '/result/edit';
-    console.log('🔴 API Sending:', formattedData);
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -99,8 +98,6 @@ const ResultForm = ({
 
       // Tạo object dữ liệu để gửi đi
       const dataToSubmit = { ...formData };
-
-      console.log('🚀 Raw Form Data:', dataToSubmit);
 
       await submitResult(dataToSubmit);
     } catch (error: any) {

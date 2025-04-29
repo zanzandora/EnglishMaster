@@ -129,9 +129,6 @@ expressRouter.get('/:userID', async (req, res) => {
   const userID = req.params.userID;
   const teacherId = await getTeacherIdByUserId(Number(userID));
 
-  console.log('userID: ' + userID);
-  console.log(teacherId);
-
   if (!userID) {
     res.status(400).send('User ID is required');
     return;
@@ -197,7 +194,6 @@ expressRouter.post('/add', async (req, res) => {
     const studentIDs = students
       .map((student) => Number(student.studentID || student))
       .filter((id) => !isNaN(id));
-    // console.log("Student IDs from request:", studentIDs);
 
     // Lấy danh sách học viên đã được gán lớp
     const assignedRows = await db
@@ -205,7 +201,6 @@ expressRouter.post('/add', async (req, res) => {
       .from(ClassStudents)
       .where(inArray(ClassStudents.studentID, studentIDs));
     const assignedIDs = assignedRows.map((row) => row.studentID);
-    // console.log("Already assigned student IDs:", assignedIDs);
 
     // Nếu có học viên đã được gán lớp, trả về lỗi để client hiển thị thông báo
     if (assignedIDs.length > 0) {
@@ -285,7 +280,6 @@ expressRouter.post('/add', async (req, res) => {
 
 expressRouter.post('/edit', async (req, res) => {
   const { id, courseID, teacherID, name, capacity, students } = req.body;
-  console.log('🔴 API Received:', req.body);
 
   if (!id) {
     res.status(400).send('Class id is required');

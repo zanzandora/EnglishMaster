@@ -1,30 +1,32 @@
-import { Router } from 'express'
-import { and, eq,sql  } from 'drizzle-orm'
+import { Router } from 'express';
+import { and, eq, sql } from 'drizzle-orm';
 
-import { Attendances, Classes, ClassStudents, Students, Teachers, Users } from '../../database/entity'
-import { db } from '../../database/driver'
-import { getTeacherIdByUserId } from '../../helper/getTeacherID'
-import { authenticateToken } from '../middleware'
+import {
+  Attendances,
+  Classes,
+  ClassStudents,
+  Students,
+  Teachers,
+  Users,
+} from '../../database/entity';
+import { db } from '../../database/driver';
+import { getTeacherIdByUserId } from '../../helper/getTeacherID';
+import { authenticateToken } from '../middleware';
 
-const expressRouter = Router()
+const expressRouter = Router();
 
 expressRouter.get('/current-teacher', async (req, res) => {
-  console.log("User from token:", req.user);
   const userID = req.user.user_id;
-  console.log(userID);
 
   if (!userID || isNaN(Number(userID))) {
-    return res.status(400).send("Invalid user ID");
-  }
-  
-  let teacherRecords = await getTeacherIdByUserId(userID);
-  console.log(teacherRecords);
-  
-  if (!teacherRecords || isNaN(Number(teacherRecords))) {
-    return res.status(404).send("Teacher not found or invalid teacher ID");
+    return res.status(400).send('Invalid user ID');
   }
 
-  
+  let teacherRecords = await getTeacherIdByUserId(userID);
+
+  if (!teacherRecords || isNaN(Number(teacherRecords))) {
+    return res.status(404).send('Teacher not found or invalid teacher ID');
+  }
 
   try {
     const teacher = await db
@@ -37,14 +39,16 @@ expressRouter.get('/current-teacher', async (req, res) => {
       .where(eq(Teachers.id, Number(teacherRecords)));
 
     if (teacher.length === 0) {
-      return res.status(404).send(`No teacher found with ID "${teacherRecords}"`);
+      return res
+        .status(404)
+        .send(`No teacher found with ID "${teacherRecords}"`);
     }
 
-    res.send({ 
+    res.send({
       teacher: {
         teacherID: teacher[0].teacherID,
-        teacherName: teacher[0].teacherName
-      }
+        teacherName: teacher[0].teacherName,
+      },
     });
   } catch (err) {
     res.status(500).send(err.toString());
@@ -72,15 +76,16 @@ expressRouter.get('/list', async (req, res) => {
           teacherID: Teachers.id,
           teacherName: Users.name,
         },
-        totalCheckins: sql`COALESCE(COUNT(${sql.raw('att_check.studentID')}), 0)`.as("totalCheckins"),
-        
+        totalCheckins: sql`COALESCE(COUNT(${sql.raw(
+          'att_check.studentID'
+        )}), 0)`.as('totalCheckins'),
       })
-      .from(ClassStudents) 
-      .leftJoin(Students, eq(ClassStudents.studentID, Students.id)) 
-      .leftJoin(Classes, eq(ClassStudents.classID, Classes.id)) 
-      .leftJoin(Teachers, eq(Classes.teacherID, Teachers.id)) 
-      .leftJoin(Users, eq(Teachers.userID, Users.id)) 
-      .leftJoin(Attendances, eq(ClassStudents.studentID, Attendances.studentID)) 
+      .from(ClassStudents)
+      .leftJoin(Students, eq(ClassStudents.studentID, Students.id))
+      .leftJoin(Classes, eq(ClassStudents.classID, Classes.id))
+      .leftJoin(Teachers, eq(Classes.teacherID, Teachers.id))
+      .leftJoin(Users, eq(Teachers.userID, Users.id))
+      .leftJoin(Attendances, eq(ClassStudents.studentID, Attendances.studentID))
       .leftJoin(
         db
           .select({
@@ -88,7 +93,7 @@ expressRouter.get('/list', async (req, res) => {
           })
           .from(Attendances)
           .where(eq(Attendances.status, true))
-          .as("att_check"),
+          .as('att_check'),
         eq(ClassStudents.studentID, sql`att_check.studentID`)
       )
       .groupBy(
@@ -107,19 +112,21 @@ expressRouter.get('/list', async (req, res) => {
   }
 });
 
-expressRouter.get('/list-today',authenticateToken, async (req, res) => {
+expressRouter.get('/list-today', authenticateToken, async (req, res) => {
   try {
-    const userID = req.user.user_id; 
+    const userID = req.user.user_id;
 
     let teacherID = await getTeacherIdByUserId(Number(userID));
-      
+
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Đặt thời gian về 00:00 để so sánh ngày
-    console.log(today);
 
     // Lấy ngày hiện tại theo định dạng yyyy-mm-dd
-    const todayString = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().split('T')[0]; // Adjust for timezone offset
-    console.log(todayString);
+    const todayString = new Date(
+      today.getTime() - today.getTimezoneOffset() * 60000
+    )
+      .toISOString()
+      .split('T')[0]; // Adjust for timezone offset
 
     // Kiểm tra xem có attendance cho ngày hôm nay không
     const existingAttendances = await db
@@ -127,9 +134,11 @@ expressRouter.get('/list-today',authenticateToken, async (req, res) => {
         id: Attendances.id,
       })
       .from(Attendances)
-      .where(sql`DATE(${Attendances.checkInTime}) = DATE(${sql.param(todayString)})`); // So sánh chỉ ngày
+      .where(
+        sql`DATE(${Attendances.checkInTime}) = DATE(${sql.param(todayString)})`
+      ); // So sánh chỉ ngày
 
-      if (existingAttendances.length === 0) {
+    if (existingAttendances.length === 0) {
       // Lọc students theo teacher (nếu có)
       let studentsQuery = db
         .select({ id: Students.id })
@@ -140,7 +149,7 @@ expressRouter.get('/list-today',authenticateToken, async (req, res) => {
 
       const students = await studentsQuery.execute();
 
-      const newAttendances = students.map(student => ({
+      const newAttendances = students.map((student) => ({
         studentID: student.id,
         checkInTime: new Date(todayString), // Đảm bảo checkInTime là ngày hiện tại
         status: null, // Đặt status là NULL khi chưa điểm danh
@@ -178,7 +187,9 @@ expressRouter.get('/list-today',authenticateToken, async (req, res) => {
       .leftJoin(Attendances, eq(ClassStudents.studentID, Attendances.studentID))
       .where(
         and(
-          sql`DATE(${Attendances.checkInTime}) = DATE(${sql.param(todayString)})`, // Lọc theo ngày hôm nay
+          sql`DATE(${Attendances.checkInTime}) = DATE(${sql.param(
+            todayString
+          )})`, // Lọc theo ngày hôm nay
           eq(Classes.teacherID, teacherID) // Lọc theo teacherID
         )
       );
@@ -188,7 +199,6 @@ expressRouter.get('/list-today',authenticateToken, async (req, res) => {
     res.status(500).send(err.toString());
   }
 });
-
 
 expressRouter.get('/:studentID', async (req, res) => {
   const studentID = req.params.studentID;
@@ -203,7 +213,7 @@ expressRouter.get('/:studentID', async (req, res) => {
       .select({
         id: Attendances.id,
         checkInTime: Attendances.checkInTime,
-        status: sql`COALESCE(Attendances.status, NULL)`.as("status"), 
+        status: sql`COALESCE(Attendances.status, NULL)`.as('status'),
         note: Attendances.note,
         student: {
           studentID: Students.id,
@@ -211,13 +221,15 @@ expressRouter.get('/:studentID', async (req, res) => {
           dateOfBirth: Students.dateOfBirth,
         },
       })
-      .from(ClassStudents) 
-      .leftJoin(Students, eq(ClassStudents.studentID, Students.id)) 
-      .leftJoin(Attendances, eq(ClassStudents.studentID, Attendances.studentID)) 
+      .from(ClassStudents)
+      .leftJoin(Students, eq(ClassStudents.studentID, Students.id))
+      .leftJoin(Attendances, eq(ClassStudents.studentID, Attendances.studentID))
       .where(eq(ClassStudents.studentID, Number(studentID)));
 
     if (attendanceRecords.length === 0) {
-      res.status(404).send(`No attendance records found for student ID "${studentID}"`);
+      res
+        .status(404)
+        .send(`No attendance records found for student ID "${studentID}"`);
       return;
     }
 
@@ -239,7 +251,7 @@ expressRouter.post('/add', async (req, res) => {
       studentID,
       checkInTime: new Date(), // Tạo thời gian mới
       status,
-      note: note || "",
+      note: note || '',
     });
 
     res.send('Điểm danh thành công');
@@ -247,7 +259,6 @@ expressRouter.post('/add', async (req, res) => {
     res.status(500).send(err.toString());
   }
 });
-
 
 expressRouter.post('/edit', async (req, res) => {
   const { studentID, status, note } = req.body;
@@ -260,12 +271,15 @@ expressRouter.post('/edit', async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set time to 00:00 for date comparison
 
-    await db.update(Attendances)
+    await db
+      .update(Attendances)
       .set({ status, note })
-      .where(and(
-        eq(Attendances.studentID, studentID),
-        sql`DATE(${Attendances.checkInTime}) = DATE(NOW())`
-      ));
+      .where(
+        and(
+          eq(Attendances.studentID, studentID),
+          sql`DATE(${Attendances.checkInTime}) = DATE(NOW())`
+        )
+      );
 
     res.send('Attendance updated');
   } catch (err) {
@@ -273,27 +287,47 @@ expressRouter.post('/edit', async (req, res) => {
   }
 });
 
-
 expressRouter.post('/delete', async (req, res) => {
-  const id = req.body.id
+  const id = req.body.id;
 
   if (!id) {
-    res.status(400).send('Attendance id is required')
-    return
+    res.status(400).send('Attendance id is required');
+    return;
   }
 
   try {
-    await db.delete(Attendances).where(eq(Attendances.id, id))
+    await db.delete(Attendances).where(eq(Attendances.id, id));
 
-    res.send('Attendance deleted')
+    res.send('Attendance deleted');
+  } catch (err) {
+    res.status(500).send(err.toString());
   }
-  catch (err) {
-    res.status(500).send(err.toString())
-  }
-})
+});
 
-export const router = expressRouter
+export const router = expressRouter;
 
-function partitionBy(studentID: MySqlColumn<{ name: "studentID"; tableName: "class_students"; dataType: "number"; columnType: "MySqlInt"; data: number; driverParam: string | number; notNull: true; hasDefault: false; isPrimaryKey: true; isAutoincrement: false; hasRuntimeDefault: false; enumValues: undefined; baseColumn: never; identity: undefined; generated: undefined }, {}, {}>): any {
-  throw new Error('Function not implemented.')
+function partitionBy(
+  studentID: MySqlColumn<
+    {
+      name: 'studentID';
+      tableName: 'class_students';
+      dataType: 'number';
+      columnType: 'MySqlInt';
+      data: number;
+      driverParam: string | number;
+      notNull: true;
+      hasDefault: false;
+      isPrimaryKey: true;
+      isAutoincrement: false;
+      hasRuntimeDefault: false;
+      enumValues: undefined;
+      baseColumn: never;
+      identity: undefined;
+      generated: undefined;
+    },
+    {},
+    {}
+  >
+): any {
+  throw new Error('Function not implemented.');
 }

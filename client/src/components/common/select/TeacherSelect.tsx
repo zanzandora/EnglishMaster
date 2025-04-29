@@ -30,17 +30,11 @@ const TeacherSelect = ({
 
   const animatedComponents = makeAnimated();
 
-  // Debug để xem giá trị defaultValue
-  // console.log('TeacherSelect defaultValue:', defaultValue);
-
   // Format các options từ teachers data
   const teacherOptions = teachers.map((teacher: any) => ({
     value: teacher.id,
     label: teacher.name,
   }));
-
-  // Debug để xem các options có sẵn
-  // console.log('TeacherSelect options:', teacherOptions);
 
   return (
     <div
@@ -54,21 +48,14 @@ const TeacherSelect = ({
         control={control}
         defaultValue={defaultValue}
         render={({ field, fieldState }) => {
-          // Debug để xem giá trị hiện tại của field
-          console.log('Field value:', field.value);
-
           // Đảm bảo value luôn là mảng
           const selectedValues = Array.isArray(field.value) ? field.value : [];
-          console.log('Select Value', selectedValues);
 
           // Tạo options từ selectedValues
-          const selectedIDs = field.value.map((obj) => obj.teacherId); // Mảng số
-          const selectedOptions = teacherOptions.filter((opt) =>
-            selectedIDs.includes(opt.value)
-          );
-
-          // Debug để xem các options đã chọn
-          console.log('Selected options:', selectedOptions);
+          // const selectedIDs = field.value.map((obj) => obj.teacherId); // Mảng số
+          // const selectedOptions = teacherOptions.filter((opt) =>
+          //   selectedIDs.includes(opt.value)
+          // );
 
           return (
             <Select
@@ -87,7 +74,6 @@ const TeacherSelect = ({
                   teacherName: opt.label,
                 }));
                 field.onChange(newValue);
-                console.log(selected);
               }}
               onBlur={() => {
                 if (!fieldState.error) {

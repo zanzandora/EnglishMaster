@@ -4,7 +4,7 @@ import {
   ApiGenderResponse,
   MonthlyGrowthData,
   ApiGrowthResponse,
-  TotalUsersData
+  TotalUsersData,
 } from '@interfaces';
 
 export const useFetchCountGenders = () => {
@@ -99,10 +99,11 @@ export const useMonthlyGrowth = () => {
         const formattedData = apiData.data
           .sort((a: any, b: any) => a.month - b.month) // Đảm bảo thứ tự tháng
           .map((item: any) => ({
-            name: new Date(2025, item.month - 1).toLocaleString('en-US', { month: 'short' }),
+            name: new Date(2025, item.month - 1).toLocaleString('en-US', {
+              month: 'short',
+            }),
             growth: item.count,
           }));
-          console.log(formattedData);
 
         setData(formattedData);
       } catch (err) {
@@ -119,55 +120,53 @@ export const useMonthlyGrowth = () => {
 };
 
 export const useFetchTotalUsers = () => {
-    const [data, setData] = useState<TotalUsersData[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const abortControllerRef = useRef<AbortController>();
-  
-    useEffect(() => {
-      const fetchTotalUsers = async () => {
-        abortControllerRef.current = new AbortController();
-  
-        try {
-          setLoading(true);
-          setError(null);
-  
-          const response = await fetch('/analytics/totalUser', {
-            signal: abortControllerRef.current.signal,
-          });
-  
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-  
-          const apiData = await response.json();
-          console.log(apiData);
-          
-  
-          setData(apiData);
-        } catch (err) {
-          if (!abortControllerRef.current.signal.aborted) {
-            setError(
-              err instanceof Error ? err.message : 'Unknown error occurred'
-            );
-          }
-        } finally {
-          if (!abortControllerRef.current.signal.aborted) {
-            setLoading(false);
-          }
+  const [data, setData] = useState<TotalUsersData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const abortControllerRef = useRef<AbortController>();
+
+  useEffect(() => {
+    const fetchTotalUsers = async () => {
+      abortControllerRef.current = new AbortController();
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await fetch('/analytics/totalUser', {
+          signal: abortControllerRef.current.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-      };
-  
-      fetchTotalUsers();
-  
-      return () => {
-        abortControllerRef.current?.abort();
-      };
-    }, []);
-  
-    return {
-      data,
-      loading,
-      error,
+
+        const apiData = await response.json();
+
+        setData(apiData);
+      } catch (err) {
+        if (!abortControllerRef.current.signal.aborted) {
+          setError(
+            err instanceof Error ? err.message : 'Unknown error occurred'
+          );
+        }
+      } finally {
+        if (!abortControllerRef.current.signal.aborted) {
+          setLoading(false);
+        }
+      }
     };
+
+    fetchTotalUsers();
+
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, []);
+
+  return {
+    data,
+    loading,
+    error,
   };
+};

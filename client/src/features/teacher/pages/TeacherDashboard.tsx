@@ -156,8 +156,6 @@ const SingleTeacherPage = () => {
     fetchTeacher();
   }, [userID, reloadTrigger]);
 
-  console.log(teacherClass);
-
   // *Khi schedules thay đổi, tạo các event bằng cách "flatMap" qua generateRecurringEvents
   useEffect(() => {
     if (schedules) {
