@@ -13,7 +13,6 @@ import {
 } from 'react-hook-form';
 import useFetchStudents from 'hooks/useFetchStudents';
 import { useTranslation } from 'react-i18next';
-import { Tooltip } from 'react-tooltip';
 import CustomTooltip from '../CustomTooltip';
 
 interface StudentSelectProps {
@@ -23,6 +22,7 @@ interface StudentSelectProps {
   className?: string;
   defaultValue?: number[];
   maxStudents?: number; // Thêm prop maxStudents để giới hạn số lượng học sinh
+  hasClass?: boolean;
 }
 
 interface StudentOptionType {
@@ -31,6 +31,7 @@ interface StudentOptionType {
   studentID: number;
   email: string;
   gender: string;
+  hasClass: boolean;
 }
 
 const CustomOption = (props: OptionProps<StudentOptionType, true>) => {
@@ -45,8 +46,11 @@ const CustomOption = (props: OptionProps<StudentOptionType, true>) => {
       >
         <selectComponents.Option {...props} />
       </div>
-      <CustomTooltip anchorId={anchorId} float={true} variant='info'>
+      <CustomTooltip anchorId={anchorId} float={true}>
         <div>
+          <div>
+            <b>Name:</b> {data.label.split(' - ')[0]}
+          </div>
           <div>
             <b>Student ID:</b> {data.studentID}
           </div>
@@ -55,6 +59,16 @@ const CustomOption = (props: OptionProps<StudentOptionType, true>) => {
           </div>
           <div>
             <b>Gender:</b> {data.gender}
+          </div>
+          <div>
+            <b>Status:</b>{' '}
+            {data.hasClass ? (
+              <span className='text-green-500'>Have registered for class</span>
+            ) : (
+              <span className='text-red-500'>
+                Have <strong>NOT</strong> registered for class
+              </span>
+            )}
           </div>
         </div>
       </CustomTooltip>
@@ -81,6 +95,7 @@ const StudentSelect = ({
     studentID: student.id,
     email: student.email || 'N/A',
     gender: student.gender || 'N/A',
+    hasClass: !!student.className,
   }));
 
   return (
@@ -121,6 +136,17 @@ const StudentSelect = ({
             <>
               <Select
                 {...field}
+                styles={{
+                  option: (provided, { data }) => ({
+                    ...provided,
+                    color: data.hasClass ? '#22c55e' : '#ef4444',
+                    backgroundColor: 'white',
+                    ':active': {
+                      ...provided[':active'],
+                      backgroundColor: data.hasClass ? '#dcfce7' : '#fee2e2',
+                    },
+                  }),
+                }}
                 isClearable
                 maxMenuHeight={250}
                 isMulti
