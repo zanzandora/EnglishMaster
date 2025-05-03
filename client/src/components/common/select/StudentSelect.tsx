@@ -45,7 +45,7 @@ const CustomOption = (props: OptionProps<StudentOptionType, true>) => {
       >
         <selectComponents.Option {...props} />
       </div>
-      <CustomTooltip anchorId={anchorId} className='z-50'>
+      <CustomTooltip anchorId={anchorId} float={true} variant='info'>
         <div>
           <div>
             <b>Student ID:</b> {data.studentID}
