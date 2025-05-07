@@ -2,6 +2,7 @@ import { useFetchTotalUsers } from 'hooks/useFetchDatas';
 import { useTranslation } from 'react-i18next';
 
 const UserCard = ({ type }: { type: string }) => {
+  const { t } = useTranslation();
   const { data } = useFetchTotalUsers();
   const date = new Date();
 
@@ -13,7 +14,7 @@ const UserCard = ({ type }: { type: string }) => {
         </span>
       </div>
       <h1 className='text-2xl font-bold my-4'>
-        {type === 'students' ? data.students : data.teachers}
+        {type === `${t('card.label.students')}` ? data.students : data.teachers}
       </h1>
       <h2 className='capitalize text-sm font-medium text-zinc-700'>{type}</h2>
     </div>

@@ -63,9 +63,9 @@ const CustomOption = (props: OptionProps<StudentOptionType, true>) => {
           <div>
             <b>Status:</b>{' '}
             {data.hasClass ? (
-              <span className='text-green-500'>Have registered for class</span>
+              <span className='text-red-500'>Have registered for class</span>
             ) : (
-              <span className='text-red-500'>
+              <span className='text-green-500'>
                 Have <strong>NOT</strong> registered for class
               </span>
             )}
@@ -139,11 +139,11 @@ const StudentSelect = ({
                 styles={{
                   option: (provided, { data }) => ({
                     ...provided,
-                    color: data.hasClass ? '#22c55e' : '#ef4444',
+                    color: data.hasClass ? '#ef4444' : '#22c55e',
                     backgroundColor: 'white',
                     ':active': {
                       ...provided[':active'],
-                      backgroundColor: data.hasClass ? '#dcfce7' : '#fee2e2',
+                      backgroundColor: data.hasClass ? '#fee2e2' : '#dcfce7',
                     },
                   }),
                 }}
